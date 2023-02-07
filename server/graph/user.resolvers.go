@@ -10,26 +10,32 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
+	"github.com/yihao2000/gqlgen-todos/service"
 )
 
 // Login is the resolver for the login field.
 func (r *authOpsResolver) Login(ctx context.Context, obj *model.AuthOps, email string, password string) (interface{}, error) {
-	panic(fmt.Errorf("not implemented: Login - login"))
+	return service.UserLogin(ctx, email, password)
 }
 
 // Register is the resolver for the register field.
 func (r *authOpsResolver) Register(ctx context.Context, obj *model.AuthOps, input model.NewUser) (interface{}, error) {
-	panic(fmt.Errorf("not implemented: Register - register"))
+	return service.UserRegister(ctx, input)
 }
 
 // Auth is the resolver for the auth field.
 func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
-	panic(fmt.Errorf("not implemented: Auth - auth"))
+	return &model.AuthOps{}, nil
 }
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	return service.UserGetByID(ctx, id)
+}
+
+// Protected is the resolver for the protected field.
+func (r *queryResolver) Protected(ctx context.Context) (string, error) {
+	return "Success", nil
 }
 
 // AuthOps returns AuthOpsResolver implementation.

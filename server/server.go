@@ -7,9 +7,13 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/mux"
+
+	"github.com/yihao2000/gqlgen-todos/config"
+	"github.com/yihao2000/gqlgen-todos/directives"
 	"github.com/yihao2000/gqlgen-todos/graph"
-	"github.com/yihao2000/gqlgen-todos/graph/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
+	middlewares "github.com/yihao2000/gqlgen-todos/middleware"
 )
 
 const defaultPort = "8080"
@@ -22,19 +26,23 @@ func main() {
 		port = defaultPort
 	}
 
-	//Defer Closing Database
 	db := config.GetDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
 
 	//Migrate table2 dari Model yang ada
 	db.AutoMigrate(&model.User{})
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: db}}))
+	router := mux.NewRouter()
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	router.Use(middlewares.AuthMiddleware)
+
+	c := graph.Config{Resolvers: &graph.Resolver{}}
+	c.Directives.Auth = directives.Auth
+
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(c))
+
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }

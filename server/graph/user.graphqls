@@ -2,6 +2,7 @@ directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | I
 
 scalar Any
 
+directive @auth on FIELD_DEFINITION
 
 type User{
   id: ID!
@@ -33,5 +34,7 @@ type AuthOps{
 
 
 type Query{
-     user(id: ID!): User! @goField(forceResolver: true)
+     user(id: ID!): User! @goField(forceResolver: true) @auth
+
+     protected: String! @goField(forceResolver: true) @auth
 }
