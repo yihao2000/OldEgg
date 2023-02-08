@@ -11,6 +11,7 @@ type User{
   phone: String!
   password: String!
   banned: Boolean!
+  role: String!
 }
 
 
@@ -20,6 +21,7 @@ type User{
   phone: String!
   password: String!
   banned: Boolean!
+  role: String!
 }
 
 
