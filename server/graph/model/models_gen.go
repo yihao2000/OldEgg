@@ -7,6 +7,12 @@ type AuthOps struct {
 	Register interface{} `json:"register"`
 }
 
+type NewPromo struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
+}
+
 type NewUser struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`

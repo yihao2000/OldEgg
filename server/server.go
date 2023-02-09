@@ -7,8 +7,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/gorilla/mux"
 
+	"github.com/go-chi/chi"
+	"github.com/rs/cors"
 	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/directives"
 	"github.com/yihao2000/gqlgen-todos/graph"
@@ -31,7 +32,13 @@ func main() {
 	//Migrate table2 dari Model yang ada
 	db.AutoMigrate(&model.User{})
 
-	router := mux.NewRouter()
+	router := chi.NewRouter()
+
+	router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
 
 	router.Use(middlewares.AuthMiddleware)
 

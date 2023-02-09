@@ -27,8 +27,12 @@ func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	return service.UserGetByID(ctx, id)
+func (r *queryResolver) User(ctx context.Context, id *string, email *string) (*model.User, error) {
+	if id == nil {
+		return service.UserGetByEmail(ctx, *email)
+	} else {
+		return service.UserGetByID(ctx, *id)
+	}
 }
 
 // Protected is the resolver for the protected field.

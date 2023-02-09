@@ -15,6 +15,8 @@ type User{
 }
 
 
+
+
  input NewUser{
   name: String!
   email: String!
@@ -23,6 +25,8 @@ type User{
   banned: Boolean!
   role: String!
 }
+
+
 
 
 type AuthOps{
@@ -36,9 +40,9 @@ type AuthOps{
 
 
 type Query{
-     user(id: ID!): User! @goField(forceResolver: true) @auth
+     user(id: ID, email: String): User! @goField(forceResolver: true)
+
 
      protected: String! @goField(forceResolver: true) @auth
-
 
 }

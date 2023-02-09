@@ -1,0 +1,19 @@
+
+
+type Promo{
+  id: ID!
+  name: String!
+  description: String!  
+  image: String!
+}
+
+input NewPromo{
+  name: String!
+  description: String!  
+  image: String!
+}
+
+
+extend type Query{
+    promos: [Promo]! @goField(forceResolver: true)
+}
