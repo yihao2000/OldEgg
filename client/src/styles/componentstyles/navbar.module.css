@@ -1,0 +1,62 @@
+.navbarcontainer {
+  /* width: 100vw; */
+  display: flex;
+  align-items: center;
+  background-color: rgb(var(--secondary-foreground-rgb));
+
+  justify-content: space-between;
+
+  padding: 15px 50px 15px 50px;
+}
+
+.hamburgercontainer {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.hamburgercomponent {
+  width: 30px;
+  height: 4px;
+  background-color: rgb(var(--foreground-rgb));
+  margin: 6px 0;
+  transition: 0.4s;
+}
+
+.navbarsearch {
+  background-color: rgb(var(--secondary-secondary-rgb));
+  padding: 1em;
+  border-radius: 20px;
+  width: 100%;
+}
+
+.usercontainer {
+  cursor: pointer;
+  padding: 1em;
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.8em;
+  border-radius: 40px;
+}
+
+.usericon {
+  display: flex;
+  align-items: center;
+  font-size: 1.8em;
+}
+
+.returnsandordercontainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.usercontainer:hover {
+  background-color: #0b081f;
+}
+
+.userinformation {
+  display: flex;
+  flex-direction: column;
+}
+
+.cartcontainer {
+}

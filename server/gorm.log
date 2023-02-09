@@ -1,295 +1,83 @@
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[113.147ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[108.170ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[0.519ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[8.985ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[10.135ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[0.504ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[8.327ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users' AND constraint_type = 'UNIQUE'
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[7.688ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users' AND constraint_type = 'UNIQUE'
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[6.337ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[7.790ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[0.508ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
 		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
 		WHERE a.attnum > 0 -- hide internal columns
 		AND NOT a.attisdropped -- hide deleted columns
 		AND b.relname = 'users'
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[2.017ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[2.014ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.504ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.506ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.504ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[2.453ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.505ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.551ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.504ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.511ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
 [0m[33m[1.506ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'banned') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:01:31 [32mD:/Projects/Web/TPA/server/server.go:33
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
 [0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'role') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:02:12 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[114.251ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND table_type = 'BASE TABLE'
 
-2023/02/09 14:02:16 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[101.611ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.cos' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
 
-2023/02/09 14:02:43 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[103.207ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[3.589ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'promos'
 
-2023/02/09 14:06:31 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[111.622ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.coms' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "promos" LIMIT 1
 
-2023/02/09 14:06:46 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[106.627ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.coms' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[6.570ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos' AND constraint_type = 'UNIQUE'
 
-2023/02/09 14:07:03 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[107.399ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[5.937ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos'
 
-2023/02/09 14:07:05 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[102.152ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.coms' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'promos'
 
-2023/02/09 14:07:06 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.coms' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.502ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:07:08 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[115.025ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:07:08 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.501ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 14:07:14 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[104.070ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:14 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.505ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:15 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:15 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.505ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:15 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:26 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[101.084ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:27 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:37 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[110.346ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:48 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[100.598ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:54 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[115.459ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.coms' LIMIT 1
-
-2023/02/09 14:07:57 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[104.292ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:07:59 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[104.824ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:07:59 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:00 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:00 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:00 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:01 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.505ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:03 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[111.808ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:03 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.505ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:04 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:26 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[105.575ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:26 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:27 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:28 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[113.731ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:28 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[1.003ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:30 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[103.676ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:31 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:31 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.509ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:32 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:32 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.505ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:32 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.505ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:32 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:33 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:33 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.528ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:33 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:33 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[1.010ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:33 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.505ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:33 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:08:36 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[114.765ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:36 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:08:37 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:40:05 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[112.439ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:40:29 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[114.343ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 14:40:47 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[106.338ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.coms' LIMIT 1
-
-2023/02/09 14:40:47 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.505ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.coms' LIMIT 1
-
-2023/02/09 14:40:47 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[13.852ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('AndrewGiovanni','andrewgiovanniw@gmail.coms','+628119200850','$2a$10$U7eAYeqlzN2PzUzRLF/..uqpXGXStOaZVdhzC8MZ6.xXc0OqYhLqu',false,'User','b41cd7df-f89e-4e9f-95e3-69a87758454e') RETURNING "id"
-
-2023/02/09 14:51:02 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[110.243ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:51:02 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.505ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 14:51:03 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[0.000ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('AndrewGiovanni','andrewgiovanniw@gmail.comss','+628119200850','$2a$10$ZjGlm210Un3W/tZFFuguHeHJu5EQBV31PN0GmrbY1s6e9/I4vajx6',false,'User','9d6d4af7-c3d8-46e1-807a-7cd7a1a11b65') RETURNING "id"
-
-2023/02/09 14:51:41 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[111.678ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comsss' LIMIT 1
-
-2023/02/09 14:51:41 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comsss' LIMIT 1
-
-2023/02/09 14:51:41 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[6.323ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('AndrewGiovanni','andrewgiovanniw@gmail.comsss','+628119200850','$2a$10$o62UsI85tdNWtaoMFuCL9u41iZrvFiu1jxebCK6g6pHWkz1Sft0WK',false,'User','88eb3e6c-ae8a-4bb3-b610-d57660803cc6') RETURNING "id"
-
-2023/02/09 14:51:45 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[101.592ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comsss' LIMIT 1
-
-2023/02/09 15:03:46 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[104.473ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 15:03:46 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.506ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 15:03:47 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 15:05:21 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[101.964ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 15:05:59 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[107.634ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comssss' LIMIT 1
-
-2023/02/09 15:05:59 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comssss' LIMIT 1
-
-2023/02/09 15:05:59 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[5.648ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('AndrewGiovanni','andrewgiovanniw@gmail.comssss','+628119200850','$2a$10$HajhhnUysz6imOlOaxpJrO4QHfmJ8e2/3vws19XuRsfS8BMF6l3uC',false,'User','9cef4813-0519-4803-8650-d2a7293a8204') RETURNING "id"
-
-2023/02/09 15:06:19 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[107.062ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comssss' LIMIT 1
-
-2023/02/09 15:06:22 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[115.571ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comsssssz' LIMIT 1
-
-2023/02/09 15:06:22 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comsssssz' LIMIT 1
-
-2023/02/09 15:06:22 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[5.295ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('AndrewGiovanni','andrewgiovanniw@gmail.comsssssz','+628119200850','$2a$10$4bTrTaRPfOi9zbzPJuokfekGopRRouQoPfnMS0sUIfvBmxTFU//a.',false,'User','b2d7f813-7941-4714-a64a-9008158b1226') RETURNING "id"
-
-2023/02/09 15:06:23 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[0.505ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comsssssz' LIMIT 1
-
-2023/02/09 15:08:00 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[107.256ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comsssssz' LIMIT 1
-
-2023/02/09 15:08:10 [32mD:/Projects/Web/TPA/server/service/user.go:49
-[0m[33m[108.372ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 15:10:06 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[106.611ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 15:10:06 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
-
-2023/02/09 15:10:06 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[5.790ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('AndrewGiovanni','andrewgiovanniw@gmail.comss','+628119200850','$2a$10$SVpJxbfXnF6EgxVGK3/QhOcj2YWHGZaHcRnwBpXhCgPBy/0IhE//K',false,'User','0dc71085-14af-4249-a28d-99c15d1359b0') RETURNING "id"
-
-2023/02/09 15:19:11 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[111.196ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comssz' LIMIT 1
-
-2023/02/09 15:19:11 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comssz' LIMIT 1
-
-2023/02/09 15:19:11 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[5.528ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('AndrewGiovanni','andrewgiovanniw@gmail.comssz','+628119200850','$2a$10$z5PY5ZYr5VpIEyjJL5tcyeIOAK7OTRf8ZB/p1ThoPnRoACKAAeeha',false,'User','6f72eb08-848c-4db5-9504-8d6ce246b874') RETURNING "id"
+2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))

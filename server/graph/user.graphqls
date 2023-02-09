@@ -34,7 +34,7 @@ type AuthOps{
   register(input: NewUser!): Any! @goField(forceResolver: true)
 }
 
- type Mutation {
+type Mutation {
    auth: AuthOps! @goField(forceResolver: true)
 }
 

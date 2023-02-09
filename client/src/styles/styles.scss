@@ -1,0 +1,35 @@
+.promo-carousel-container {
+  margin: 20px 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  .selected-image {
+    width: 85%;
+    height: 15vw;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+}
+.text-button {
+  border-radius: 8px;
+  border: 2px solid $primary-color;
+  padding: 3px;
+  width: 5vw;
+  min-width: fit-content;
+  // margin-left: 20px;
+  // a {
+  // width: 100%;
+  text-align: center;
+  font-weight: bold;
+  background-color: #ffffff;
+  color: $primary-color;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  cursor: pointer;
+  margin: 5px 0;
+  // }
+}

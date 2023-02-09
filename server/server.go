@@ -31,6 +31,7 @@ func main() {
 
 	//Migrate table2 dari Model yang ada
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Promo{})
 
 	router := chi.NewRouter()
 

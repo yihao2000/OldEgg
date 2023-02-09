@@ -13,7 +13,11 @@ input NewPromo{
   image: String!
 }
 
+extend type Mutation{
+    createPromo(input: NewPromo!): Promo! 
+    updatePromo(input: NewPromo!): Promo!
+} 
 
 extend type Query{
-    promos: [Promo]! @goField(forceResolver: true)
+    promos: [Promo!]! @goField(forceResolver: true)
 }
