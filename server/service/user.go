@@ -21,6 +21,7 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 		Password: input.Password,
 		Phone:    input.Phone,
 		Banned:   input.Banned,
+		Role:     input.Role,
 	}
 
 	if err := db.Model(user).Create(&user).Error; err != nil {

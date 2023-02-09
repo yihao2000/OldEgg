@@ -9,6 +9,7 @@ type User struct {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
 	Banned   bool   `json:"banned"`
+	Role     string `json:"role"`
 }
 
 func HashPassword(s string) string {
