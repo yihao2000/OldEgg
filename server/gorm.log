@@ -81,3 +81,360 @@
 
 2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
 [0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/09 17:39:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[112.500ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:50:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[32.053ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:50:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.211ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:50:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.253ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:50:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.635ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:22 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.095ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.531ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.029ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.261ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.988ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[115.286ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:43 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.607ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:52:49 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.227ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 17:59:55 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.008ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[28.333ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[32.782ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[106.778ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.943ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:05:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.852ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:05:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.875ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:13:24 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[106.814ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:13:24 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.824ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:13:26 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.768ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:13:26 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.550ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:13:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.507ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:13:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.707ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:14:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.208ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:14:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[112.253ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:14:30 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.453ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:14:30 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[113.684ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.421ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[113.229ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.294ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.861ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:44 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.164ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:44 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[106.928ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:55 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.611ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.815ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:15:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.518ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:17 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.174ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:17 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[113.954ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.325ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.630ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.771ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.418ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.648ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 18:16:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.688ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:03:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[113.136ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:04:12 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.997ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:05:01 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.869ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:05:03 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.083ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:05:03 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.609ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:05:29 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.046ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:05:29 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.836ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:05:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.069ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:05:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.565ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:07:47 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.138ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:07:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.435ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:07:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.571ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:08:15 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.238ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:09:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.359ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:09:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.749ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:09:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.749ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:20:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.922ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:20:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.744ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:20:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.417ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:20:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.050ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:21:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.330ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:21:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.793ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:24:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.737ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:25:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[106.380ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:25:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.493ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:27:03 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.690ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:39:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.498ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:39:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[113.920ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:39:11 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.598ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:39:11 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.857ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:39:34 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.099ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:40:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.550ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:40:09 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.350ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:40:28 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.496ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:40:28 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.637ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:49:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.835ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:50:08 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.323ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:50:12 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.133ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:50:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.924ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:50:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.152ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:50:18 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.932ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:50:18 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.081ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:50:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[113.379ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:53:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[112.304ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:53:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.488ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:53:33 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[112.381ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:53:33 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.130ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:59:59 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.680ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 19:59:59 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.175ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 20:18:02 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.709ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 20:45:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[104.138ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:10:34 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[115.889ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:10:34 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[112.909ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:16:55 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.087ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:18:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.485ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:24:42 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
+[0m[33m[104.477ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'endrugiovanniw@gmail.com' LIMIT 1
+
+2023/02/09 21:24:42 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'endrugiovanniw@gmail.com' LIMIT 1
+
+2023/02/09 21:24:42 [32mD:/Projects/Web/TPA/server/service/user.go:27
+[0m[33m[5.307ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('EndruGiovanni','endrugiovanniw@gmail.com','+628119200850','$2a$10$C.eNJj5J8R8KVJozORzqAuwMVJ.5K85FmuF8sdEWhxfETviNj5bnm',false,'User','d5c3341b-f9d6-4db0-8b89-c207d3988ced') RETURNING "id"
+
+2023/02/09 21:24:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.833ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:24:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:31:06 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.804ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:31:06 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.132ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 21:59:15 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.360ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:06:15 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.997ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:06:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.293ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:07:43 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.763ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:09:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.106ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:09:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.036ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:18:13 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.242ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:18:13 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.105ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:18:14 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.650ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+
+2023/02/09 22:18:14 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.812ms] [34;1m[rows:1][0m SELECT * FROM "promos"

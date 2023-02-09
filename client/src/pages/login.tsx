@@ -1,11 +1,50 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from '@next/font/google';
+import React, { useState } from 'react';
 import styles from '@/styles/home.module.css';
 import Link from 'next/link';
 import { links } from '@/util/route';
+import axios from 'axios';
+import { GRAPHQLAPI, LOGIN_QUERY, USER_QUERY } from '@/util/constant';
+import { FaArrowCircleLeft } from 'react-icons/fa';
 
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isEmailExist, setIsEmailExist] = useState(false);
+  const [nextPrompt, setNextPrompt] = useState(false);
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+
+    if (!nextPrompt) {
+      axios
+        .post(GRAPHQLAPI, {
+          query: USER_QUERY,
+          variables: {
+            email: email,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data.data.user == null) {
+            setIsEmailExist(true);
+            return;
+          } else {
+            setIsEmailExist(false);
+            setNextPrompt(true);
+          }
+        })
+        .catch(() => {
+          console.log('Error');
+        });
+    } else {
+    }
+  };
   return (
     <>
       <Head>
@@ -28,24 +67,56 @@ export default function Login() {
               width: '100%',
               paddingBottom: '15px',
             }}
+            onSubmit={handleSubmit}
           >
-            <input
-              type="email"
-              style={{
-                marginBottom: '15px',
-              }}
-              className={styles.formtextinput}
-              id="email"
-              name="email"
-              required
-              placeholder="Email Address"
-            />
+            {!nextPrompt && (
+              <input
+                type="email"
+                style={{
+                  marginBottom: '15px',
+                }}
+                className={styles.formtextinput}
+                id="email"
+                name="email"
+                required
+                placeholder="Email Address"
+                value={email}
+                onChange={handleEmailChange}
+              />
+            )}
+            {nextPrompt && (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  columnGap: '0.6em',
+                }}
+              >
+                <div>
+                  <FaArrowCircleLeft />
+                </div>
+                <div>{email}</div>
+              </div>
+            )}
 
-            <input
-              type="submit"
+            {isEmailExist && (
+              <h4
+                className={styles.errorMessage}
+                style={{
+                  textAlign: 'center',
+                  paddingBottom: '1em',
+                }}
+              >
+                We didn't find an account for this email address
+              </h4>
+            )}
+
+            <button
               className={`${styles.formbutton} ${styles.themeaccent}`}
-              value="SIGN IN"
-            />
+              onClick={handleSubmit}
+            >
+              SIGN IN
+            </button>
           </form>
 
           <button className={styles.formbutton}>
