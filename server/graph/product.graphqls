@@ -74,7 +74,7 @@ extend type Mutation{
     createCategory(input: NewCategory!): Category!
     updateCategory(input: NewCategory!): Category!
 
-    createProductGroup(): ProductGroup!
+    createProductGroup: ProductGroup!
 
     createProduct(input: NewProduct!): Product!
     updateProduct(input: NewProduct!): Product!

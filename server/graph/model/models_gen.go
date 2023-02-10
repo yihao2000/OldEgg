@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"time"
+)
+
 type AuthOps struct {
 	Login    interface{} `json:"login"`
 	Register interface{} `json:"register"`
@@ -14,10 +18,47 @@ type NewBrand struct {
 	Description string `json:"description"`
 }
 
+type NewCategory struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type NewProduct struct {
+	BrandID     string     `json:"brandId"`
+	CategoryID  string     `json:"categoryId"`
+	ShopID      string     `json:"shopId"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	Price       int        `json:"price"`
+	Image       string     `json:"image"`
+	Quantity    int        `json:"quantity"`
+	ValidTo     *time.Time `json:"validTo"`
+}
+
+type NewProductVariant struct {
+	ProductgroupID string     `json:"productgroupId"`
+	BrandID        string     `json:"brandId"`
+	CategoryID     string     `json:"categoryId"`
+	ShopID         string     `json:"shopId"`
+	Name           string     `json:"name"`
+	Description    string     `json:"description"`
+	Price          int        `json:"price"`
+	Image          string     `json:"image"`
+	Quantity       int        `json:"quantity"`
+	ValidTo        *time.Time `json:"validTo"`
+}
+
 type NewPromo struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Image       string `json:"image"`
+}
+
+type NewShop struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
+	Aboutus     string `json:"aboutus"`
 }
 
 type NewUser struct {
@@ -28,3 +69,7 @@ type NewUser struct {
 	Banned   bool   `json:"banned"`
 	Role     string `json:"role"`
 }
+
+
+
+
