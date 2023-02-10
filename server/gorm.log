@@ -1,440 +1,350 @@
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[108.170ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[103.580ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
 [0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[10.135ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[32.439ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[7.688ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users' AND constraint_type = 'UNIQUE'
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[8.288ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users' AND constraint_type = 'UNIQUE'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[7.790ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[6.724ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
 		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
 		WHERE a.attnum > 0 -- hide internal columns
 		AND NOT a.attisdropped -- hide deleted columns
 		AND b.relname = 'users'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[2.014ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.069ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.506ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.522ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[2.453ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.510ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.551ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.010ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.511ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.515ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
-[0m[33m[1.506ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'banned') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.513ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'banned') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:33
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:33
 [0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'role') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
 [0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND table_type = 'BASE TABLE'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
 [0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
-[0m[33m[3.589ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'promos'
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[4.519ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'promos'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
-[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "promos" LIMIT 1
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[6.276ms] [34;1m[rows:-][0m SELECT * FROM "promos" LIMIT 1
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
-[0m[33m[6.570ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos' AND constraint_type = 'UNIQUE'
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[6.024ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos' AND constraint_type = 'UNIQUE'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
-[0m[33m[5.937ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos'
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[5.510ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
 [0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
 		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
 		WHERE a.attnum > 0 -- hide internal columns
 		AND NOT a.attisdropped -- hide deleted columns
 		AND b.relname = 'promos'
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
-[0m[33m[0.502ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
 [0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
-[0m[33m[0.501ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:49 [32mD:/Projects/Web/TPA/server/server.go:34
+2023/02/10 20:12:23 [32mD:/Projects/Web/TPA/server/server.go:34
 [0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
 
-2023/02/09 17:39:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[112.500ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:12:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[38.789ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:50:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[32.053ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:12:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.576ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:50:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[114.211ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:13:01 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[106.570ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 17:50:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[101.253ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:13:04 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[102.659ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 17:50:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.635ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:13:04 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.690ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:22 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[105.095ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:13:04 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.000ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.531ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:15:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[115.097ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[108.029ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:15:52 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[112.054ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[114.261ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:16:35 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.843ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[105.988ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:17:20 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.662ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[115.286ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:17:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.377ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:43 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[108.607ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:18:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.347ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:52:49 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[100.227ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:21:44 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.005ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 17:59:55 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.008ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:22:43 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.772ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[28.333ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:22:49 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.098ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[32.782ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:23:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.739ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[106.778ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:23:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.519ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:00:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.943ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:23:58 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[108.562ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 18:05:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[101.852ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:24:01 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[107.371ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 18:05:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.875ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:24:01 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.505ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:13:24 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[106.814ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:24:01 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.504ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:13:24 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.824ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:30:41 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.279ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:13:26 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.768ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:30:41 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.544ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:13:26 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[101.550ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:30:49 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[101.681ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 18:13:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.507ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:30:54 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[101.071ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 18:13:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.707ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:30:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.505ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:14:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.208ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:30:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.504ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:14:23 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[112.253ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:35:19 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.573ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:14:30 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.453ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:35:19 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.090ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:14:30 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[113.684ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:39:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[106.383ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:15:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.421ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:39:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.156ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:15:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[113.229ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:44:12 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[108.339ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 18:15:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.294ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:44:16 [32mD:/Projects/Web/TPA/server/service/user.go:49
+[0m[33m[114.907ms] [34;1m[rows:1][0m SELECT * FROM "users" WHERE email LIKE 'andrewgiovanniw@gmail.comss' LIMIT 1
 
-2023/02/09 18:15:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[114.861ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:44:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.000ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:15:44 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[100.164ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 20:44:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.502ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:15:44 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[106.928ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:02:07 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.979ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:15:55 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[108.611ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:02:13 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[113.711ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:15:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.815ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:03:49 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.365ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:15:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.518ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:03:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.704ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:17 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[101.174ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:39:35 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.188ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:17 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[113.954ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:41:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.787ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[101.325ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:46:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.863ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.630ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 21:50:02 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.830ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.771ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:08:20 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[106.518ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.418ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:08:20 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.960ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.648ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.281ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 18:16:57 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[101.688ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.440ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:03:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[113.136ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:19 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.790ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:04:12 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[108.997ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:19 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[114.206ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:05:01 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[105.869ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:20 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.701ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:05:03 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[105.083ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:20 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.248ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:05:03 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.609ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.402ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:05:29 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.046ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.402ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:05:29 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.836ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.771ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:05:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.069ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.361ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:05:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.565ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[106.299ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:07:47 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.138ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.832ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:07:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.435ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.503ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:07:51 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.571ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:38 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.506ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:08:15 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.238ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.503ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:09:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.359ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.504ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:09:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.749ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.504ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:09:58 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.749ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.503ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:20:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.922ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.504ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:20:21 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.744ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.513ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:20:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.417ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:41 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.695ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:20:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[114.050ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:09:41 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.695ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:21:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.330ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:10:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.383ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:21:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.793ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:10:54 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.996ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:24:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.737ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[110.881ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:25:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[106.380ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.945ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:25:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.493ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:11 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.076ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:27:03 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.690ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:11 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.239ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:39:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.498ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.881ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:39:10 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[113.920ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:37 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.340ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:39:11 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[100.598ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:43 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[108.430ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:39:11 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.857ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:43 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.605ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:39:34 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.099ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:44 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[103.301ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:40:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.550ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:44 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[100.225ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:40:09 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.350ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:45 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.503ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:40:28 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.496ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:11:45 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[0.503ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:40:28 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.637ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:12:27 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[101.992ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:49:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.835ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:12:27 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[109.409ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:50:08 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[102.323ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:14:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[105.438ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:50:12 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.133ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:14:36 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.748ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:50:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.924ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:14:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.541ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:50:16 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[105.152ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:14:40 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.970ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:50:18 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.932ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:14:52 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[107.991ms] [34;1m[rows:3][0m SELECT * FROM "promos"
 
-2023/02/09 19:50:18 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[105.081ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 19:50:39 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[113.379ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 19:53:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[112.304ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 19:53:31 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.488ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 19:53:33 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[112.381ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 19:53:33 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.130ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 19:59:59 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.680ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 19:59:59 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.175ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 20:18:02 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[108.709ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 20:45:05 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[104.138ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:10:34 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[115.889ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:10:34 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[112.909ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:16:55 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.087ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:18:32 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[114.485ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:24:42 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[104.477ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'endrugiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 21:24:42 [31;1mD:/Projects/Web/TPA/server/service/user.go:49 [35;1mrecord not found
-[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE email LIKE 'endrugiovanniw@gmail.com' LIMIT 1
-
-2023/02/09 21:24:42 [32mD:/Projects/Web/TPA/server/service/user.go:27
-[0m[33m[5.307ms] [34;1m[rows:1][0m INSERT INTO "users" ("name","email","phone","password","banned","role","id") VALUES ('EndruGiovanni','endrugiovanniw@gmail.com','+628119200850','$2a$10$C.eNJj5J8R8KVJozORzqAuwMVJ.5K85FmuF8sdEWhxfETviNj5bnm',false,'User','d5c3341b-f9d6-4db0-8b89-c207d3988ced') RETURNING "id"
-
-2023/02/09 21:24:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[0.833ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:24:42 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:31:06 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.804ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:31:06 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.132ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 21:59:15 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[107.360ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:06:15 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[110.997ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:06:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[100.293ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:07:43 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[108.763ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:09:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.106ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:09:46 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[111.036ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:18:13 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[103.242ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:18:13 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[108.105ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:18:14 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[109.650ms] [34;1m[rows:1][0m SELECT * FROM "promos"
-
-2023/02/09 22:18:14 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
-[0m[33m[114.812ms] [34;1m[rows:1][0m SELECT * FROM "promos"
+2023/02/10 22:15:04 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[102.663ms] [34;1m[rows:3][0m SELECT * FROM "promos"

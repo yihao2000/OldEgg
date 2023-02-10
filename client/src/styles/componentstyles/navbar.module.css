@@ -7,6 +7,8 @@
   justify-content: space-between;
 
   padding: 15px 50px 15px 50px;
+
+  overflow: hidden;
 }
 
 .hamburgercontainer {
@@ -15,6 +17,20 @@
 }
 
 .hamburgercomponent {
+  width: 30px;
+  height: 4px;
+  background-color: rgb(var(--foreground-rgb));
+  margin: 6px 0;
+  transition: 0.4s;
+}
+
+.hamburgerresponsivecontainer {
+  display: inline-block;
+  cursor: pointer;
+  display: none;
+}
+
+.hamburgerresponsivecomponent {
   width: 30px;
   height: 4px;
   background-color: rgb(var(--foreground-rgb));
@@ -59,4 +75,21 @@
 }
 
 .cartcontainer {
+}
+
+@media screen and (max-width: 600px) {
+  .navbarcontainer {
+    padding: 10px 20px 10px 20px;
+  }
+  .returnsandordercontainer {
+    display: none;
+  }
+  .locationcontainer {
+    display: none;
+    color: red;
+  }
+
+  .userinformation {
+    display: none;
+  }
 }

@@ -8,6 +8,22 @@ import { useSessionStorage } from 'usehooks-ts';
 export default function Navbar() {
   const [token, setToken] = useSessionStorage('token', '');
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userInformation, setUserInformation] = useState('');
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    if (token == '') {
+      setUserInformation('Sign In / Register');
+    } else {
+      setUserInformation('');
+    }
+  }, [token]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    console.log(event.target.value);
+  };
+
   const showToken = () => {
     console.log(token);
   };
@@ -33,6 +49,11 @@ export default function Navbar() {
         <div className={styles.hamburgercomponent}></div>
         <div className={styles.hamburgercomponent}></div>
       </div>
+      <div className={styles.hamburgerresponsivecontainer}>
+        <div className={styles.hamburgerresponsivecomponent}></div>
+        <div className={styles.hamburgercomponent}></div>
+        <div className={styles.hamburgercomponent}></div>
+      </div>
       <Image
         alt="Logo"
         src="/asset/logo.svg"
@@ -41,7 +62,7 @@ export default function Navbar() {
         onClick={showToken}
       />
       <i
-        className="fas fa-map-marker-alt"
+        className={`${styles.locationcontainer} "fas fa-map-marker-alt" `}
         style={{
           fontSize: '30px',
           color: 'wheat',
@@ -60,6 +81,8 @@ export default function Navbar() {
           placeholder="Search.."
           name="search"
           className={styles.navbarsearch}
+          value={search}
+          onChange={handleSearchChange}
         />
         <button type="submit">
           <i className="fa fa-search"></i>
@@ -67,7 +90,7 @@ export default function Navbar() {
       </form>
 
       <i
-        className="fa fa-bell"
+        className={`${styles.locationcontainer} "fa fa-bell" `}
         style={{
           fontSize: '30px',
           color: 'wheat',
@@ -86,16 +109,14 @@ export default function Navbar() {
         <div className={styles.userinformation}>
           <div style={{ color: 'gray' }}>Welcome</div>
           <div>
-            <b>{token == '' ? 'Sign In / Register' : ''}</b>
+            <b>{userInformation}</b>
           </div>
         </div>
       </div>
 
       <div className={styles.returnsandordercontainer}>
         <div style={{ color: 'gray' }}>Returns</div>
-        <div style={{}}>
-          <b>& Orders</b>
-        </div>
+        <div style={{}}>{/* <b>& Orders</b> */}</div>
       </div>
 
       <div className={styles.cartcontainer}>

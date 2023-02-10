@@ -1,0 +1,97 @@
+scalar Time
+
+type Brand{
+  id: ID!
+  name: String!
+  description: String!  
+}
+
+input NewBrand{
+    name: String!
+    description: String!
+}
+
+type Category{
+    id: ID!
+    name: String!
+    description: String!
+}
+
+input NewCategory{
+    name: String!
+    description: String!
+}
+
+type ProductGroup{
+    id: ID!
+}
+
+type Product{
+  id: ID!   
+  productgroup: ProductGroup!
+  brand: Brand!
+  category: Category!
+  shop: Shop!
+  name: String!
+  description: String!  
+  price: Int!
+  image: String!
+  quantity: Int!
+  validTo: Time
+}
+
+
+input NewProduct{
+    brandId: ID!
+    categoryId: ID!
+    shopId: ID!
+    name: String!
+    description: String!
+    price: Int!
+    image: String!
+    quantity: Int!
+    validTo: Time
+}
+
+input NewProductVariant{
+    productgroupId: ID!
+    brandId: ID!
+    categoryId: ID!
+    shopId: ID!
+    name: String!
+    description: String!
+    price: Int!
+    image: String!
+    quantity: Int!
+    validTo: Time
+}
+
+
+extend type Mutation{
+    createBrand(input: NewBrand!): Brand! 
+    updateBrand(input: NewBrand!): Brand!
+
+    createCategory(input: NewCategory!): Category!
+    updateCategory(input: NewCategory!): Category!
+
+    createProductGroup(): ProductGroup!
+
+    createProduct(input: NewProduct!): Product!
+    updateProduct(input: NewProduct!): Product!
+    
+    createProductVariant(input: NewProductVariant!): Product!
+    updateProductVariant(input: NewProductVariant!): Product!
+} 
+
+extend type Query{
+    brands: [Brand!]! @goField(forceResolver: true)
+    brand(id: ID, name: String): Brand! @goField(forceResolver: true)
+
+    categories: [Category!]! @goField(forceResolver: true)
+    category(id: ID, name: String): Category! @goField(forceResolver: true)
+
+    products: [Product!]! @goField(forceResolver: true)
+    product(id: ID, name: String): Product! @goField(forceResolver: true)
+    productsGroup(category: ID, brand: ID, productgroup: ID, shop: ID): [Product!]! @goField(forceResolver: true)
+
+}

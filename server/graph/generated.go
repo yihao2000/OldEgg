@@ -52,9 +52,17 @@ type ComplexityRoot struct {
 		Register func(childComplexity int, input model.NewUser) int
 	}
 
+	Brand struct {
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+	}
+
 	Mutation struct {
 		Auth        func(childComplexity int) int
+		CreateBrand func(childComplexity int, input model.NewBrand) int
 		CreatePromo func(childComplexity int, input model.NewPromo) int
+		UpdateBrand func(childComplexity int, input model.NewBrand) int
 		UpdatePromo func(childComplexity int, input model.NewPromo) int
 	}
 
@@ -66,6 +74,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Brand     func(childComplexity int, id *string, name *string) int
+		Brands    func(childComplexity int) int
 		Promos    func(childComplexity int) int
 		Protected func(childComplexity int) int
 		User      func(childComplexity int, id *string, email *string) int
@@ -88,12 +98,16 @@ type AuthOpsResolver interface {
 }
 type MutationResolver interface {
 	Auth(ctx context.Context) (*model.AuthOps, error)
+	CreateBrand(ctx context.Context, input model.NewBrand) (*model.Promo, error)
+	UpdateBrand(ctx context.Context, input model.NewBrand) (*model.Promo, error)
 	CreatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error)
 	UpdatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error)
 }
 type QueryResolver interface {
 	User(ctx context.Context, id *string, email *string) (*model.User, error)
 	Protected(ctx context.Context) (string, error)
+	Brands(ctx context.Context) ([]*model.Brand, error)
+	Brand(ctx context.Context, id *string, name *string) (*model.Brand, error)
 	Promos(ctx context.Context) ([]*model.Promo, error)
 }
 
@@ -136,12 +150,45 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthOps.Register(childComplexity, args["input"].(model.NewUser)), true
 
+	case "Brand.description":
+		if e.complexity.Brand.Description == nil {
+			break
+		}
+
+		return e.complexity.Brand.Description(childComplexity), true
+
+	case "Brand.id":
+		if e.complexity.Brand.ID == nil {
+			break
+		}
+
+		return e.complexity.Brand.ID(childComplexity), true
+
+	case "Brand.name":
+		if e.complexity.Brand.Name == nil {
+			break
+		}
+
+		return e.complexity.Brand.Name(childComplexity), true
+
 	case "Mutation.auth":
 		if e.complexity.Mutation.Auth == nil {
 			break
 		}
 
 		return e.complexity.Mutation.Auth(childComplexity), true
+
+	case "Mutation.createBrand":
+		if e.complexity.Mutation.CreateBrand == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createBrand_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateBrand(childComplexity, args["input"].(model.NewBrand)), true
 
 	case "Mutation.createPromo":
 		if e.complexity.Mutation.CreatePromo == nil {
@@ -154,6 +201,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreatePromo(childComplexity, args["input"].(model.NewPromo)), true
+
+	case "Mutation.updateBrand":
+		if e.complexity.Mutation.UpdateBrand == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateBrand_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateBrand(childComplexity, args["input"].(model.NewBrand)), true
 
 	case "Mutation.updatePromo":
 		if e.complexity.Mutation.UpdatePromo == nil {
@@ -194,6 +253,25 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Promo.Name(childComplexity), true
+
+	case "Query.brand":
+		if e.complexity.Query.Brand == nil {
+			break
+		}
+
+		args, err := ec.field_Query_brand_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Brand(childComplexity, args["id"].(*string), args["name"].(*string)), true
+
+	case "Query.brands":
+		if e.complexity.Query.Brands == nil {
+			break
+		}
+
+		return e.complexity.Query.Brands(childComplexity), true
 
 	case "Query.promos":
 		if e.complexity.Query.Promos == nil {
@@ -278,6 +356,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputNewBrand,
 		ec.unmarshalInputNewPromo,
 		ec.unmarshalInputNewUser,
 	)
@@ -339,7 +418,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
-//go:embed "promo.graphqls" "user.graphqls"
+//go:embed "brand.graphqls" "product.graphqls" "promo.graphqls" "shop.graphqls" "user.graphqls"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -351,7 +430,10 @@ func sourceData(filename string) string {
 }
 
 var sources = []*ast.Source{
+	{Name: "brand.graphqls", Input: sourceData("brand.graphqls"), BuiltIn: false},
+	{Name: "product.graphqls", Input: sourceData("product.graphqls"), BuiltIn: false},
 	{Name: "promo.graphqls", Input: sourceData("promo.graphqls"), BuiltIn: false},
+	{Name: "shop.graphqls", Input: sourceData("shop.graphqls"), BuiltIn: false},
 	{Name: "user.graphqls", Input: sourceData("user.graphqls"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -399,6 +481,21 @@ func (ec *executionContext) field_AuthOps_register_args(ctx context.Context, raw
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createBrand_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewBrand
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewBrand2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewBrand(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createPromo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -406,6 +503,21 @@ func (ec *executionContext) field_Mutation_createPromo_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewPromo2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewPromo(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateBrand_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewBrand
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewBrand2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewBrand(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -441,6 +553,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_brand_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["name"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg1
 	return args, nil
 }
 
@@ -616,6 +752,138 @@ func (ec *executionContext) fieldContext_AuthOps_register(ctx context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Brand_id(ctx context.Context, field graphql.CollectedField, obj *model.Brand) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Brand_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Brand_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Brand",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Brand_name(ctx context.Context, field graphql.CollectedField, obj *model.Brand) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Brand_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Brand_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Brand",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Brand_description(ctx context.Context, field graphql.CollectedField, obj *model.Brand) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Brand_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Brand_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Brand",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_auth(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_auth(ctx, field)
 	if err != nil {
@@ -661,6 +929,134 @@ func (ec *executionContext) fieldContext_Mutation_auth(ctx context.Context, fiel
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AuthOps", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createBrand(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createBrand(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateBrand(rctx, fc.Args["input"].(model.NewBrand))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Promo)
+	fc.Result = res
+	return ec.marshalNPromo2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐPromo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createBrand(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Promo_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Promo_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Promo_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Promo_image(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Promo", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createBrand_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateBrand(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateBrand(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateBrand(rctx, fc.Args["input"].(model.NewBrand))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Promo)
+	fc.Result = res
+	return ec.marshalNPromo2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐPromo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateBrand(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Promo_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Promo_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Promo_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Promo_image(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Promo", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateBrand_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -1098,6 +1494,119 @@ func (ec *executionContext) fieldContext_Query_protected(ctx context.Context, fi
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_brands(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_brands(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Brands(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Brand)
+	fc.Result = res
+	return ec.marshalNBrand2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐBrandᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_brands(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Brand_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Brand_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Brand_description(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_brand(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_brand(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Brand(rctx, fc.Args["id"].(*string), fc.Args["name"].(*string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Brand)
+	fc.Result = res
+	return ec.marshalNBrand2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐBrand(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_brand(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Brand_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Brand_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Brand_description(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_brand_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -3363,6 +3872,42 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputNewBrand(ctx context.Context, obj interface{}) (model.NewBrand, error) {
+	var it model.NewBrand
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "description"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewPromo(ctx context.Context, obj interface{}) (model.NewPromo, error) {
 	var it model.NewPromo
 	asMap := map[string]interface{}{}
@@ -3544,6 +4089,48 @@ func (ec *executionContext) _AuthOps(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var brandImplementors = []string{"Brand"}
+
+func (ec *executionContext) _Brand(ctx context.Context, sel ast.SelectionSet, obj *model.Brand) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, brandImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Brand")
+		case "id":
+
+			out.Values[i] = ec._Brand_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "name":
+
+			out.Values[i] = ec._Brand_name(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "description":
+
+			out.Values[i] = ec._Brand_description(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -3566,6 +4153,18 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_auth(ctx, field)
+			})
+
+		case "createBrand":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createBrand(ctx, field)
+			})
+
+		case "updateBrand":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateBrand(ctx, field)
 			})
 
 		case "createPromo":
@@ -3685,6 +4284,46 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_protected(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "brands":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_brands(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "brand":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_brand(ctx, field)
 				return res
 			}
 
@@ -4173,6 +4812,64 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNBrand2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐBrand(ctx context.Context, sel ast.SelectionSet, v model.Brand) graphql.Marshaler {
+	return ec._Brand(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBrand2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐBrandᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Brand) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBrand2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐBrand(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBrand2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐBrand(ctx context.Context, sel ast.SelectionSet, v *model.Brand) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Brand(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4186,6 +4883,11 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNNewBrand2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewBrand(ctx context.Context, v interface{}) (model.NewBrand, error) {
+	res, err := ec.unmarshalInputNewBrand(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNNewPromo2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewPromo(ctx context.Context, v interface{}) (model.NewPromo, error) {

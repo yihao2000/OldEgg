@@ -1,10 +1,13 @@
 .main {
   display: flex;
-  /* flex-direction: column; */
+  min-height: 100vh;
+}
+
+.centermain {
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* padding: 4rem; */
-  min-height: 100vh;
+  padding: 4rem;
 }
 
 .nopadding {
@@ -49,6 +52,11 @@
   /* margin-bottom: 2vh; */
 }
 
+.loginemailcontainer:hover {
+  color: lightblue;
+  cursor: pointer;
+}
+
 .formbutton {
   width: 100%;
   height: 40px;
@@ -89,12 +97,26 @@
 .promocarouselcontainer {
   width: 100vw;
   display: flex;
+  height: auto;
+  overflow: hidden;
+}
+
+.selectedimagecontainer {
+  width: 100%;
+  position: relative;
+  top: 19vh;
+  left: 8vw;
+  transform: scale(1.4);
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .selectedimage {
   width: 100%;
-  height: 100vh;
-
+  position: relative;
+  /* top: 15%; */
+  /* left: 10%; */
+  transform: scale(1.4);
   background-repeat: no-repeat;
   background-size: contain;
 }

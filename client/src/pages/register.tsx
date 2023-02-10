@@ -153,7 +153,7 @@ export default function Signup() {
         <title>OldEgg Sign Up</title>
       </Head>
 
-      <main className={styles.main}>
+      <main className={`${styles.main} ${styles.centermain}`}>
         <div className={styles.formcontainer}>
           <Image alt="Logo" src="/asset/logo.svg" width={170} height={70} />
           <h3>Create Account</h3>

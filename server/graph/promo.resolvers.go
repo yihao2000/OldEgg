@@ -21,7 +21,7 @@ func (r *mutationResolver) CreatePromo(ctx context.Context, input model.NewPromo
 		ID:          uuid.New().String(),
 		Name:        input.Name,
 		Description: input.Description,
-		Image:       input.Description,
+		Image:       input.Image,
 	}
 
 	if err := db.Model(promo).Create(&promo).Error; err != nil {

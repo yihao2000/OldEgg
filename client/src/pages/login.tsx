@@ -8,16 +8,29 @@ import { links } from '@/util/route';
 import axios from 'axios';
 import { GRAPHQLAPI, LOGIN_QUERY, USER_QUERY } from '@/util/constant';
 import { FaArrowCircleLeft } from 'react-icons/fa';
+import { useSessionStorage } from 'usehooks-ts';
+import Router, { useRouter } from 'next/router';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isEmailExist, setIsEmailExist] = useState(false);
   const [nextPrompt, setNextPrompt] = useState(false);
+  const [loginInvalid, setLoginInvalid] = useState(false);
+  const [token, setToken] = useSessionStorage('token', '');
+
+  const handleEmailContainerClick = () => {
+    setNextPrompt(false);
+  };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
@@ -43,6 +56,28 @@ export default function Login() {
           console.log('Error');
         });
     } else {
+      axios
+        .post(GRAPHQLAPI, {
+          query: LOGIN_QUERY,
+          variables: {
+            email: email,
+            password: password,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data.data.auth == null) {
+            setLoginInvalid(true);
+            return;
+          } else {
+            setLoginInvalid(false);
+            setToken(res.data.data.auth.login.token);
+            Router.push('/');
+          }
+        })
+        .catch(() => {
+          console.log('Error');
+        });
     }
   };
   return (
@@ -56,7 +91,7 @@ export default function Login() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
+      <main className={`${styles.main} ${styles.centermain}`}>
         <div className={styles.formcontainer}>
           <Image alt="Logo" src="/asset/logo.svg" width={170} height={70} />
           <h3 className="centered-text">Sign In</h3>
@@ -85,17 +120,46 @@ export default function Login() {
               />
             )}
             {nextPrompt && (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  columnGap: '0.6em',
-                }}
-              >
-                <div>
-                  <FaArrowCircleLeft />
+              <div className={styles.formcontainer}>
+                <div
+                  className={styles.loginemailcontainer}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    columnGap: '0.6em',
+                  }}
+                  onClick={handleEmailContainerClick}
+                >
+                  <div>
+                    <FaArrowCircleLeft />
+                  </div>
+                  <div
+                    style={{
+                      paddingBottom: '1em',
+                    }}
+                  >
+                    {email}
+                  </div>
                 </div>
-                <div>{email}</div>
+                <input
+                  type="password"
+                  className={styles.formtextinput}
+                  id="password"
+                  name="password"
+                  placeholder="Password"
+                  value={password}
+                  style={{ marginBottom: '0.5em' }}
+                  onChange={handlePasswordChange}
+                />
+                {loginInvalid && (
+                  <div
+                    className={styles.errorMessage}
+                    style={{ paddingBottom: '1em' }}
+                  >
+                    The email and password do not match, please try again or
+                    click here to reset.
+                  </div>
+                )}
               </div>
             )}
 

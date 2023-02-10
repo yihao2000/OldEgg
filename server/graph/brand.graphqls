@@ -1,0 +1,21 @@
+type Brand{
+  id: ID!
+  name: String!
+  description: String!  
+}
+
+input NewBrand{
+    name: String!
+    description: String!
+}
+
+extend type Mutation{
+    createBrand(input: NewBrand!): Brand! 
+    updateBrand(input: NewBrand!): Brand!
+} 
+
+extend type Query{
+    brands: [Brand!]! @goField(forceResolver: true)
+    brand(id: ID, name: String): Brand! @goField(forceResolver: true)
+
+}
