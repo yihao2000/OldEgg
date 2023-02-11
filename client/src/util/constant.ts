@@ -35,3 +35,11 @@ export const PROMOS_QUERY = `query{
     image
   }
 }`;
+
+export const PRODUCTS_QUERY = `query($shopId:String, $brandId:String, $categoryId:String, $limit:Int, $offset:Int){
+  products(shopId:$shopId, brandId:$brandId, categoryId:$categoryId, limit:$limit, offset:$offset){
+    id
+    name
+    image
+  }
+}`;

@@ -25,7 +25,7 @@ type Product struct {
 
 	Name        string     `json:"name"`
 	Description string     `json:"description"`
-	Price       int        `json:"price"`
+	Price       float64    `json:"price"`
 	Image       string     `json:"image"`
 	Quantity    int        `json:"quantity"`
 	ValidTo     *time.Time `json:"validTo"`

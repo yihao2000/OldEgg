@@ -154,94 +154,96 @@ export default function Signup() {
       </Head>
 
       <main className={`${styles.main} ${styles.centermain}`}>
-        <div className={styles.formcontainer}>
-          <Image alt="Logo" src="/asset/logo.svg" width={170} height={70} />
-          <h3>Create Account</h3>
-          <p className={`${styles.nopadding} ${styles.nomargin}`}>
-            Shopping for your business? <u>Create a free business account</u>
-          </p>
-          <form className={styles.formcontainer} onSubmit={handleSubmit}>
-            <input
-              type="text"
-              className={styles.formtextinput}
-              id="firstname"
-              name="firstname"
-              value={firstname}
-              onChange={handleFirstNameChange}
-              placeholder="First Name"
-            />
-
-            <input
-              type="text"
-              className={styles.formtextinput}
-              id="lastname"
-              name="lastname"
-              value={lastname}
-              onChange={handleLastNameChange}
-              placeholder="Last Name"
-            />
-
-            <input
-              type="email"
-              className={styles.formtextinput}
-              id="emailaddress"
-              name="emailaddress"
-              placeholder="Email Address"
-              value={email}
-              onChange={handleEmailChange}
-            />
-
-            <input
-              type="text"
-              className={styles.formtextinput}
-              id="mobilephone"
-              name="mobilephone"
-              placeholder="Mobile Phone Number (optional)"
-              value={phoneNumber}
-              onChange={handlePhoneChange}
-            />
-            <input
-              type="password"
-              className={styles.formtextinput}
-              id="password"
-              name="password"
-              placeholder="Password"
-              value={password}
-              onChange={handlePasswordChange}
-            />
-            {errorMessage != '' && (
-              <h4 className={styles.errorMessage}>{errorMessage}</h4>
-            )}
-            <div className={styles.formsplit}>
-              <div className={styles.formsplitchild}>
-                Including 3 of the following:
-              </div>
-              <div className={styles.formsplitchild}>Must contain:</div>
-            </div>
-
-            <label htmlFor="checkbox">
-              <input
-                type="checkbox"
-                checked={subscribe}
-                onChange={handleSubscribeChange}
-              />
-              <span className={styles.formcheckboxtitle}>
-                Subscribe for exclusive e-mail offers and discounts
-              </span>
-            </label>
-
-            <p>
-              By creating an account, you agree to Newegg's Privacy Notice and
-              Terms of Use
+        <div className={styles.pagecontainer}>
+          <div className={styles.formcontainer}>
+            <Image alt="Logo" src="/asset/logo.svg" width={170} height={70} />
+            <h3>Create Account</h3>
+            <p className={`${styles.nopadding} ${styles.nomargin}`}>
+              Shopping for your business? <u>Create a free business account</u>
             </p>
+            <form className={styles.formcontainer} onSubmit={handleSubmit}>
+              <input
+                type="text"
+                className={styles.formtextinput}
+                id="firstname"
+                name="firstname"
+                value={firstname}
+                onChange={handleFirstNameChange}
+                placeholder="First Name"
+              />
 
-            <button
-              onClick={handleSubmit}
-              className={`${styles.formbutton} ${styles.themeaccent}`}
-            >
-              {loading ? <ClipLoader size={20} /> : 'Submit'}
-            </button>
-          </form>
+              <input
+                type="text"
+                className={styles.formtextinput}
+                id="lastname"
+                name="lastname"
+                value={lastname}
+                onChange={handleLastNameChange}
+                placeholder="Last Name"
+              />
+
+              <input
+                type="email"
+                className={styles.formtextinput}
+                id="emailaddress"
+                name="emailaddress"
+                placeholder="Email Address"
+                value={email}
+                onChange={handleEmailChange}
+              />
+
+              <input
+                type="text"
+                className={styles.formtextinput}
+                id="mobilephone"
+                name="mobilephone"
+                placeholder="Mobile Phone Number (optional)"
+                value={phoneNumber}
+                onChange={handlePhoneChange}
+              />
+              <input
+                type="password"
+                className={styles.formtextinput}
+                id="password"
+                name="password"
+                placeholder="Password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+              {errorMessage != '' && (
+                <h4 className={styles.errorMessage}>{errorMessage}</h4>
+              )}
+              <div className={styles.formsplit}>
+                <div className={styles.formsplitchild}>
+                  Including 3 of the following:
+                </div>
+                <div className={styles.formsplitchild}>Must contain:</div>
+              </div>
+
+              <label htmlFor="checkbox">
+                <input
+                  type="checkbox"
+                  checked={subscribe}
+                  onChange={handleSubscribeChange}
+                />
+                <span className={styles.formcheckboxtitle}>
+                  Subscribe for exclusive e-mail offers and discounts
+                </span>
+              </label>
+
+              <p>
+                By creating an account, you agree to Newegg's Privacy Notice and
+                Terms of Use
+              </p>
+
+              <button
+                onClick={handleSubmit}
+                className={`${styles.formbutton} ${styles.themeaccent}`}
+              >
+                {loading ? <ClipLoader size={20} /> : 'Submit'}
+              </button>
+            </form>
+          </div>
         </div>
       </main>
     </>

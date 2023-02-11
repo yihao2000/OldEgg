@@ -92,112 +92,114 @@ export default function Login() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${styles.centermain}`}>
-        <div className={styles.formcontainer}>
-          <Image alt="Logo" src="/asset/logo.svg" width={170} height={70} />
-          <h3 className="centered-text">Sign In</h3>
+        <div className={styles.pagecontainer}>
+          <div className={styles.formcontainer}>
+            <Image alt="Logo" src="/asset/logo.svg" width={170} height={70} />
+            <h3 className="centered-text">Sign In</h3>
 
-          <form
-            action=""
-            style={{
-              width: '100%',
-              paddingBottom: '15px',
-            }}
-            onSubmit={handleSubmit}
-          >
-            {!nextPrompt && (
-              <input
-                type="email"
-                style={{
-                  marginBottom: '15px',
-                }}
-                className={styles.formtextinput}
-                id="email"
-                name="email"
-                required
-                placeholder="Email Address"
-                value={email}
-                onChange={handleEmailChange}
-              />
-            )}
-            {nextPrompt && (
-              <div className={styles.formcontainer}>
-                <div
-                  className={styles.loginemailcontainer}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    columnGap: '0.6em',
-                  }}
-                  onClick={handleEmailContainerClick}
-                >
-                  <div>
-                    <FaArrowCircleLeft />
-                  </div>
-                  <div
-                    style={{
-                      paddingBottom: '1em',
-                    }}
-                  >
-                    {email}
-                  </div>
-                </div>
-                <input
-                  type="password"
-                  className={styles.formtextinput}
-                  id="password"
-                  name="password"
-                  placeholder="Password"
-                  value={password}
-                  style={{ marginBottom: '0.5em' }}
-                  onChange={handlePasswordChange}
-                />
-                {loginInvalid && (
-                  <div
-                    className={styles.errorMessage}
-                    style={{ paddingBottom: '1em' }}
-                  >
-                    The email and password do not match, please try again or
-                    click here to reset.
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isEmailExist && (
-              <h4
-                className={styles.errorMessage}
-                style={{
-                  textAlign: 'center',
-                  paddingBottom: '1em',
-                }}
-              >
-                We didn't find an account for this email address
-              </h4>
-            )}
-
-            <button
-              className={`${styles.formbutton} ${styles.themeaccent}`}
-              onClick={handleSubmit}
+            <form
+              action=""
+              style={{
+                width: '100%',
+                paddingBottom: '15px',
+              }}
+              onSubmit={handleSubmit}
             >
-              SIGN IN
+              {!nextPrompt && (
+                <input
+                  type="email"
+                  style={{
+                    marginBottom: '15px',
+                  }}
+                  className={styles.formtextinput}
+                  id="email"
+                  name="email"
+                  required
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={handleEmailChange}
+                />
+              )}
+              {nextPrompt && (
+                <div className={styles.formcontainer}>
+                  <div
+                    className={styles.loginemailcontainer}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      columnGap: '0.6em',
+                    }}
+                    onClick={handleEmailContainerClick}
+                  >
+                    <div>
+                      <FaArrowCircleLeft />
+                    </div>
+                    <div
+                      style={{
+                        paddingBottom: '1em',
+                      }}
+                    >
+                      {email}
+                    </div>
+                  </div>
+                  <input
+                    type="password"
+                    className={styles.formtextinput}
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    value={password}
+                    style={{ marginBottom: '0.5em' }}
+                    onChange={handlePasswordChange}
+                  />
+                  {loginInvalid && (
+                    <div
+                      className={styles.errorMessage}
+                      style={{ paddingBottom: '1em' }}
+                    >
+                      The email and password do not match, please try again or
+                      click here to reset.
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {isEmailExist && (
+                <h4
+                  className={styles.errorMessage}
+                  style={{
+                    textAlign: 'center',
+                    paddingBottom: '1em',
+                  }}
+                >
+                  We didn't find an account for this email address
+                </h4>
+              )}
+
+              <button
+                className={`${styles.formbutton} ${styles.themeaccent}`}
+                onClick={handleSubmit}
+              >
+                SIGN IN
+              </button>
+            </form>
+
+            <button className={styles.formbutton}>
+              GET ONE-TIME SIGN IN CODE
             </button>
-          </form>
+            <h4 className={`${styles.nopadding} ${styles.nomargin}`}>
+              <u>What's the One-Time Code?</u>
+            </h4>
+            <h4 className={`${styles.nopadding} ${styles.nomargin}`}>
+              New to Newegg?{' '}
+              <Link href={links.signup}>
+                <u>Sign Up</u>
+              </Link>
+            </h4>
 
-          <button className={styles.formbutton}>
-            GET ONE-TIME SIGN IN CODE
-          </button>
-          <h4 className={`${styles.nopadding} ${styles.nomargin}`}>
-            <u>What's the One-Time Code?</u>
-          </h4>
-          <h4 className={`${styles.nopadding} ${styles.nomargin}`}>
-            New to Newegg?{' '}
-            <Link href={links.signup}>
-              <u>Sign Up</u>
-            </Link>
-          </h4>
-
-          <button className={styles.formbutton}>SIGN IN WITH GOOGLE</button>
-          <button className={styles.formbutton}>SIGN IN WITH APPLE</button>
+            <button className={styles.formbutton}>SIGN IN WITH GOOGLE</button>
+            <button className={styles.formbutton}>SIGN IN WITH APPLE</button>
+          </div>
         </div>
       </main>
     </>

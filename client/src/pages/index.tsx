@@ -12,6 +12,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { GRAPHQLAPI, PROMOS_QUERY } from '@/util/constant';
 import PromoCarousel from '@/components/promocarousel';
+import ProductRecommendations from '@/components/productrecommendations';
 
 // const myImage = new CloudinaryImage('sample', {
 //   cloudName: 'dmpbgjnrc',
@@ -33,7 +34,10 @@ export default function Home() {
       </Head>
       <Layout>
         <main className={styles.main}>
+          {/* <div className={styles.promocarouseloutercontainer}> */}
           <PromoCarousel />
+          {/* </div> */}
+          <ProductRecommendations />
         </main>
       </Layout>
     </>

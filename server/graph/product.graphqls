@@ -34,7 +34,7 @@ type Product{
   shop: Shop! @goField(forceResolver: true)
   name: String!
   description: String!  
-  price: Int!
+  price: Float!
   image: String!
   quantity: Int!
   validTo: Time
@@ -47,7 +47,7 @@ input NewProduct{
     shopId: ID!
     name: String!
     description: String!
-    price: Int!
+    price: Float!
     image: String!
     quantity: Int!
     validTo: Time
@@ -60,7 +60,7 @@ input NewProductVariant{
     shopId: ID!
     name: String!
     description: String!
-    price: Int!
+    price: Float!
     image: String!
     quantity: Int!
     validTo: Time
@@ -90,7 +90,7 @@ extend type Query{
     categories: [Category!]! @goField(forceResolver: true)
     category(id: ID, name: String): Category! @goField(forceResolver: true)
 
-    products: [Product!]! @goField(forceResolver: true)
+    products(shopId:String, brandId: String, categoryId: String, limit: Int, offset: Int): [Product!]! @goField(forceResolver: true)
     product(id: ID, name: String): Product! @goField(forceResolver: true)
     productsGroup(category: ID, brand: ID, productgroup: ID, shop: ID): [Product!]! @goField(forceResolver: true)
 

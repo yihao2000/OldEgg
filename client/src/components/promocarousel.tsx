@@ -77,18 +77,15 @@ const PromoCarousel = () => {
         &lsaquo;
       </button> */}
 
-      <div
-        className={styles.selectedimagecontainer}
-        style={{ backgroundImage: `url(${selectedImage?.image})` }}
-      >
+      <div className={styles.selectedimagecontainer}>
         {/* <button onClick={handleLeftClick} className={styles.textbutton}>
           &lsaquo;
         </button> */}
-        {/* <img
+        <img
           src={selectedImage?.image}
           alt=""
           className={styles.selectedimage}
-        /> */}
+        />
       </div>
       {/* <button onClick={handleRightClick} className={styles.textbutton}>
         &rsaquo;

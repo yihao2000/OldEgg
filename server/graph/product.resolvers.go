@@ -209,12 +209,20 @@ func (r *queryResolver) Category(ctx context.Context, id *string, name *string) 
 }
 
 // Products is the resolver for the products field.
-func (r *queryResolver) Products(ctx context.Context) ([]*model.Product, error) {
+func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int) ([]*model.Product, error) {
 	db := config.GetDB()
 
 	var models []*model.Product
 
 	temp := db.Model(models).Where("valid_to IS NULL")
+
+	if offset != nil {
+		temp = temp.Offset(*offset)
+	}
+
+	if limit != nil {
+		temp = temp.Limit(*limit)
+	}
 
 	return models, temp.Find(&models).Error
 }
@@ -236,3 +244,13 @@ func (r *queryResolver) ProductsGroup(ctx context.Context, category *string, bra
 func (r *Resolver) Product() ProductResolver { return &productResolver{r} }
 
 type productResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *productResolver) Price(ctx context.Context, obj *model.Product) (float64, error) {
+	panic(fmt.Errorf("not implemented: Price - price"))
+}
