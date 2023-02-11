@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 	"github.com/yihao2000/gqlgen-todos/service"
@@ -37,7 +38,7 @@ func (r *queryResolver) User(ctx context.Context, id *string, email *string) (*m
 
 // Protected is the resolver for the protected field.
 func (r *queryResolver) Protected(ctx context.Context) (string, error) {
-	return "Success", nil
+	return "Success" + fmt.Sprintf("%+v\n", ctx.Value("auth")), nil
 }
 
 // AuthOps returns AuthOpsResolver implementation.

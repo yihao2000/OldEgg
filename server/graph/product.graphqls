@@ -28,10 +28,10 @@ type ProductGroup{
 
 type Product{
   id: ID!   
-  productgroup: ProductGroup!
-  brand: Brand!
-  category: Category!
-  shop: Shop!
+  productgroup: ProductGroup! @goField(forceResolver: true)
+  brand: Brand! @goField(forceResolver: true)
+  category: Category! @goField(forceResolver: true)
+  shop: Shop! @goField(forceResolver: true)
   name: String!
   description: String!  
   price: Int!
@@ -68,7 +68,7 @@ input NewProductVariant{
 
 
 extend type Mutation{
-    createBrand(input: NewBrand!): Brand! 
+    createBrand(input: NewBrand!): Brand! @goField(forceResolver: true) @auth
     updateBrand(input: NewBrand!, lastUpdateId: ID!): Brand!
 
     createCategory(input: NewCategory!): Category!

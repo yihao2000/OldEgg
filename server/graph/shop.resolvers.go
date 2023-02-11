@@ -8,12 +8,36 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 )
 
-// CreateNewShop is the resolver for the createNewShop field.
-func (r *mutationResolver) CreateNewShop(ctx context.Context, input model.NewShop) (*model.Shop, error) {
-	panic(fmt.Errorf("not implemented: CreateNewShop - createNewShop"))
+// CreateShop is the resolver for the createShop field.
+func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) (*model.Shop, error) {
+	db := config.GetDB()
+
+	// if ctx.Value("Role") == nil {
+	// 	return nil, nil
+	// }
+
+	var shop model.Shop
+	if err := db.Model(shop).Where("name LIKE ?", input.Name).Take(&shop).Error; err == nil {
+		return nil, err
+	} else {
+		shop := model.Shop{
+			ID:          uuid.New().String(),
+			Name:        input.Name,
+			Description: input.Description,
+			Image:       input.Image,
+			Aboutus:     input.Aboutus,
+		}
+		if err := db.Model(shop).Create(&shop).Error; err != nil {
+			return nil, err
+		}
+
+		return &shop, nil
+	}
 }
 
 // UpdateShop is the resolver for the updateShop field.

@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 )
@@ -25,6 +26,13 @@ func (r *mutationResolver) CreateBrand(ctx context.Context, input model.NewBrand
 	if err := db.Model(brand).Where("name LIKE ?", input.Name).Take(&brand).Error; err == nil {
 		return nil, err
 	} else {
+
+		if ctx.Value("auth") == nil {
+			return nil, &gqlerror.Error{
+				Message: "Error, token gaada",
+			}
+		}
+
 		brand := model.Brand{
 			ID:          uuid.New().String(),
 			Name:        input.Name,
@@ -36,7 +44,6 @@ func (r *mutationResolver) CreateBrand(ctx context.Context, input model.NewBrand
 
 		return &brand, nil
 	}
-
 }
 
 // UpdateBrand is the resolver for the updateBrand field.
@@ -90,12 +97,51 @@ func (r *mutationResolver) UpdateCategory(ctx context.Context, input model.NewCa
 
 // CreateProductGroup is the resolver for the createProductGroup field.
 func (r *mutationResolver) CreateProductGroup(ctx context.Context) (*model.ProductGroup, error) {
-	panic(fmt.Errorf("not implemented: CreateProductGroup - createProductGroup"))
+	db := config.GetDB()
+
+	productGroup := model.ProductGroup{
+		ID: uuid.New().String(),
+	}
+
+	if err := db.Model(productGroup).Create(&productGroup).Error; err != nil {
+		return nil, err
+	}
+
+	return &productGroup, nil
 }
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewProduct) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: CreateProduct - createProduct"))
+	db := config.GetDB()
+
+	var product model.Product
+	if err := db.Model(product).Where("name LIKE ?", input.Name).Take(&product).Error; err == nil {
+		return nil, err
+	} else {
+		createdProductGroup, err := r.CreateProductGroup(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		product := model.Product{
+			ID:             uuid.New().String(),
+			Name:           input.Name,
+			Description:    input.Description,
+			ProductgroupId: createdProductGroup.ID,
+			BrandId:        input.BrandID,
+			CategoryId:     input.CategoryID,
+			ShopId:         input.ShopID,
+			Price:          input.Price,
+			Image:          input.Image,
+			Quantity:       input.Quantity,
+			ValidTo:        input.ValidTo,
+		}
+		if err := db.Model(product).Create(&product).Error; err != nil {
+			return nil, err
+		}
+
+		return &product, nil
+	}
 }
 
 // UpdateProduct is the resolver for the updateProduct field.
@@ -111,6 +157,35 @@ func (r *mutationResolver) CreateProductVariant(ctx context.Context, input model
 // UpdateProductVariant is the resolver for the updateProductVariant field.
 func (r *mutationResolver) UpdateProductVariant(ctx context.Context, input model.NewProductVariant, lastUpdateID string) (*model.Product, error) {
 	panic(fmt.Errorf("not implemented: UpdateProductVariant - updateProductVariant"))
+}
+
+// Productgroup is the resolver for the productgroup field.
+func (r *productResolver) Productgroup(ctx context.Context, obj *model.Product) (*model.ProductGroup, error) {
+	panic(fmt.Errorf("not implemented: Productgroup - productgroup"))
+}
+
+// Brand is the resolver for the brand field.
+func (r *productResolver) Brand(ctx context.Context, obj *model.Product) (*model.Brand, error) {
+	db := config.GetDB()
+	brand := new(model.Brand)
+
+	return brand, db.First(brand, "id = ?", obj.BrandId).Error
+}
+
+// Category is the resolver for the category field.
+func (r *productResolver) Category(ctx context.Context, obj *model.Product) (*model.Category, error) {
+	db := config.GetDB()
+	category := new(model.Category)
+
+	return category, db.First(category, "id = ?", obj.CategoryId).Error
+}
+
+// Shop is the resolver for the shop field.
+func (r *productResolver) Shop(ctx context.Context, obj *model.Product) (*model.Shop, error) {
+	db := config.GetDB()
+	shop := new(model.Shop)
+
+	return shop, db.First(shop, "id = ?", obj.ShopId).Error
 }
 
 // Brands is the resolver for the brands field.
@@ -135,15 +210,29 @@ func (r *queryResolver) Category(ctx context.Context, id *string, name *string) 
 
 // Products is the resolver for the products field.
 func (r *queryResolver) Products(ctx context.Context) ([]*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Products - products"))
+	db := config.GetDB()
+
+	var models []*model.Product
+
+	temp := db.Model(models).Where("valid_to IS NULL")
+
+	return models, temp.Find(&models).Error
 }
 
 // Product is the resolver for the product field.
 func (r *queryResolver) Product(ctx context.Context, id *string, name *string) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+	db := config.GetDB()
+	product := new(model.Product)
+
+	return product, db.Where("id = ?", id).Order("valid_to ASC").Limit(1).Find(&product).Error
 }
 
 // ProductsGroup is the resolver for the productsGroup field.
 func (r *queryResolver) ProductsGroup(ctx context.Context, category *string, brand *string, productgroup *string, shop *string) ([]*model.Product, error) {
 	panic(fmt.Errorf("not implemented: ProductsGroup - productsGroup"))
 }
+
+// Product returns ProductResolver implementation.
+func (r *Resolver) Product() ProductResolver { return &productResolver{r} }
+
+type productResolver struct{ *Resolver }

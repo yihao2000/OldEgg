@@ -14,7 +14,7 @@ input NewShop{
 }
 
 extend type Mutation{
-    createNewShop(input: NewShop!): Shop! 
+    createShop(input: NewShop!): Shop! 
     updateShop(input: NewShop!): Shop!
 } 
 

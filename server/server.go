@@ -33,11 +33,16 @@ func main() {
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.Promo{})
 	db.AutoMigrate(&model.Brand{})
+	db.AutoMigrate(&model.ProductGroup{})
+	db.AutoMigrate(&model.Category{})
+	db.AutoMigrate(&model.Shop{})
+	db.AutoMigrate(&model.Product{})
 
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedHeaders:   []string{"*"},
+		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:8080"},
 		AllowCredentials: true,
 		Debug:            true,
 	}).Handler)
