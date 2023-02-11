@@ -8,26 +8,83 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 )
 
 // CreateBrand is the resolver for the createBrand field.
 func (r *mutationResolver) CreateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error) {
-	panic(fmt.Errorf("not implemented: CreateBrand - createBrand"))
+	db := config.GetDB()
+
+	// if ctx.Value("Role") == nil {
+	// 	return nil, nil
+	// }
+
+	var brand model.Brand
+	if err := db.Model(brand).Where("name LIKE ?", input.Name).Take(&brand).Error; err == nil {
+		return nil, err
+	} else {
+		brand := model.Brand{
+			ID:          uuid.New().String(),
+			Name:        input.Name,
+			Description: input.Description,
+		}
+		if err := db.Model(brand).Create(&brand).Error; err != nil {
+			return nil, err
+		}
+
+		return &brand, nil
+	}
+
 }
 
 // UpdateBrand is the resolver for the updateBrand field.
-func (r *mutationResolver) UpdateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error) {
-	panic(fmt.Errorf("not implemented: UpdateBrand - updateBrand"))
+func (r *mutationResolver) UpdateBrand(ctx context.Context, input model.NewBrand, lastUpdateID string) (*model.Brand, error) {
+	db := config.GetDB()
+
+	brand := new(model.Brand)
+
+	err := db.First(brand, "id = ?", lastUpdateID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	brand.Name = input.Name
+	brand.Description = input.Description
+
+	db.Save(brand)
+
+	return brand, nil
 }
 
 // CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error) {
-	panic(fmt.Errorf("not implemented: CreateCategory - createCategory"))
+	db := config.GetDB()
+
+	// if ctx.Value("Role") == nil {
+	// 	return nil, nil
+	// }
+
+	var category model.Category
+	if err := db.Model(category).Where("name LIKE ?", input.Name).Take(&category).Error; err == nil {
+		return nil, err
+	} else {
+		category := model.Category{
+			ID:          uuid.New().String(),
+			Name:        input.Name,
+			Description: input.Description,
+		}
+		if err := db.Model(category).Create(&category).Error; err != nil {
+			return nil, err
+		}
+
+		return &category, nil
+	}
 }
 
 // UpdateCategory is the resolver for the updateCategory field.
-func (r *mutationResolver) UpdateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error) {
+func (r *mutationResolver) UpdateCategory(ctx context.Context, input model.NewCategory, lastUpdateID string) (*model.Category, error) {
 	panic(fmt.Errorf("not implemented: UpdateCategory - updateCategory"))
 }
 
@@ -42,7 +99,7 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewPro
 }
 
 // UpdateProduct is the resolver for the updateProduct field.
-func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct) (*model.Product, error) {
+func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct, lastUpdateID string) (*model.Product, error) {
 	panic(fmt.Errorf("not implemented: UpdateProduct - updateProduct"))
 }
 
@@ -52,7 +109,7 @@ func (r *mutationResolver) CreateProductVariant(ctx context.Context, input model
 }
 
 // UpdateProductVariant is the resolver for the updateProductVariant field.
-func (r *mutationResolver) UpdateProductVariant(ctx context.Context, input model.NewProductVariant) (*model.Product, error) {
+func (r *mutationResolver) UpdateProductVariant(ctx context.Context, input model.NewProductVariant, lastUpdateID string) (*model.Product, error) {
 	panic(fmt.Errorf("not implemented: UpdateProductVariant - updateProductVariant"))
 }
 

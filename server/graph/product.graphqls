@@ -69,18 +69,18 @@ input NewProductVariant{
 
 extend type Mutation{
     createBrand(input: NewBrand!): Brand! 
-    updateBrand(input: NewBrand!): Brand!
+    updateBrand(input: NewBrand!, lastUpdateId: ID!): Brand!
 
     createCategory(input: NewCategory!): Category!
-    updateCategory(input: NewCategory!): Category!
+    updateCategory(input: NewCategory!, lastUpdateId: ID!): Category!
 
     createProductGroup: ProductGroup!
 
     createProduct(input: NewProduct!): Product!
-    updateProduct(input: NewProduct!): Product!
+    updateProduct(input: NewProduct!, lastUpdateId: ID!): Product!
     
     createProductVariant(input: NewProductVariant!): Product!
-    updateProductVariant(input: NewProductVariant!): Product!
+    updateProductVariant(input: NewProductVariant!, lastUpdateId: ID!): Product!
 } 
 
 extend type Query{

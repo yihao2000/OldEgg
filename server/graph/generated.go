@@ -74,10 +74,10 @@ type ComplexityRoot struct {
 		CreateProductGroup   func(childComplexity int) int
 		CreateProductVariant func(childComplexity int, input model.NewProductVariant) int
 		CreatePromo          func(childComplexity int, input model.NewPromo) int
-		UpdateBrand          func(childComplexity int, input model.NewBrand) int
-		UpdateCategory       func(childComplexity int, input model.NewCategory) int
-		UpdateProduct        func(childComplexity int, input model.NewProduct) int
-		UpdateProductVariant func(childComplexity int, input model.NewProductVariant) int
+		UpdateBrand          func(childComplexity int, input model.NewBrand, lastUpdateID string) int
+		UpdateCategory       func(childComplexity int, input model.NewCategory, lastUpdateID string) int
+		UpdateProduct        func(childComplexity int, input model.NewProduct, lastUpdateID string) int
+		UpdateProductVariant func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
 		UpdatePromo          func(childComplexity int, input model.NewPromo) int
 		UpdateShop           func(childComplexity int, input model.NewShop) int
 	}
@@ -148,14 +148,14 @@ type AuthOpsResolver interface {
 type MutationResolver interface {
 	Auth(ctx context.Context) (*model.AuthOps, error)
 	CreateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error)
-	UpdateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error)
+	UpdateBrand(ctx context.Context, input model.NewBrand, lastUpdateID string) (*model.Brand, error)
 	CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error)
-	UpdateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error)
+	UpdateCategory(ctx context.Context, input model.NewCategory, lastUpdateID string) (*model.Category, error)
 	CreateProductGroup(ctx context.Context) (*model.ProductGroup, error)
 	CreateProduct(ctx context.Context, input model.NewProduct) (*model.Product, error)
-	UpdateProduct(ctx context.Context, input model.NewProduct) (*model.Product, error)
+	UpdateProduct(ctx context.Context, input model.NewProduct, lastUpdateID string) (*model.Product, error)
 	CreateProductVariant(ctx context.Context, input model.NewProductVariant) (*model.Product, error)
-	UpdateProductVariant(ctx context.Context, input model.NewProductVariant) (*model.Product, error)
+	UpdateProductVariant(ctx context.Context, input model.NewProductVariant, lastUpdateID string) (*model.Product, error)
 	CreatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error)
 	UpdatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error)
 	CreateNewShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
@@ -353,7 +353,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateBrand(childComplexity, args["input"].(model.NewBrand)), true
+		return e.complexity.Mutation.UpdateBrand(childComplexity, args["input"].(model.NewBrand), args["lastUpdateId"].(string)), true
 
 	case "Mutation.updateCategory":
 		if e.complexity.Mutation.UpdateCategory == nil {
@@ -365,7 +365,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateCategory(childComplexity, args["input"].(model.NewCategory)), true
+		return e.complexity.Mutation.UpdateCategory(childComplexity, args["input"].(model.NewCategory), args["lastUpdateId"].(string)), true
 
 	case "Mutation.updateProduct":
 		if e.complexity.Mutation.UpdateProduct == nil {
@@ -377,7 +377,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProduct(childComplexity, args["input"].(model.NewProduct)), true
+		return e.complexity.Mutation.UpdateProduct(childComplexity, args["input"].(model.NewProduct), args["lastUpdateId"].(string)), true
 
 	case "Mutation.updateProductVariant":
 		if e.complexity.Mutation.UpdateProductVariant == nil {
@@ -389,7 +389,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProductVariant(childComplexity, args["input"].(model.NewProductVariant)), true
+		return e.complexity.Mutation.UpdateProductVariant(childComplexity, args["input"].(model.NewProductVariant), args["lastUpdateId"].(string)), true
 
 	case "Mutation.updatePromo":
 		if e.complexity.Mutation.UpdatePromo == nil {
@@ -963,6 +963,15 @@ func (ec *executionContext) field_Mutation_updateBrand_args(ctx context.Context,
 		}
 	}
 	args["input"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["lastUpdateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastUpdateId"))
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastUpdateId"] = arg1
 	return args, nil
 }
 
@@ -978,6 +987,15 @@ func (ec *executionContext) field_Mutation_updateCategory_args(ctx context.Conte
 		}
 	}
 	args["input"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["lastUpdateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastUpdateId"))
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastUpdateId"] = arg1
 	return args, nil
 }
 
@@ -993,6 +1011,15 @@ func (ec *executionContext) field_Mutation_updateProductVariant_args(ctx context
 		}
 	}
 	args["input"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["lastUpdateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastUpdateId"))
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastUpdateId"] = arg1
 	return args, nil
 }
 
@@ -1008,6 +1035,15 @@ func (ec *executionContext) field_Mutation_updateProduct_args(ctx context.Contex
 		}
 	}
 	args["input"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["lastUpdateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastUpdateId"))
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastUpdateId"] = arg1
 	return args, nil
 }
 
@@ -1755,7 +1791,7 @@ func (ec *executionContext) _Mutation_updateBrand(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateBrand(rctx, fc.Args["input"].(model.NewBrand))
+		return ec.resolvers.Mutation().UpdateBrand(rctx, fc.Args["input"].(model.NewBrand), fc.Args["lastUpdateId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1879,7 +1915,7 @@ func (ec *executionContext) _Mutation_updateCategory(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateCategory(rctx, fc.Args["input"].(model.NewCategory))
+		return ec.resolvers.Mutation().UpdateCategory(rctx, fc.Args["input"].(model.NewCategory), fc.Args["lastUpdateId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2066,7 +2102,7 @@ func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProduct(rctx, fc.Args["input"].(model.NewProduct))
+		return ec.resolvers.Mutation().UpdateProduct(rctx, fc.Args["input"].(model.NewProduct), fc.Args["lastUpdateId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2222,7 +2258,7 @@ func (ec *executionContext) _Mutation_updateProductVariant(ctx context.Context, 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProductVariant(rctx, fc.Args["input"].(model.NewProductVariant))
+		return ec.resolvers.Mutation().UpdateProductVariant(rctx, fc.Args["input"].(model.NewProductVariant), fc.Args["lastUpdateId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

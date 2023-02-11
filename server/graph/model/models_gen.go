@@ -11,8 +11,6 @@ type AuthOps struct {
 	Register interface{} `json:"register"`
 }
 
-
-
 type NewBrand struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -69,7 +67,3 @@ type NewUser struct {
 	Banned   bool   `json:"banned"`
 	Role     string `json:"role"`
 }
-
-
-
-
