@@ -8,74 +8,81 @@ import { useIsFirstRender } from 'usehooks-ts';
 const ProductRecommendations = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [offset, setOffset] = useState(0);
+  const [loadData, setLoadData] = useState(false);
   const [noData, setNoData] = useState(false);
 
-  const loadProducts = () => {
-    console.log(offset);
-    axios
-      .post(GRAPHQLAPI, {
-        query: PRODUCTS_QUERY,
-        variables: {
-          limit: 1,
-          offset: offset,
-        },
-      })
-      .then((res) => {
-        setOffset(offset + 1);
-        // console.log(res.data.data.products);
-        if (res.data.data.products.length == 0) {
-          console.log('Masuk ke data kosong');
-          setNoData(true);
-        } else {
-          const newProducts = products.concat(res.data.data.products);
-          setProducts(newProducts);
-        }
-      })
-      .catch((err) => console.log(err))
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    loadProducts();
+    if (loading == false) {
+      setLoading(true);
+      console.log('Kepanggil');
+      axios
+        .post(GRAPHQLAPI, {
+          query: PRODUCTS_QUERY,
+          variables: {
+            limit: 5,
+            offset: offset,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data.data.products.length == 0) {
+            setNoData(true);
+          } else {
+            var temp = offset;
+            temp = temp + 5;
+            console.log(temp);
+            setOffset(temp);
+            const newProducts = products.concat(res.data.data.products);
+
+            setProducts(newProducts);
+          }
+        })
+        .catch((err) => console.log(err))
+        .finally(() => {
+          setLoading(false);
+          setLoadData(false);
+        });
+    }
+  }, [loadData]);
+
+  useEffect(() => {
+    setLoadData(true);
   }, []);
 
   const scrollHandler = () => {
-    // console.log('Masuk ke scrollhandler');
-
-    // console.log('Innerheight: ' + window.innerHeight);
-    // console.log('ScrollTop: ' + document.documentElement.scrollTop);
-    // console.log('Offsetheight: ' + document.documentElement.offsetHeight);
     if (
       window.innerHeight + Math.floor(document.documentElement.scrollTop) >=
       document.documentElement.offsetHeight
     ) {
-      // console.log('Masuk ke dalam if 1');
-      if (!noData) {
-        // console.log('masuk ke dalam if 2 (ada data)');
-        loadProducts();
+      if (noData == false) {
+        setLoadData(true);
       }
     }
   };
 
-  const isFirst = useIsFirstRender();
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      console.log('Adding listener');
       window.addEventListener('scroll', scrollHandler);
     }
-  }, [isFirst]);
+  }, []);
 
   return (
-    <div className={styles.productscardcontainer}>
+    <div className={styles.productcardcontainer}>
       {products.map((product) => {
         return (
-          <div>
-            <img src={product.image} alt="" style={{ maxHeight: '60vh' }} />
-            <p>{product.name}</p>
+          <div className={styles.productcard}>
+            <div className={styles.productcardimagecontainer}>
+              <img
+                src={product.image}
+                alt=""
+                className={styles.productcardimage}
+              />
+            </div>
+            <div className={styles.productdescriptioncontainer}>
+              <p>{product.name}</p>
+            </div>
           </div>
         );
       })}

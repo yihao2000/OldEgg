@@ -150,12 +150,30 @@
 }
 
 /* Bagian Product Recommendations */
-.productscardcontainer {
+.product {
   display: flex;
-  flex-flow: row wrap;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  row-gap: 15px;
+  justify-content: space-between;
+  padding: 30px;
 }
 
-.productscard {
+.productcard {
+  background-color: rgb(var(--foreground-lighter-rgb));
+  /* max-width: 18%; */
+  /* padding: 0.5%; */
+  /* flex: 0 1 calc(20% - 1em); */
+}
+
+.productcardimage {
+  /* max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; */
+}
+
+.productdescriptioncontainer {
+  /* margin-top: 60px; */
 }
 
 /* Ends Here */
