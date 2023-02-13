@@ -97,18 +97,28 @@ func (r *mutationResolver) UpdateCategory(ctx context.Context, input model.NewCa
 }
 
 // CreateProductGroup is the resolver for the createProductGroup field.
-func (r *mutationResolver) CreateProductGroup(ctx context.Context) (*model.ProductGroup, error) {
+func (r *mutationResolver) CreateProductGroup(ctx context.Context, input *model.NewProductGroup) (*model.ProductGroup, error) {
 	db := config.GetDB()
 
-	productGroup := model.ProductGroup{
-		ID: uuid.New().String(),
+	if input == nil {
+		productGroup := model.ProductGroup{
+			ID:   uuid.New().String(),
+			Name: "",
+		}
+		if err := db.Model(productGroup).Create(&productGroup).Error; err != nil {
+			return nil, err
+		}
+		return &productGroup, nil
+	} else {
+		productGroup := model.ProductGroup{
+			ID:   uuid.New().String(),
+			Name: *input.Name,
+		}
+		if err := db.Model(productGroup).Create(&productGroup).Error; err != nil {
+			return nil, err
+		}
+		return &productGroup, nil
 	}
-
-	if err := db.Model(productGroup).Create(&productGroup).Error; err != nil {
-		return nil, err
-	}
-
-	return &productGroup, nil
 }
 
 // CreateProduct is the resolver for the createProduct field.
@@ -119,7 +129,7 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewPro
 	if err := db.Model(product).Where("name LIKE ?", input.Name).Take(&product).Error; err == nil {
 		return nil, err
 	} else {
-		createdProductGroup, err := r.CreateProductGroup(ctx)
+		createdProductGroup, err := r.CreateProductGroup(ctx, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -242,6 +252,14 @@ func (r *queryResolver) Product(ctx context.Context, id *string, name *string) (
 // ProductsGroup is the resolver for the productsGroup field.
 func (r *queryResolver) ProductsGroup(ctx context.Context, category *string, brand *string, productgroup *string, shop *string) ([]*model.Product, error) {
 	panic(fmt.Errorf("not implemented: ProductsGroup - productsGroup"))
+}
+
+// ProductGroup is the resolver for the productGroup field.
+func (r *queryResolver) ProductGroup(ctx context.Context, id *string, name *string) (*model.ProductGroup, error) {
+	db := config.GetDB()
+	productGroup := new(model.ProductGroup)
+
+	return productGroup, db.Where("id = ?", id).Limit(1).Find(&productGroup).Error
 }
 
 // Product returns ProductResolver implementation.

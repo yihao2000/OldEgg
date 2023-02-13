@@ -34,6 +34,10 @@ type NewProduct struct {
 	ValidTo     *time.Time `json:"validTo"`
 }
 
+type NewProductGroup struct {
+	Name *string `json:"name"`
+}
+
 type NewProductVariant struct {
 	ProductgroupID string     `json:"productgroupId"`
 	BrandID        string     `json:"brandId"`

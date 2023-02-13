@@ -16,6 +16,7 @@ const ProductDetail: NextPage = () => {
   const [id, setId] = useState('');
   const [available, setAvailable] = useState(false);
   const [product, setProduct] = useState<ProductDetail | null>(null);
+  const [descriptions, setDescriptions] = useState([]);
 
   useEffect(() => {
     var items = window.location.pathname.split('/');
@@ -29,6 +30,10 @@ const ProductDetail: NextPage = () => {
       })
       .then((res) => {
         setProduct(res.data.data.product);
+        console.log(res.data.data.product);
+
+        var temp = res.data.data.product.description.split(';');
+        setDescriptions(temp);
         if (res.data.data.product.quantity > 0) {
           setAvailable(true);
         }
@@ -71,6 +76,20 @@ const ProductDetail: NextPage = () => {
             </div>
             <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
             <div className=""></div>
+            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+            <div className={styles.productdescriptionscontainer}>
+              <ul
+                style={{ margin: 0, padding: 0, listStylePosition: 'inside' }}
+              >
+                {descriptions.map((e) => {
+                  return (
+                    <li style={{ fontSize: '0.9em', marginTop: '10px' }}>
+                      {e}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         </div>
         <div style={{ width: '25%' }}>Bag 3</div>
