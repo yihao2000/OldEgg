@@ -37,6 +37,7 @@ func (r *mutationResolver) CreateBrand(ctx context.Context, input model.NewBrand
 			ID:          uuid.New().String(),
 			Name:        input.Name,
 			Description: input.Description,
+			Image:       input.Image,
 		}
 		if err := db.Model(brand).Create(&brand).Error; err != nil {
 			return nil, err
@@ -161,7 +162,10 @@ func (r *mutationResolver) UpdateProductVariant(ctx context.Context, input model
 
 // Productgroup is the resolver for the productgroup field.
 func (r *productResolver) Productgroup(ctx context.Context, obj *model.Product) (*model.ProductGroup, error) {
-	panic(fmt.Errorf("not implemented: Productgroup - productgroup"))
+	db := config.GetDB()
+	productgroupmodel := new(model.ProductGroup)
+
+	return productgroupmodel, db.Where("id = ?", obj.ProductgroupId).Limit(1).Find(&productgroupmodel).Error
 }
 
 // Brand is the resolver for the brand field.

@@ -57,6 +57,7 @@ type ComplexityRoot struct {
 	Brand struct {
 		Description func(childComplexity int) int
 		ID          func(childComplexity int) int
+		Image       func(childComplexity int) int
 		Name        func(childComplexity int) int
 	}
 
@@ -235,6 +236,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Brand.ID(childComplexity), true
+
+	case "Brand.image":
+		if e.complexity.Brand.Image == nil {
+			break
+		}
+
+		return e.complexity.Brand.Image(childComplexity), true
 
 	case "Brand.name":
 		if e.complexity.Brand.Name == nil {
@@ -1597,6 +1605,50 @@ func (ec *executionContext) fieldContext_Brand_description(ctx context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _Brand_image(ctx context.Context, field graphql.CollectedField, obj *model.Brand) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Brand_image(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Brand_image(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Brand",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Category_id(ctx, field)
 	if err != nil {
@@ -1842,6 +1894,8 @@ func (ec *executionContext) fieldContext_Mutation_createBrand(ctx context.Contex
 				return ec.fieldContext_Brand_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Brand_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Brand_image(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
 		},
@@ -1904,6 +1958,8 @@ func (ec *executionContext) fieldContext_Mutation_updateBrand(ctx context.Contex
 				return ec.fieldContext_Brand_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Brand_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Brand_image(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
 		},
@@ -2802,6 +2858,8 @@ func (ec *executionContext) fieldContext_Product_brand(ctx context.Context, fiel
 				return ec.fieldContext_Brand_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Brand_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Brand_image(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
 		},
@@ -3575,6 +3633,8 @@ func (ec *executionContext) fieldContext_Query_brands(ctx context.Context, field
 				return ec.fieldContext_Brand_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Brand_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Brand_image(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
 		},
@@ -3626,6 +3686,8 @@ func (ec *executionContext) fieldContext_Query_brand(ctx context.Context, field 
 				return ec.fieldContext_Brand_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Brand_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Brand_image(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
 		},
@@ -6600,7 +6662,7 @@ func (ec *executionContext) unmarshalInputNewBrand(ctx context.Context, obj inte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "description"}
+	fieldsInOrder := [...]string{"name", "description", "image"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -6620,6 +6682,14 @@ func (ec *executionContext) unmarshalInputNewBrand(ctx context.Context, obj inte
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
 			it.Description, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			it.Image, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7117,6 +7187,13 @@ func (ec *executionContext) _Brand(ctx context.Context, sel ast.SelectionSet, ob
 		case "description":
 
 			out.Values[i] = ec._Brand_description(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "image":
+
+			out.Values[i] = ec._Brand_image(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

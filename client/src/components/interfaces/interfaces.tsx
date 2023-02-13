@@ -10,3 +10,41 @@ export interface Product {
   image: string;
   quantity: number;
 }
+
+export interface Brand {
+  id: string;
+  name: string;
+  image: string;
+  description: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Shop {
+  id: string;
+  name: string;
+  image: string;
+  aboutus: string;
+  description: string;
+}
+
+export interface ProductGroup {
+  id: string;
+}
+
+export interface ProductDetail {
+  id: string;
+  productgroup: ProductGroup;
+  brand: Brand;
+  category: Category;
+  shop: Shop;
+  name: string;
+  description: string[];
+  price: number;
+  image: string;
+  quantity: number;
+}

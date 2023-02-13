@@ -14,6 +14,7 @@ type AuthOps struct {
 type NewBrand struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Image       string `json:"image"`
 }
 
 type NewCategory struct {

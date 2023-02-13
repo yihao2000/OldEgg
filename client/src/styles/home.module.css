@@ -1,6 +1,7 @@
 .main {
   /* display: flex; */
   /* min-height: 100vh; */
+  overflow-y: hidden;
 }
 
 .pagecontainer {
@@ -150,30 +151,42 @@
 }
 
 /* Bagian Product Recommendations */
-.product {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 10px;
-  row-gap: 15px;
-  justify-content: space-between;
-  padding: 30px;
-}
 
+.productcardcontainer {
+  margin: 0 auto;
+  display: grid;
+  gap: 0.8%;
+  grid-template-columns: repeat(5, 1fr);
+}
 .productcard {
   background-color: rgb(var(--foreground-lighter-rgb));
-  /* max-width: 18%; */
-  /* padding: 0.5%; */
-  /* flex: 0 1 calc(20% - 1em); */
+  max-width: 90%;
+  padding: 5%;
 }
 
 .productcardimage {
-  /* max-width: 100%;
+  max-width: 100%;
   max-height: 100%;
-  object-fit: contain; */
+  object-fit: contain;
+}
+
+.productcardimage:hover {
+  cursor: pointer;
+}
+
+.productcarddetailname {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: normal;
+  max-width: 100%;
+  max-height: 100%;
+}
+.productcarddetailname:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .productdescriptioncontainer {
-  /* margin-top: 60px; */
 }
 
 /* Ends Here */
@@ -359,6 +372,12 @@
 
 /* Mobile */
 @media (max-width: 700px) {
+  .productcardcontainer {
+    margin: 0 auto;
+    display: grid;
+    gap: 1.5%;
+    grid-template-columns: repeat(2, 1fr);
+  }
   .content {
     padding: 4rem;
   }

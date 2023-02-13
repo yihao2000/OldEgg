@@ -41,5 +41,38 @@ export const PRODUCTS_QUERY = `query($shopId:String, $brandId:String, $categoryI
     id
     name
     image
+    price
+  }
+}`;
+
+export const PRODUCT_QUERY = `query($name:String){
+  product(id:"c777901a-b7ea-4796-bff3-1eff9e925237", name:$name){
+   name
+    description
+    brand{
+      id
+      name
+      image
+      description
+
+    }
+    category{
+      name
+      id
+      description
+    }
+    price
+    productgroup{
+      id
+    }
+    image
+    quantity
+    shop{
+      id
+      name
+      image
+      aboutus
+      description
+    }
   }
 }`;

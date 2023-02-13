@@ -4,6 +4,7 @@ import { GRAPHQLAPI, PRODUCTS_QUERY, PROMOS_QUERY } from '@/util/constant';
 import styles from '@/styles/home.module.css';
 import { Product } from '@/components/interfaces/interfaces';
 import { useIsFirstRender } from 'usehooks-ts';
+import ProductCard from './productcard';
 
 const ProductRecommendations = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -69,23 +70,22 @@ const ProductRecommendations = () => {
   }, []);
 
   return (
-    <div className={styles.productcardcontainer}>
-      {products.map((product) => {
-        return (
-          <div className={styles.productcard}>
-            <div className={styles.productcardimagecontainer}>
-              <img
-                src={product.image}
-                alt=""
-                className={styles.productcardimage}
-              />
-            </div>
-            <div className={styles.productdescriptioncontainer}>
-              <p>{product.name}</p>
-            </div>
-          </div>
-        );
-      })}
+    <div>
+      <h1 style={{ paddingLeft: '2%' }}>YOU MAY ALSO LIKE</h1>
+
+      <div className={styles.productcardcontainer}>
+        {products.map((product) => {
+          return (
+            <ProductCard
+              id={product.id}
+              image={product.image}
+              name={product.name}
+              price={product.price}
+              key={product.id}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };
