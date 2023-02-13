@@ -45,8 +45,8 @@ export const PRODUCTS_QUERY = `query($shopId:String, $brandId:String, $categoryI
   }
 }`;
 
-export const PRODUCT_QUERY = `query($name:String){
-  product(id:"c777901a-b7ea-4796-bff3-1eff9e925237", name:$name){
+export const PRODUCT_QUERY = `query($id:ID, $name:String){
+  product(id:$id, name:$name){
    name
     description
     brand{

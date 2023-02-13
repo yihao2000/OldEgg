@@ -43,89 +43,116 @@ export default function Navbar() {
     }
   };
   return (
-    <nav className={styles.navbarcontainer}>
-      <div className={styles.hamburgercontainer}>
-        <div className={styles.hamburgercomponent}></div>
-        <div className={styles.hamburgercomponent}></div>
-        <div className={styles.hamburgercomponent}></div>
-      </div>
-      <div className={styles.hamburgerresponsivecontainer}>
-        <div className={styles.hamburgerresponsivecomponent}></div>
-        <div className={styles.hamburgercomponent}></div>
-        <div className={styles.hamburgercomponent}></div>
-      </div>
-      <Image
-        alt="Logo"
-        src="/asset/logo.svg"
-        width={120}
-        height={40}
-        onClick={showToken}
-      />
-      <i
-        className={`${styles.locationcontainer} "fas fa-map-marker-alt" `}
-        style={{
-          fontSize: '30px',
-          color: 'wheat',
-        }}
-      ></i>
-
-      <form
-        action="/action_page.php"
-        style={{
-          width: '30%',
-          display: 'flex',
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search.."
-          name="search"
-          className={styles.navbarsearch}
-          value={search}
-          onChange={handleSearchChange}
+    <nav>
+      <div className={styles.navbarcontainer}>
+        <div className={styles.hamburgercontainer}>
+          <div className={styles.hamburgercomponent}></div>
+          <div className={styles.hamburgercomponent}></div>
+          <div className={styles.hamburgercomponent}></div>
+        </div>
+        <div className={styles.hamburgerresponsivecontainer}>
+          <div className={styles.hamburgerresponsivecomponent}></div>
+          <div className={styles.hamburgercomponent}></div>
+          <div className={styles.hamburgercomponent}></div>
+        </div>
+        <Image
+          alt="Logo"
+          src="/asset/logo.svg"
+          width={120}
+          height={40}
+          onClick={showToken}
         />
-        <button type="submit">
-          <i className="fa fa-search"></i>
-        </button>
-      </form>
-
-      <i
-        className={`${styles.locationcontainer} "fa fa-bell" `}
-        style={{
-          fontSize: '30px',
-          color: 'wheat',
-        }}
-      ></i>
-
-      <div
-        className={styles.usercontainer}
-        onClick={() => {
-          handleUserClick();
-        }}
-      >
-        <div className={styles.usericon}>
-          <i className="fa fa-user"></i>
-        </div>
-        <div className={styles.userinformation}>
-          <div style={{ color: 'gray' }}>Welcome</div>
-          <div>
-            <b>{userInformation}</b>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.returnsandordercontainer}>
-        <div style={{ color: 'gray' }}>Returns</div>
-        <div style={{}}>{/* <b>& Orders</b> */}</div>
-      </div>
-
-      <div className={styles.cartcontainer}>
         <i
-          className="fa fa-shopping-cart"
+          className={`${styles.locationcontainer} "fas fa-map-marker-alt" `}
           style={{
-            fontSize: '1.7em',
+            fontSize: '30px',
+            color: 'wheat',
           }}
         ></i>
+
+        <form
+          action="/action_page.php"
+          style={{
+            width: '40%',
+            display: 'flex',
+          }}
+        >
+          <div className={styles.searchbarcontainer}>
+            <input
+              type="text"
+              placeholder="Search.."
+              name="search"
+              className={styles.navbarsearch}
+              value={search}
+              onChange={handleSearchChange}
+            />
+            <button type="submit" className={styles.navbarsearchbutton}>
+              <i className="fa fa-search" style={{ fontSize: '20px' }}></i>
+            </button>
+          </div>
+        </form>
+
+        <i
+          className={`${styles.locationcontainer} "fa fa-bell" `}
+          style={{
+            fontSize: '30px',
+            color: 'wheat',
+          }}
+        ></i>
+
+        <div
+          className={styles.usercontainer}
+          onClick={() => {
+            handleUserClick();
+          }}
+        >
+          <div className={styles.usericon}>
+            <i className="fa fa-user"></i>
+          </div>
+          <div className={styles.userinformation}>
+            <div style={{ color: 'gray' }}>Welcome</div>
+            <div>
+              <b>{userInformation}</b>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.returnsandordercontainer}>
+          <div style={{ color: 'gray' }}>Returns</div>
+          <div style={{}}>{/* <b>& Orders</b> */}</div>
+        </div>
+
+        <div className={styles.cartcontainer}>
+          <i
+            className="fa fa-shopping-cart"
+            style={{
+              fontSize: '1.7em',
+            }}
+          ></i>
+        </div>
+      </div>
+      <div className={styles.navbarsecondarycontainer}>
+        <form
+          action="/action_page.php"
+          style={{
+            width: '100%',
+            display: 'flex',
+          }}
+        >
+          <div className={styles.secondarysearchbarcontainer}>
+            <input
+              type="text"
+              placeholder="Search.."
+              name="search"
+              className={styles.secondarynavbarsearch}
+              value={search}
+              onChange={handleSearchChange}
+            />
+            {/* <button type="submit" className={styles.secondarynavbarsearchbutton}>
+              <i className="fa fa-search" style={{ fontSize: '20px' }}></i>
+            </button> */}
+          </div>
+        </form>
       </div>
     </nav>
   );

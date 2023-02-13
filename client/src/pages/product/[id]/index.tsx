@@ -12,19 +12,26 @@ import { Product, ProductDetail } from '@/components/interfaces/interfaces';
 
 const ProductDetail: NextPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+
+  const [id, setId] = useState('');
+  const [available, setAvailable] = useState(false);
   const [product, setProduct] = useState<ProductDetail | null>(null);
 
   useEffect(() => {
+    var items = window.location.pathname.split('/');
+    setId(items[2]);
     axios
       .post(GRAPHQLAPI, {
         query: PRODUCT_QUERY,
         variables: {
-          id: id,
+          id: items[2],
         },
       })
       .then((res) => {
         setProduct(res.data.data.product);
+        if (res.data.data.product.quantity > 0) {
+          setAvailable(true);
+        }
       })
       .catch((err) => console.log(err));
   }, []);
@@ -58,6 +65,12 @@ const ProductDetail: NextPage = () => {
             <div style={{ marginTop: '10px', fontSize: '28px' }}>
               {product?.name}
             </div>
+            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+            <div className={styles.productinventory}>
+              <b> {available ? 'In stock.' : ''} </b>
+            </div>
+            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+            <div className=""></div>
           </div>
         </div>
         <div style={{ width: '25%' }}>Bag 3</div>
