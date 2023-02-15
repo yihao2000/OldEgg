@@ -72,7 +72,7 @@ type ComplexityRoot struct {
 		CreateBrand          func(childComplexity int, input model.NewBrand) int
 		CreateCategory       func(childComplexity int, input model.NewCategory) int
 		CreateProduct        func(childComplexity int, input model.NewProduct) int
-		CreateProductGroup   func(childComplexity int, input *model.NewProductGroup) int
+		CreateProductGroup   func(childComplexity int) int
 		CreateProductVariant func(childComplexity int, input model.NewProductVariant) int
 		CreatePromo          func(childComplexity int, input model.NewPromo) int
 		CreateShop           func(childComplexity int, input model.NewShop) int
@@ -82,6 +82,7 @@ type ComplexityRoot struct {
 		UpdateProductVariant func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
 		UpdatePromo          func(childComplexity int, input model.NewPromo) int
 		UpdateShop           func(childComplexity int, input model.NewShop) int
+		UserUpdatePhone      func(childComplexity int, phone string) int
 	}
 
 	Product struct {
@@ -99,8 +100,7 @@ type ComplexityRoot struct {
 	}
 
 	ProductGroup struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+		ID func(childComplexity int) int
 	}
 
 	Promo struct {
@@ -111,19 +111,20 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Brand         func(childComplexity int, id *string, name *string) int
-		Brands        func(childComplexity int) int
-		Categories    func(childComplexity int) int
-		Category      func(childComplexity int, id *string, name *string) int
-		Product       func(childComplexity int, id *string, name *string) int
-		ProductGroup  func(childComplexity int, id *string, name *string) int
-		Products      func(childComplexity int, shopID *string, brandID *string, categoryID *string, limit *int, offset *int) int
-		ProductsGroup func(childComplexity int, category *string, brand *string, productgroup *string, shop *string) int
-		Promos        func(childComplexity int) int
-		Protected     func(childComplexity int) int
-		Shop          func(childComplexity int, id *string, name *string) int
-		Shops         func(childComplexity int) int
-		User          func(childComplexity int, id *string, email *string) int
+		Brand          func(childComplexity int, id *string, name *string) int
+		Brands         func(childComplexity int) int
+		Categories     func(childComplexity int) int
+		Category       func(childComplexity int, id *string, name *string) int
+		GetCurrentUser func(childComplexity int) int
+		Product        func(childComplexity int, id *string, name *string) int
+		ProductGroup   func(childComplexity int, id *string) int
+		Products       func(childComplexity int, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string) int
+		ProductsGroup  func(childComplexity int, category *string, brand *string, productgroup *string, shop *string) int
+		Promos         func(childComplexity int) int
+		Protected      func(childComplexity int) int
+		Shop           func(childComplexity int, id *string, name *string) int
+		Shops          func(childComplexity int) int
+		User           func(childComplexity int, id *string, email *string) int
 	}
 
 	Shop struct {
@@ -151,11 +152,12 @@ type AuthOpsResolver interface {
 }
 type MutationResolver interface {
 	Auth(ctx context.Context) (*model.AuthOps, error)
+	UserUpdatePhone(ctx context.Context, phone string) (*model.User, error)
 	CreateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error)
 	UpdateBrand(ctx context.Context, input model.NewBrand, lastUpdateID string) (*model.Brand, error)
 	CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error)
 	UpdateCategory(ctx context.Context, input model.NewCategory, lastUpdateID string) (*model.Category, error)
-	CreateProductGroup(ctx context.Context, input *model.NewProductGroup) (*model.ProductGroup, error)
+	CreateProductGroup(ctx context.Context) (*model.ProductGroup, error)
 	CreateProduct(ctx context.Context, input model.NewProduct) (*model.Product, error)
 	UpdateProduct(ctx context.Context, input model.NewProduct, lastUpdateID string) (*model.Product, error)
 	CreateProductVariant(ctx context.Context, input model.NewProductVariant) (*model.Product, error)
@@ -173,15 +175,16 @@ type ProductResolver interface {
 }
 type QueryResolver interface {
 	User(ctx context.Context, id *string, email *string) (*model.User, error)
+	GetCurrentUser(ctx context.Context) (*model.User, error)
 	Protected(ctx context.Context) (string, error)
 	Brands(ctx context.Context) ([]*model.Brand, error)
 	Brand(ctx context.Context, id *string, name *string) (*model.Brand, error)
 	Categories(ctx context.Context) ([]*model.Category, error)
 	Category(ctx context.Context, id *string, name *string) (*model.Category, error)
-	Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int) ([]*model.Product, error)
+	Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string) ([]*model.Product, error)
 	Product(ctx context.Context, id *string, name *string) (*model.Product, error)
 	ProductsGroup(ctx context.Context, category *string, brand *string, productgroup *string, shop *string) ([]*model.Product, error)
-	ProductGroup(ctx context.Context, id *string, name *string) (*model.ProductGroup, error)
+	ProductGroup(ctx context.Context, id *string) (*model.ProductGroup, error)
 	Promos(ctx context.Context) ([]*model.Promo, error)
 	Shops(ctx context.Context) ([]*model.Shop, error)
 	Shop(ctx context.Context, id *string, name *string) (*model.Shop, error)
@@ -323,12 +326,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Mutation_createProductGroup_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateProductGroup(childComplexity, args["input"].(*model.NewProductGroup)), true
+		return e.complexity.Mutation.CreateProductGroup(childComplexity), true
 
 	case "Mutation.createProductVariant":
 		if e.complexity.Mutation.CreateProductVariant == nil {
@@ -438,6 +436,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateShop(childComplexity, args["input"].(model.NewShop)), true
 
+	case "Mutation.userUpdatePhone":
+		if e.complexity.Mutation.UserUpdatePhone == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_userUpdatePhone_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UserUpdatePhone(childComplexity, args["phone"].(string)), true
+
 	case "Product.brand":
 		if e.complexity.Product.Brand == nil {
 			break
@@ -522,13 +532,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ProductGroup.ID(childComplexity), true
 
-	case "ProductGroup.name":
-		if e.complexity.ProductGroup.Name == nil {
-			break
-		}
-
-		return e.complexity.ProductGroup.Name(childComplexity), true
-
 	case "Promo.description":
 		if e.complexity.Promo.Description == nil {
 			break
@@ -595,6 +598,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Category(childComplexity, args["id"].(*string), args["name"].(*string)), true
 
+	case "Query.getCurrentUser":
+		if e.complexity.Query.GetCurrentUser == nil {
+			break
+		}
+
+		return e.complexity.Query.GetCurrentUser(childComplexity), true
+
 	case "Query.product":
 		if e.complexity.Query.Product == nil {
 			break
@@ -617,7 +627,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ProductGroup(childComplexity, args["id"].(*string), args["name"].(*string)), true
+		return e.complexity.Query.ProductGroup(childComplexity, args["id"].(*string)), true
 
 	case "Query.products":
 		if e.complexity.Query.Products == nil {
@@ -629,7 +639,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Products(childComplexity, args["shopId"].(*string), args["brandId"].(*string), args["categoryId"].(*string), args["limit"].(*int), args["offset"].(*int)), true
+		return e.complexity.Query.Products(childComplexity, args["shopId"].(*string), args["brandId"].(*string), args["categoryId"].(*string), args["limit"].(*int), args["offset"].(*int), args["productGroupId"].(*string)), true
 
 	case "Query.productsGroup":
 		if e.complexity.Query.ProductsGroup == nil {
@@ -783,7 +793,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewBrand,
 		ec.unmarshalInputNewCategory,
 		ec.unmarshalInputNewProduct,
-		ec.unmarshalInputNewProductGroup,
 		ec.unmarshalInputNewProductVariant,
 		ec.unmarshalInputNewPromo,
 		ec.unmarshalInputNewShop,
@@ -931,21 +940,6 @@ func (ec *executionContext) field_Mutation_createCategory_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewCategory2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewCategory(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_createProductGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *model.NewProductGroup
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalONewProductGroup2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewProductGroup(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1140,6 +1134,21 @@ func (ec *executionContext) field_Mutation_updateShop_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_userUpdatePhone_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["phone"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phone"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["phone"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1215,15 +1224,6 @@ func (ec *executionContext) field_Query_productGroup_args(ctx context.Context, r
 		}
 	}
 	args["id"] = arg0
-	var arg1 *string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["name"] = arg1
 	return args, nil
 }
 
@@ -1341,6 +1341,15 @@ func (ec *executionContext) field_Query_products_args(ctx context.Context, rawAr
 		}
 	}
 	args["offset"] = arg4
+	var arg5 *string
+	if tmp, ok := rawArgs["productGroupId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productGroupId"))
+		arg5, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["productGroupId"] = arg5
 	return args, nil
 }
 
@@ -1897,6 +1906,76 @@ func (ec *executionContext) fieldContext_Mutation_auth(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_userUpdatePhone(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_userUpdatePhone(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UserUpdatePhone(rctx, fc.Args["phone"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_userUpdatePhone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_userUpdatePhone_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createBrand(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createBrand(ctx, field)
 	if err != nil {
@@ -2183,7 +2262,7 @@ func (ec *executionContext) _Mutation_createProductGroup(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateProductGroup(rctx, fc.Args["input"].(*model.NewProductGroup))
+		return ec.resolvers.Mutation().CreateProductGroup(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2209,22 +2288,9 @@ func (ec *executionContext) fieldContext_Mutation_createProductGroup(ctx context
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_ProductGroup_id(ctx, field)
-			case "name":
-				return ec.fieldContext_ProductGroup_name(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ProductGroup", field.Name)
 		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createProductGroup_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
 	}
 	return fc, nil
 }
@@ -2886,8 +2952,6 @@ func (ec *executionContext) fieldContext_Product_productgroup(ctx context.Contex
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_ProductGroup_id(ctx, field)
-			case "name":
-				return ec.fieldContext_ProductGroup_name(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ProductGroup", field.Name)
 		},
@@ -3362,47 +3426,6 @@ func (ec *executionContext) fieldContext_ProductGroup_id(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _ProductGroup_name(ctx context.Context, field graphql.CollectedField, obj *model.ProductGroup) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ProductGroup_name(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ProductGroup_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ProductGroup",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Promo_id(ctx context.Context, field graphql.CollectedField, obj *model.Promo) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Promo_id(ctx, field)
 	if err != nil {
@@ -3645,6 +3668,85 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 	if fc.Args, err = ec.field_Query_user_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getCurrentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getCurrentUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().GetCurrentUser(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.User); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/yihao2000/gqlgen-todos/graph/model.User`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getCurrentUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -3956,7 +4058,7 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Products(rctx, fc.Args["shopId"].(*string), fc.Args["brandId"].(*string), fc.Args["categoryId"].(*string), fc.Args["limit"].(*int), fc.Args["offset"].(*int))
+		return ec.resolvers.Query().Products(rctx, fc.Args["shopId"].(*string), fc.Args["brandId"].(*string), fc.Args["categoryId"].(*string), fc.Args["limit"].(*int), fc.Args["offset"].(*int), fc.Args["productGroupId"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4190,7 +4292,7 @@ func (ec *executionContext) _Query_productGroup(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ProductGroup(rctx, fc.Args["id"].(*string), fc.Args["name"].(*string))
+		return ec.resolvers.Query().ProductGroup(rctx, fc.Args["id"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4216,8 +4318,6 @@ func (ec *executionContext) fieldContext_Query_productGroup(ctx context.Context,
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_ProductGroup_id(ctx, field)
-			case "name":
-				return ec.fieldContext_ProductGroup_name(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ProductGroup", field.Name)
 		},
@@ -4910,14 +5010,11 @@ func (ec *executionContext) _User_phone(ctx context.Context, field graphql.Colle
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_phone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7010,34 +7107,6 @@ func (ec *executionContext) unmarshalInputNewProduct(ctx context.Context, obj in
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputNewProductGroup(ctx context.Context, obj interface{}) (model.NewProductGroup, error) {
-	var it model.NewProductGroup
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"name"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "name":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputNewProductVariant(ctx context.Context, obj interface{}) (model.NewProductVariant, error) {
 	var it model.NewProductVariant
 	asMap := map[string]interface{}{}
@@ -7268,7 +7337,7 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phone"))
-			it.Phone, err = ec.unmarshalNString2string(ctx, v)
+			it.Phone, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7484,6 +7553,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_auth(ctx, field)
+			})
+
+		case "userUpdatePhone":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_userUpdatePhone(ctx, field)
 			})
 
 		case "createBrand":
@@ -7736,10 +7811,6 @@ func (ec *executionContext) _ProductGroup(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "name":
-
-			out.Values[i] = ec._ProductGroup_name(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7828,6 +7899,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_user(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getCurrentUser":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getCurrentUser(ctx, field)
 				return res
 			}
 
@@ -8189,9 +8280,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 
 			out.Values[i] = ec._User_phone(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "password":
 
 			out.Values[i] = ec._User_password(ctx, field, obj)
@@ -9314,14 +9402,6 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
-}
-
-func (ec *executionContext) unmarshalONewProductGroup2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewProductGroup(ctx context.Context, v interface{}) (*model.NewProductGroup, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputNewProductGroup(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

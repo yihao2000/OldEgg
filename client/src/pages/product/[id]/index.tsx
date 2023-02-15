@@ -7,39 +7,70 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { GRAPHQLAPI, PRODUCT_QUERY } from '@/util/constant';
+import {
+  GRAPHQLAPI,
+  PRODUCT_PRODUCTSGROUP_QUERY,
+  PRODUCT_QUERY,
+} from '@/util/constant';
 import { Product, ProductDetail } from '@/components/interfaces/interfaces';
+import { LAPTOP_NAME_CONVERTER } from '@/components/converter/converter';
 
 const ProductDetail: NextPage = () => {
-  const router = useRouter();
+  interface ProductVariant {
+    id: string;
+    name: string;
+  }
 
-  const [id, setId] = useState('');
+  const router = useRouter();
+  const { id } = router.query;
+  console.log(id);
+  // const [id, setId] = useState('');
   const [available, setAvailable] = useState(false);
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [descriptions, setDescriptions] = useState([]);
+  const [productName, setProductName] = useState('');
+
+  const [productsVariant, setProductsVariant] = useState<
+    ProductDetail[] | null
+  >(null);
 
   useEffect(() => {
-    var items = window.location.pathname.split('/');
-    setId(items[2]);
-    axios
-      .post(GRAPHQLAPI, {
-        query: PRODUCT_QUERY,
-        variables: {
-          id: items[2],
-        },
-      })
-      .then((res) => {
-        setProduct(res.data.data.product);
-        console.log(res.data.data.product);
+    // var items = window.location.pathname.split('/');
+    // setId(items[2]);
+    if (id) {
+      axios
+        .post(GRAPHQLAPI, {
+          query: PRODUCT_QUERY,
+          variables: {
+            id: id,
+          },
+        })
+        .then((res) => {
+          setProduct(res.data.data.product);
+          setProductName(LAPTOP_NAME_CONVERTER(res.data.data.product.name));
 
-        var temp = res.data.data.product.description.split(';');
-        setDescriptions(temp);
-        if (res.data.data.product.quantity > 0) {
-          setAvailable(true);
-        }
-      })
-      .catch((err) => console.log(err));
-  }, []);
+          var temp = res.data.data.product.description.split(';');
+          setDescriptions(temp);
+          if (res.data.data.product.quantity > 0) {
+            setAvailable(true);
+          }
+
+          console.log(res.data.data.product.productgroup.id);
+          axios
+            .post(GRAPHQLAPI, {
+              query: PRODUCT_PRODUCTSGROUP_QUERY,
+              variables: {
+                id: res.data.data.product.productgroup.id,
+              },
+            })
+            .then((res) => {
+              setProductsVariant(res.data.data.products);
+            });
+        })
+
+        .catch((err) => console.log(err));
+    }
+  }, [id]);
   return (
     <Layout>
       <div className={styles.pagedivider}>
@@ -68,7 +99,7 @@ const ProductDetail: NextPage = () => {
               <h3 className={styles.visitshop}>Visit {product?.shop.name}</h3>
             </div>
             <div style={{ marginTop: '10px', fontSize: '28px' }}>
-              {product?.name}
+              {productName}
             </div>
             <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
             <div className={styles.productinventory}>

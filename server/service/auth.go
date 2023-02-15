@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -58,4 +59,26 @@ func UserLogin(ctx context.Context, email string, password string) (interface{},
 	return map[string]interface{}{
 		"token": token,
 	}, nil
+}
+
+func UserUpdatePhone(ctx context.Context, phone string) (*model.User, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, Invalid Token !",
+		}
+	}
+
+	userID := ctx.Value("auth").(*JwtCustomClaim).ID
+
+	var user model.User
+	if err := db.Model(user).Where("id LIKE ?", userID).Take(&user).Error; err != nil {
+		return nil, err
+	}
+
+	user.Phone = phone
+
+	return &user, db.Save(user).Error
+
 }

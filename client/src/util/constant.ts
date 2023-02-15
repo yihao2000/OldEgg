@@ -27,6 +27,17 @@ export const USER_QUERY = `query($id:ID, $email:String){
   }
 }`;
 
+export const CURRENT_USER_QUERY = `query{
+  getCurrentUser{
+    id
+    name
+    email
+    phone
+    banned
+    role
+  }
+}`;
+
 export const PROMOS_QUERY = `query{
   promos {
     id
@@ -74,5 +85,12 @@ export const PRODUCT_QUERY = `query($id:ID, $name:String){
       aboutus
       description
     }
+  }
+}`;
+
+export const PRODUCT_PRODUCTSGROUP_QUERY = `query($id:ID){
+  products(productGroupId:$id){
+    id
+    name
   }
 }`;

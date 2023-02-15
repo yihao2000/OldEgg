@@ -8,7 +8,7 @@ type User{
   id: ID!
   name: String!
   email: String!
-  phone: String!
+  phone: String
   password: String!
   banned: Boolean!
   role: String!
@@ -20,7 +20,7 @@ type User{
  input NewUser{
   name: String!
   email: String!
-  phone: String!
+  phone: String
   password: String!
   banned: Boolean!
   role: String!
@@ -29,20 +29,26 @@ type User{
 
 
 
+
+
 type AuthOps{
   login(email: String!, password: String!): Any! @goField(forceResolver: true)
   register(input: NewUser!): Any! @goField(forceResolver: true)
+  
 }
 
 type Mutation {
    auth: AuthOps! @goField(forceResolver: true)
+   userUpdatePhone(phone: String!): User! @goField(forceResolver: true)
 }
 
 
 type Query{
-     user(id: ID, email: String): User! @goField(forceResolver: true)
+    user(id: ID, email: String): User! @goField(forceResolver: true)
+    getCurrentUser: User! @goField(forceResolver: true) @auth
+
+    protected: String! @goField(forceResolver: true) @auth
 
 
-     protected: String! @goField(forceResolver: true) @auth
 
 }

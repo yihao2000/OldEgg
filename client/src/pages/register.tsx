@@ -23,12 +23,7 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
 
   const validateEmptyFields = () => {
-    if (
-      firstname.length == 0 ||
-      lastname.length == 0 ||
-      email.length == 0 ||
-      phone.length == 0
-    ) {
+    if (firstname.length == 0 || lastname.length == 0 || email.length == 0) {
       return true;
     }
 
@@ -59,6 +54,9 @@ export default function Signup() {
   };
 
   const validatePhoneValid = () => {
+    if (phoneNumber == '') {
+      return true;
+    }
     return phone(phoneNumber).isValid;
   };
 
@@ -81,7 +79,7 @@ export default function Signup() {
     }
 
     var emailExist;
-    var fullName = firstname.concat(lastname);
+    var fullName = firstname.concat(' ').concat(lastname);
     setLoading(true);
     axios
       .post(GRAPHQLAPI, {

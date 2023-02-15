@@ -1,0 +1,128 @@
+.main {
+  /* display: flex; */
+  /* min-height: 100vh; */
+  overflow-y: hidden;
+}
+
+.pagecontainer {
+  display: flex;
+  min-height: 80vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+}
+
+@mixin nopadding {
+  padding: 0;
+}
+
+@mixin nomargin {
+  margin: 0;
+}
+
+.nopadding {
+  padding: 0;
+}
+
+.nomargin {
+  margin: 0;
+}
+
+.formsplit {
+  padding: 1rem;
+  width: 100%;
+  display: flex;
+}
+
+.formsplitchild {
+  font-size: 0.8em;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formcheckboxtitle {
+  /* display: block; */
+  min-height: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.formtextinput {
+  background: transparent;
+  box-sizing: border-box;
+  background-color: rgba(var(--background-start-rgb), 0, 5);
+
+  font-size: 1em;
+  height: 44px;
+  width: 66.7%;
+  padding: 2vh;
+  border-radius: var(--border-radius);
+  /* margin-bottom: 2vh; */
+}
+
+@mixin border10 {
+  border-radius: 3px;
+}
+
+.forminputcontainer {
+  width: 100%;
+  display: flex;
+  column-gap: 10px;
+}
+
+.forminputselection {
+  width: 33.3%;
+  height: 44px;
+  text-indent: 10px;
+  @include border10;
+}
+
+.loginemailcontainer:hover {
+  color: lightblue;
+  cursor: pointer;
+}
+
+@mixin paddingvertical {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.buttonpaddingvertical {
+  @include paddingvertical;
+}
+
+.formbutton {
+  width: 100%;
+  height: 40px;
+  /* background-color: rgb(var(--accent-rgb)); */
+  cursor: pointer;
+  border: 0px;
+  border-radius: 3px;
+}
+
+.themeaccent {
+  background-color: rgb(var(--accent-rgb));
+}
+
+.themebglight {
+  background-color: rgb(var(--foreground-lighter-rgb));
+}
+
+.formcontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 320px;
+  row-gap: 2vh;
+}
+
+.errorMessage {
+  color: red;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8em;
+}

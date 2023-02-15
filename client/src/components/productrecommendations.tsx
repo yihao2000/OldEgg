@@ -5,6 +5,7 @@ import styles from '@/styles/home.module.css';
 import { Product } from '@/components/interfaces/interfaces';
 import { useIsFirstRender } from 'usehooks-ts';
 import ProductCard from './productcard';
+import { LAPTOP_NAME_CONVERTER } from './converter/converter';
 
 const ProductRecommendations = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -79,7 +80,7 @@ const ProductRecommendations = () => {
             <ProductCard
               id={product.id}
               image={product.image}
-              name={product.name}
+              name={LAPTOP_NAME_CONVERTER(product.name)}
               price={product.price}
               key={product.id}
             />

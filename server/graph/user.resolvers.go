@@ -27,13 +27,26 @@ func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
 	return &model.AuthOps{}, nil
 }
 
+// UserUpdatePhone is the resolver for the userUpdatePhone field.
+func (r *mutationResolver) UserUpdatePhone(ctx context.Context, phone string) (*model.User, error) {
+	return service.UserUpdatePhone(ctx, phone)
+}
+
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id *string, email *string) (*model.User, error) {
-	if id == nil {
-		return service.UserGetByEmail(ctx, *email)
-	} else {
+	if id != nil {
 		return service.UserGetByID(ctx, *id)
+
+	} else {
+		return service.UserGetByEmail(ctx, *email)
 	}
+
+	// return service.UserGetByEmail(ctx, *email)
+}
+
+// GetCurrentUser is the resolver for the getCurrentUser field.
+func (r *queryResolver) GetCurrentUser(ctx context.Context) (*model.User, error) {
+	return service.UserGetByToken(ctx)
 }
 
 // Protected is the resolver for the protected field.

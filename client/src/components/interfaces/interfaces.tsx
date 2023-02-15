@@ -48,3 +48,12 @@ export interface ProductDetail {
   image: string;
   quantity: number;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  banned: boolean;
+  role: string;
+}

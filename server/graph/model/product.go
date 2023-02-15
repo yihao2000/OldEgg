@@ -33,8 +33,7 @@ type Product struct {
 }
 
 type ProductGroup struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID string `json:"id"`
 }
 
 type Category struct {

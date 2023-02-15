@@ -26,7 +26,6 @@ input NewCategory{
 
 type ProductGroup{
     id: ID!
-    name: String
 }
 
 type Product{
@@ -69,9 +68,7 @@ input NewProductVariant{
     validTo: Time
 }
 
-input NewProductGroup{
-    name: String
-}
+
 
 
 extend type Mutation{
@@ -81,7 +78,7 @@ extend type Mutation{
     createCategory(input: NewCategory!): Category!
     updateCategory(input: NewCategory!, lastUpdateId: ID!): Category!
 
-    createProductGroup(input: NewProductGroup): ProductGroup!
+    createProductGroup: ProductGroup!
 
     createProduct(input: NewProduct!): Product!
     updateProduct(input: NewProduct!, lastUpdateId: ID!): Product!
@@ -97,9 +94,9 @@ extend type Query{
     categories: [Category!]! @goField(forceResolver: true)
     category(id: ID, name: String): Category! @goField(forceResolver: true)
 
-    products(shopId:String, brandId: String, categoryId: String, limit: Int, offset: Int): [Product!]! @goField(forceResolver: true)
+    products(shopId:String, brandId: String, categoryId: String, limit: Int, offset: Int, productGroupId: ID): [Product!]! @goField(forceResolver: true)
     product(id: ID, name: String): Product! @goField(forceResolver: true)
     productsGroup(category: ID, brand: ID, productgroup: ID, shop: ID): [Product!]! @goField(forceResolver: true)
 
-    productGroup(id: ID, name: String): ProductGroup! @goField(forceResolver: true)
+    productGroup(id: ID): ProductGroup! @goField(forceResolver: true)
 }

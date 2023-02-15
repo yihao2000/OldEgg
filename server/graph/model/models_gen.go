@@ -34,10 +34,6 @@ type NewProduct struct {
 	ValidTo     *time.Time `json:"validTo"`
 }
 
-type NewProductGroup struct {
-	Name *string `json:"name"`
-}
-
 type NewProductVariant struct {
 	ProductgroupID string     `json:"productgroupId"`
 	BrandID        string     `json:"brandId"`
@@ -65,10 +61,10 @@ type NewShop struct {
 }
 
 type NewUser struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
-	Banned   bool   `json:"banned"`
-	Role     string `json:"role"`
+	Name     string  `json:"name"`
+	Email    string  `json:"email"`
+	Phone    *string `json:"phone"`
+	Password string  `json:"password"`
+	Banned   bool    `json:"banned"`
+	Role     string  `json:"role"`
 }

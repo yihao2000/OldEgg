@@ -97,28 +97,16 @@ func (r *mutationResolver) UpdateCategory(ctx context.Context, input model.NewCa
 }
 
 // CreateProductGroup is the resolver for the createProductGroup field.
-func (r *mutationResolver) CreateProductGroup(ctx context.Context, input *model.NewProductGroup) (*model.ProductGroup, error) {
+func (r *mutationResolver) CreateProductGroup(ctx context.Context) (*model.ProductGroup, error) {
 	db := config.GetDB()
 
-	if input == nil {
-		productGroup := model.ProductGroup{
-			ID:   uuid.New().String(),
-			Name: "",
-		}
-		if err := db.Model(productGroup).Create(&productGroup).Error; err != nil {
-			return nil, err
-		}
-		return &productGroup, nil
-	} else {
-		productGroup := model.ProductGroup{
-			ID:   uuid.New().String(),
-			Name: *input.Name,
-		}
-		if err := db.Model(productGroup).Create(&productGroup).Error; err != nil {
-			return nil, err
-		}
-		return &productGroup, nil
+	productGroup := model.ProductGroup{
+		ID: uuid.New().String(),
 	}
+	if err := db.Model(productGroup).Create(&productGroup).Error; err != nil {
+		return nil, err
+	}
+	return &productGroup, nil
 }
 
 // CreateProduct is the resolver for the createProduct field.
@@ -129,7 +117,7 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewPro
 	if err := db.Model(product).Where("name LIKE ?", input.Name).Take(&product).Error; err == nil {
 		return nil, err
 	} else {
-		createdProductGroup, err := r.CreateProductGroup(ctx, nil)
+		createdProductGroup, err := r.CreateProductGroup(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -223,7 +211,7 @@ func (r *queryResolver) Category(ctx context.Context, id *string, name *string) 
 }
 
 // Products is the resolver for the products field.
-func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int) ([]*model.Product, error) {
+func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string) ([]*model.Product, error) {
 	db := config.GetDB()
 
 	var models []*model.Product
@@ -236,6 +224,10 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *s
 
 	if limit != nil {
 		temp = temp.Limit(*limit)
+	}
+
+	if productGroupID != nil {
+		temp = temp.Where("productgroup_id = ?", productGroupID)
 	}
 
 	return models, temp.Find(&models).Error
@@ -255,7 +247,7 @@ func (r *queryResolver) ProductsGroup(ctx context.Context, category *string, bra
 }
 
 // ProductGroup is the resolver for the productGroup field.
-func (r *queryResolver) ProductGroup(ctx context.Context, id *string, name *string) (*model.ProductGroup, error) {
+func (r *queryResolver) ProductGroup(ctx context.Context, id *string) (*model.ProductGroup, error) {
 	db := config.GetDB()
 	productGroup := new(model.ProductGroup)
 
