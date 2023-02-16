@@ -94,3 +94,15 @@ export const PRODUCT_PRODUCTSGROUP_QUERY = `query($id:ID){
     name
   }
 }`;
+
+export const USER_UPDATE_PHONE_MUTATION = `mutation($phone:String!){
+  userUpdatePhone(phone:$phone){
+    phone
+  }
+}`;
+
+export const USER_UPDATE_PASSWORD_MUTATION = `mutation($currentPassword:String!, $newPassword:String!){
+  userUpdateInformation(currentPassword:$currentPassword, newPassword:$newPassword){
+    id
+  }
+}`;

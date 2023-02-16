@@ -71,7 +71,11 @@ const ProductRecommendations = () => {
   }, []);
 
   return (
-    <div>
+    <div
+      style={{
+        marginBottom: '170px',
+      }}
+    >
       <h1 style={{ paddingLeft: '2%' }}>YOU MAY ALSO LIKE</h1>
 
       <div className={styles.productcardcontainer}>

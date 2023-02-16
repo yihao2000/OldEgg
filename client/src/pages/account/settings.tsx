@@ -146,14 +146,24 @@ const Profile: NextPage = () => {
                       <td>
                         <div className={styles.marginvertical}>
                           <div className={styles.flexwrap}>
-                            <span>
+                            <span
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
                               <b>
                                 {user.phone == ''
                                   ? 'To enhance your account security, add your mobile number.'
                                   : user.phone}
                               </b>
                             </span>
-                            <button>
+                            <button
+                              className={styles.editbutton}
+                              onClick={() => {
+                                router.push('/account/mobilephone');
+                              }}
+                            >
                               {user.phone == '' ? 'Add' : 'Update'}
                             </button>
                           </div>
@@ -167,10 +177,22 @@ const Profile: NextPage = () => {
                       <td>
                         <div className={styles.marginvertical}>
                           <div className={styles.flexwrap}>
-                            <span>
+                            <span
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
                               <b>********</b>
                             </span>
-                            <button>EDIT</button>
+                            <button
+                              className={styles.editbutton}
+                              onClick={() => {
+                                router.push('/account/password');
+                              }}
+                            >
+                              EDIT
+                            </button>
                           </div>
                         </div>
                       </td>

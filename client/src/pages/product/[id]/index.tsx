@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import styles from '../../../styles/pagesstyles/productdetail.module.css';
+import styles from '../../../styles/pagesstyles/productdetail.module.scss';
 import Layout from '@/components/layout';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -12,8 +12,14 @@ import {
   PRODUCT_PRODUCTSGROUP_QUERY,
   PRODUCT_QUERY,
 } from '@/util/constant';
+import { FaTruck } from 'react-icons/fa';
 import { Product, ProductDetail } from '@/components/interfaces/interfaces';
-import { LAPTOP_NAME_CONVERTER } from '@/components/converter/converter';
+import {
+  GET_LAPTOP_COMPONENT_VARIANT,
+  LAPTOP_COMPONENTS_CONVERTER,
+  LAPTOP_NAME_CONVERTER,
+} from '@/components/converter/converter';
+import { useSessionStorage } from 'usehooks-ts';
 
 const ProductDetail: NextPage = () => {
   interface ProductVariant {
@@ -23,16 +29,51 @@ const ProductDetail: NextPage = () => {
 
   const router = useRouter();
   const { id } = router.query;
-  console.log(id);
+
   // const [id, setId] = useState('');
+  const [token, setToken] = useSessionStorage('token', '');
   const [available, setAvailable] = useState(false);
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [descriptions, setDescriptions] = useState([]);
   const [productName, setProductName] = useState('');
+  const [productCategory, setProductCategory] = useState('');
+
+  const [productQuantity, setProductQuantity] = useState(1);
 
   const [productsVariant, setProductsVariant] = useState<
     ProductDetail[] | null
   >(null);
+
+  const [variantList, setVariantList] = useState([]);
+
+  const handleQuantityChange = (event: any) => {
+    if (event.target.value >= 20) {
+      setProductQuantity(20);
+    } else if (event.target.value <= 0) {
+      setProductQuantity(1);
+    } else {
+      setProductQuantity(event.target.value);
+    }
+  };
+
+  const handleIncreaseQuantity = () => {
+    if (productQuantity < 20) {
+      setProductQuantity(productQuantity + 1);
+    }
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (productQuantity > 1) {
+      setProductQuantity(productQuantity - 1);
+    }
+  };
+
+  const handleSubmit = () => {
+    console.log(token);
+    if (!token) {
+      router.push('/login');
+    }
+  };
 
   useEffect(() => {
     // var items = window.location.pathname.split('/');
@@ -47,7 +88,13 @@ const ProductDetail: NextPage = () => {
         })
         .then((res) => {
           setProduct(res.data.data.product);
-          setProductName(LAPTOP_NAME_CONVERTER(res.data.data.product.name));
+
+          var productCategory = res.data.data.product.category.name;
+          setProductCategory(productCategory);
+
+          if (productCategory == 'Laptop') {
+            setProductName(LAPTOP_NAME_CONVERTER(res.data.data.product.name));
+          }
 
           var temp = res.data.data.product.description.split(';');
           setDescriptions(temp);
@@ -55,7 +102,6 @@ const ProductDetail: NextPage = () => {
             setAvailable(true);
           }
 
-          console.log(res.data.data.product.productgroup.id);
           axios
             .post(GRAPHQLAPI, {
               query: PRODUCT_PRODUCTSGROUP_QUERY,
@@ -71,6 +117,18 @@ const ProductDetail: NextPage = () => {
         .catch((err) => console.log(err));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (productCategory == 'Laptop') {
+      // setVariantList(GET_LAPTOP_COMPONENT_VARIANT(productsVariant))
+      if (productsVariant != null) {
+        console.log(productsVariant);
+        // console.log(GET_LAPTOP_COMPONENT_VARIANT(productsVariant));
+      }
+    }
+
+    var variantlist;
+  }, [productsVariant]);
   return (
     <Layout>
       <div className={styles.pagedivider}>
@@ -114,7 +172,10 @@ const ProductDetail: NextPage = () => {
               >
                 {descriptions.map((e) => {
                   return (
-                    <li style={{ fontSize: '0.9em', marginTop: '10px' }}>
+                    <li
+                      style={{ fontSize: '0.9em', marginTop: '10px' }}
+                      key={e}
+                    >
                       {e}
                     </li>
                   );
@@ -123,7 +184,67 @@ const ProductDetail: NextPage = () => {
             </div>
           </div>
         </div>
-        <div style={{ width: '25%' }}>Bag 3</div>
+        <div className={styles.sectionthree}>
+          <div className={styles.soldandshippedcontainer}>
+            <span className={styles.soldandshippedtext}>
+              {' '}
+              <a
+                href=""
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <FaTruck style={{ fontSize: '20px' }} />
+                SOLD & SHIPPED BY NEWEGG
+              </a>
+            </span>
+            <span>
+              <span>Free Shipping</span> from United States
+            </span>
+            <hr className={styles.horizontaldivider} />
+
+            <span style={{ display: 'block' }}>Estimated GST Inclusive</span>
+            <span className={styles.pricelabel}>
+              <b>${product?.price}</b>
+            </span>
+
+            <div style={{ display: 'flex', columnGap: '10px' }}>
+              <div className={styles.quantitycontainer}>
+                <input
+                  type="number"
+                  className={styles.quantityfield}
+                  value={productQuantity}
+                  onChange={handleQuantityChange}
+                />
+                <button
+                  className={`${styles.quantityarrow} ${styles.uparrow}`}
+                  onClick={handleIncreaseQuantity}
+                >
+                  +
+                </button>
+                <button
+                  className={`${styles.quantityarrow} ${styles.downarrow}`}
+                  onClick={handleDecreaseQuantity}
+                >
+                  -
+                </button>
+              </div>
+              <button
+                className={`${styles.addtocartbutton} ${
+                  productQuantity < 0 ? styles.disablebutton : ''
+                }`}
+                onClick={() => {
+                  productQuantity > 0 ? handleSubmit() : null;
+                }}
+              >
+                {product?.quantity && product?.quantity > 0
+                  ? 'Add To Cart'
+                  : 'Out of Stock'}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </Layout>
   );

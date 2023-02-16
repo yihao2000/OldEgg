@@ -70,6 +70,22 @@
   padding: 10px;
 }
 
+.editbutton {
+  background: #e6e6e6;
+  border-color: #a9a9a9;
+  color: #222;
+  cursor: pointer;
+  font: 700 12px/1 Open Sans Condensed, Arial Narrow, Helvetica Narrow, arial,
+    helvetica, sans-serif;
+  letter-spacing: 1px;
+  padding: 10px;
+  position: relative;
+  text-align: center;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  border-radius: 3px;
+}
+
 @media (max-width: 900px) {
   .divider {
     padding: 40px 0px;

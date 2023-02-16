@@ -27,9 +27,9 @@ func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
 	return &model.AuthOps{}, nil
 }
 
-// UserUpdatePhone is the resolver for the userUpdatePhone field.
-func (r *mutationResolver) UserUpdatePhone(ctx context.Context, phone string) (*model.User, error) {
-	return service.UserUpdatePhone(ctx, phone)
+// UserUpdateInformation is the resolver for the userUpdateInformation field.
+func (r *mutationResolver) UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string) (*model.User, error) {
+	return service.UserUpdateInformation(ctx, currentPassword, newPassword, phone)
 }
 
 // User is the resolver for the user field.

@@ -61,7 +61,7 @@ func UserLogin(ctx context.Context, email string, password string) (interface{},
 	}, nil
 }
 
-func UserUpdatePhone(ctx context.Context, phone string) (*model.User, error) {
+func UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string) (*model.User, error) {
 	db := config.GetDB()
 
 	if ctx.Value("auth") == nil {
@@ -77,7 +77,18 @@ func UserUpdatePhone(ctx context.Context, phone string) (*model.User, error) {
 		return nil, err
 	}
 
-	user.Phone = phone
+	if phone != nil {
+		user.Phone = *phone
+	}
+
+	if newPassword != nil && currentPassword != nil {
+		if err := model.ComparePassword(user.Password, *currentPassword); err != nil {
+			return nil, err
+		} else {
+			user.Password = model.HashPassword(*newPassword)
+		}
+
+	}
 
 	return &user, db.Save(user).Error
 

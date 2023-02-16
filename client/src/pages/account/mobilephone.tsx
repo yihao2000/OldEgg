@@ -1,12 +1,18 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from '@next/font/google';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import styles from '@/styles/home.module.css';
 import Link from 'next/link';
 import { links } from '@/util/route';
 import axios from 'axios';
-import { GRAPHQLAPI, LOGIN_QUERY, USER_QUERY } from '@/util/constant';
+import {
+  CURRENT_USER_QUERY,
+  GRAPHQLAPI,
+  LOGIN_QUERY,
+  USER_QUERY,
+  USER_UPDATE_PHONE_MUTATION,
+} from '@/util/constant';
 import { FaArrowCircleLeft } from 'react-icons/fa';
 import { useSessionStorage } from 'usehooks-ts';
 import Router, { useRouter } from 'next/router';
@@ -36,6 +42,33 @@ export default function UpdateMobilePhone() {
     setPhoneNumber(result);
   };
 
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CURRENT_USER_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        var retrieved: string = res.data.data.getCurrentUser.phone;
+        if (retrieved != '') {
+          var code = retrieved.substring(1, 3);
+          var number = retrieved.substring(3);
+          setPhoneCode(code);
+          setPhoneNumber(number);
+        }
+      })
+      .catch((err) =>
+        setError('Unable to update phone number! Please try again...'),
+      );
+  }, []);
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
@@ -45,16 +78,40 @@ export default function UpdateMobilePhone() {
     }
 
     const formattedPhone = '+' + phoneCode + phoneNumber;
-
-    if (validatePhoneValid(formattedPhone)) {
+    console.log(formattedPhone);
+    if (!validatePhoneValid(formattedPhone)) {
       setError('Invalid Phone Format !');
       return;
     }
+
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_UPDATE_PHONE_MUTATION,
+          variables: {
+            phone: formattedPhone,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setTimeout(() => {
+          Router.reload();
+        }, 3000);
+      })
+      .catch((err) =>
+        setError('Unable to update phone number! Please try again...'),
+      );
   };
   return (
     <>
       <Head>
-        <title>OldEgg Sign In</title>
+        <title>Update Mobile Phone</title>
         <meta
           name="description"
           content="TypeScript starter for Next.js that includes all you need to build amazing apps"

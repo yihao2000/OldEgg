@@ -68,21 +68,21 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		Auth                 func(childComplexity int) int
-		CreateBrand          func(childComplexity int, input model.NewBrand) int
-		CreateCategory       func(childComplexity int, input model.NewCategory) int
-		CreateProduct        func(childComplexity int, input model.NewProduct) int
-		CreateProductGroup   func(childComplexity int) int
-		CreateProductVariant func(childComplexity int, input model.NewProductVariant) int
-		CreatePromo          func(childComplexity int, input model.NewPromo) int
-		CreateShop           func(childComplexity int, input model.NewShop) int
-		UpdateBrand          func(childComplexity int, input model.NewBrand, lastUpdateID string) int
-		UpdateCategory       func(childComplexity int, input model.NewCategory, lastUpdateID string) int
-		UpdateProduct        func(childComplexity int, input model.NewProduct, lastUpdateID string) int
-		UpdateProductVariant func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
-		UpdatePromo          func(childComplexity int, input model.NewPromo) int
-		UpdateShop           func(childComplexity int, input model.NewShop) int
-		UserUpdatePhone      func(childComplexity int, phone string) int
+		Auth                  func(childComplexity int) int
+		CreateBrand           func(childComplexity int, input model.NewBrand) int
+		CreateCategory        func(childComplexity int, input model.NewCategory) int
+		CreateProduct         func(childComplexity int, input model.NewProduct) int
+		CreateProductGroup    func(childComplexity int) int
+		CreateProductVariant  func(childComplexity int, input model.NewProductVariant) int
+		CreatePromo           func(childComplexity int, input model.NewPromo) int
+		CreateShop            func(childComplexity int, input model.NewShop) int
+		UpdateBrand           func(childComplexity int, input model.NewBrand, lastUpdateID string) int
+		UpdateCategory        func(childComplexity int, input model.NewCategory, lastUpdateID string) int
+		UpdateProduct         func(childComplexity int, input model.NewProduct, lastUpdateID string) int
+		UpdateProductVariant  func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
+		UpdatePromo           func(childComplexity int, input model.NewPromo) int
+		UpdateShop            func(childComplexity int, input model.NewShop) int
+		UserUpdateInformation func(childComplexity int, currentPassword *string, newPassword *string, phone *string) int
 	}
 
 	Product struct {
@@ -152,7 +152,7 @@ type AuthOpsResolver interface {
 }
 type MutationResolver interface {
 	Auth(ctx context.Context) (*model.AuthOps, error)
-	UserUpdatePhone(ctx context.Context, phone string) (*model.User, error)
+	UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string) (*model.User, error)
 	CreateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error)
 	UpdateBrand(ctx context.Context, input model.NewBrand, lastUpdateID string) (*model.Brand, error)
 	CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error)
@@ -436,17 +436,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateShop(childComplexity, args["input"].(model.NewShop)), true
 
-	case "Mutation.userUpdatePhone":
-		if e.complexity.Mutation.UserUpdatePhone == nil {
+	case "Mutation.userUpdateInformation":
+		if e.complexity.Mutation.UserUpdateInformation == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_userUpdatePhone_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_userUpdateInformation_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UserUpdatePhone(childComplexity, args["phone"].(string)), true
+		return e.complexity.Mutation.UserUpdateInformation(childComplexity, args["currentPassword"].(*string), args["newPassword"].(*string), args["phone"].(*string)), true
 
 	case "Product.brand":
 		if e.complexity.Product.Brand == nil {
@@ -1134,18 +1134,36 @@ func (ec *executionContext) field_Mutation_updateShop_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_userUpdatePhone_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_userUpdateInformation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["phone"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phone"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 *string
+	if tmp, ok := rawArgs["currentPassword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentPassword"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["phone"] = arg0
+	args["currentPassword"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["newPassword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("newPassword"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["newPassword"] = arg1
+	var arg2 *string
+	if tmp, ok := rawArgs["phone"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phone"))
+		arg2, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["phone"] = arg2
 	return args, nil
 }
 
@@ -1906,8 +1924,8 @@ func (ec *executionContext) fieldContext_Mutation_auth(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_userUpdatePhone(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_userUpdatePhone(ctx, field)
+func (ec *executionContext) _Mutation_userUpdateInformation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_userUpdateInformation(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1920,7 +1938,7 @@ func (ec *executionContext) _Mutation_userUpdatePhone(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UserUpdatePhone(rctx, fc.Args["phone"].(string))
+		return ec.resolvers.Mutation().UserUpdateInformation(rctx, fc.Args["currentPassword"].(*string), fc.Args["newPassword"].(*string), fc.Args["phone"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1936,7 +1954,7 @@ func (ec *executionContext) _Mutation_userUpdatePhone(ctx context.Context, field
 	return ec.marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_userUpdatePhone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_userUpdateInformation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -1969,7 +1987,7 @@ func (ec *executionContext) fieldContext_Mutation_userUpdatePhone(ctx context.Co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_userUpdatePhone_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_userUpdateInformation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -7555,10 +7573,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_auth(ctx, field)
 			})
 
-		case "userUpdatePhone":
+		case "userUpdateInformation":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_userUpdatePhone(ctx, field)
+				return ec._Mutation_userUpdateInformation(ctx, field)
 			})
 
 		case "createBrand":

@@ -39,7 +39,7 @@ type AuthOps{
 
 type Mutation {
    auth: AuthOps! @goField(forceResolver: true)
-   userUpdatePhone(phone: String!): User! @goField(forceResolver: true)
+   userUpdateInformation(currentPassword: String, newPassword: String, phone: String): User! @goField(forceResolver: true)
 }
 
 

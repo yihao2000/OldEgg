@@ -98,10 +98,11 @@
 }
 
 .promocarouselcontainer {
-  width: 100vw;
-  /* display: flex; */
-  /* height: auto; */
-  /* overflow: hidden; */
+  width: 100%;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: space-evenly;
 }
 
 .selectedimagecontainer {
@@ -133,21 +134,26 @@
 
 .textbutton {
   border-radius: 8px;
-  border: 2px solid rgb(var(--foreground-rgb));
+  /* border: 2px solid rgb(var(--foreground-rgb)); */
   padding: 3px;
   width: 5vw;
   min-width: fit-content;
 
   text-align: center;
   font-weight: bold;
-  background-color: #ffffff;
+
   color: rgb(var(--foreground-rgb));
 
   display: flex;
   justify-content: space-around;
+  position: absolute;
+
   align-items: center;
   cursor: pointer;
   margin: 5px 0;
+  z-index: 100;
+
+  font-size: 80px;
 }
 
 /* Bagian Product Recommendations */
@@ -372,10 +378,15 @@
 
 /* Mobile */
 @media (max-width: 700px) {
+  .textbutton {
+    font-size: 35px;
+    margin: 0.2em;
+  }
   .productcardcontainer {
     margin: 0 auto;
     display: grid;
-    gap: 1.5%;
+    /* gap: 1.5%; */
+    height: fit-content;
     grid-template-columns: repeat(2, 1fr);
   }
   .content {
@@ -462,7 +473,7 @@
 
 @media (max-width: 1000px) {
   .selectedimage {
-    object-position: top 2vh left 9vw;
+    object-position: top 5vh left 9vw;
   }
 }
 

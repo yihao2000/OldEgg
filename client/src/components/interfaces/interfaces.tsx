@@ -47,6 +47,7 @@ export interface ProductDetail {
   price: number;
   image: string;
   quantity: number;
+  components: string[];
 }
 
 export interface User {

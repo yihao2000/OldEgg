@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { GRAPHQLAPI, PROMOS_QUERY } from '@/util/constant';
 import styles from '@/styles/home.module.css';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
 interface Promo {
   id: string;
@@ -73,23 +74,41 @@ const PromoCarousel = () => {
 
   return (
     <div className={styles.promocarouselcontainer}>
-      {/* <button onClick={handleLeftClick} className={styles.textbutton}>
+      {/* <button
+        onClick={handleLeftClick}
+        className={styles.textbutton}
+        style={{
+          left: '0',
+          marginLeft: '1em',
+        }}
+      >
         &lsaquo;
       </button> */}
+      <FaAngleLeft
+        onClick={handleRightClick}
+        className={styles.textbutton}
+        style={{
+          left: '0',
+          margin: '0.2em',
+        }}
+      />
 
       <div className={styles.selectedimagecontainer}>
-        {/* <button onClick={handleLeftClick} className={styles.textbutton}>
-          &lsaquo;
-        </button> */}
         <img
           src={selectedImage?.image}
           alt=""
           className={styles.selectedimage}
         />
       </div>
-      {/* <button onClick={handleRightClick} className={styles.textbutton}>
-        &rsaquo;
-      </button> */}
+      <FaAngleRight
+        onClick={handleRightClick}
+        className={styles.textbutton}
+        style={{
+          right: '0',
+          margin: '0.2em',
+        }}
+      />
+      {/* <button>&rsaquo;</button> */}
     </div>
   );
 };

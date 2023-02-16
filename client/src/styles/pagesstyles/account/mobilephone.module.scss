@@ -126,3 +126,13 @@
   margin: 0;
   font-size: 0.8em;
 }
+
+.itemendcontainer {
+  display: flex;
+  justify-content: end;
+}
+
+.notopspace {
+  padding-top: 0px;
+  margin-top: 0px;
+}
