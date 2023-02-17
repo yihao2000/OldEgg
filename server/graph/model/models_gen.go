@@ -68,3 +68,8 @@ type NewUser struct {
 	Banned   bool    `json:"banned"`
 	Role     string  `json:"role"`
 }
+
+type NewWishlist struct {
+	Name    string `json:"name"`
+	Privacy string `json:"privacy"`
+}

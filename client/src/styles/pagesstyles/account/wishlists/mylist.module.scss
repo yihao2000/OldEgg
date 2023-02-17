@@ -1,0 +1,73 @@
+@mixin nogap {
+  margin: 0;
+  padding: 0;
+}
+
+@mixin paddinghorizontal($left, $right) {
+  padding-left: $left;
+  padding-right: $right;
+}
+
+@mixin paddingvertical($top, $bottom) {
+  padding-top: $top;
+  padding-bottom: $bottom;
+}
+
+.appcontainer {
+  border: 0;
+  outline: 0;
+  @include nogap();
+}
+
+.appnavcontainer {
+  border-bottom: 1px solid #333 !important;
+  border-color: #555;
+}
+
+.listcontainer {
+  display: flex;
+  @include paddinghorizontal(30px, 30px);
+  @include paddingvertical(50px, 0px);
+  column-gap: 40px;
+}
+
+.wishlistlabelcontainer {
+  @include nogap();
+}
+
+.wishlistlabel {
+  color: #e3e3e3 !important;
+  border-color: #e3e3e3 !important;
+
+  border-bottom: 5px solid #3b4a65;
+  box-sizing: border-box;
+
+  display: block;
+  font: 700 24px/32px Open Sans Condensed, Helvetica Narrow, arial, helvetica,
+    sans-serif;
+  letter-spacing: 1px;
+  max-width: 500px;
+  text-transform: uppercase;
+  @include nogap();
+}
+
+.listnavcontainer {
+  display: flex;
+  align-items: center;
+}
+
+.navtabcell {
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  cursor: pointer;
+  display: block;
+  background-color: var;
+  font-size: 13px;
+  // height: 35px;
+  line-height: 35px;
+  margin-left: -1px;
+  padding: 0 20px;
+  text-align: center;
+  padding-bottom: 1px;
+  z-index: 1;
+}

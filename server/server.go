@@ -38,6 +38,7 @@ func main() {
 	db.AutoMigrate(&model.Shop{})
 	db.AutoMigrate(&model.Product{})
 	db.AutoMigrate(&model.Wishlist{})
+	db.AutoMigrate(&model.WishlistDetail{})
 	db.AutoMigrate(&model.Cart{})
 
 	router := chi.NewRouter()

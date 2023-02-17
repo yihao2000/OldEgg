@@ -360,7 +360,7 @@ const ProductDetail: NextPage = () => {
         </div>
         <div>aas</div>
       </div>
-      {openModal && <Modal />}
+      {/* {openModal && <Modal />} */}
     </Layout>
   );
 };

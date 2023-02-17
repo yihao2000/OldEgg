@@ -9,22 +9,48 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
+	"github.com/yihao2000/gqlgen-todos/service"
 )
 
 // User is the resolver for the user field.
 func (r *cartResolver) User(ctx context.Context, obj *model.Cart) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	db := config.GetDB()
+	user := new(model.User)
+
+	return user, db.First(user, "id = ?", obj.UserID).Error
 }
 
 // Product is the resolver for the product field.
 func (r *cartResolver) Product(ctx context.Context, obj *model.Cart) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+	db := config.GetDB()
+	product := new(model.Product)
+
+	return product, db.Where("id = ?", obj.ProductID).Order("valid_to ASC").Limit(1).Find(&product).Error
 }
 
 // CreateCart is the resolver for the createCart field.
 func (r *mutationResolver) CreateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error) {
-	panic(fmt.Errorf("not implemented: CreateCart - createCart"))
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Invalid Token !",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	cart, _ := service.CartGetByUserProduct(ctx, userID, productID)
+
+	if cart != nil {
+		cart.Quantity += quantity
+
+		return cart, db.Save(cart).Error
+	}
+	return service.CartCreate(ctx, userID, productID, quantity)
 }
 
 // UpdateCart is the resolver for the updateCart field.
@@ -38,18 +64,68 @@ func (r *mutationResolver) DeleteCart(ctx context.Context, productID string) (bo
 }
 
 // CreateWishlist is the resolver for the createWishlist field.
-func (r *mutationResolver) CreateWishlist(ctx context.Context, wishlistID string) (*model.Wishlist, error) {
-	panic(fmt.Errorf("not implemented: CreateWishlist - createWishlist"))
+func (r *mutationResolver) CreateWishlist(ctx context.Context, input model.NewWishlist) (*model.Wishlist, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	wishlist := model.Wishlist{
+		ID:          uuid.New().String(),
+		Name:        input.Name,
+		UserID:      userID,
+		Privacy:     input.Privacy,
+		DateCreated: time.Now(),
+	}
+
+	if err := db.Model(wishlist).Create(&wishlist).Error; err != nil {
+		return nil, nil
+	}
+	return &wishlist, nil
 }
 
-// UpdataeWishlist is the resolver for the updataeWishlist field.
-func (r *mutationResolver) UpdataeWishlist(ctx context.Context, wishlistID string, name *string, privacy *string) (*model.Wishlist, error) {
-	panic(fmt.Errorf("not implemented: UpdataeWishlist - updataeWishlist"))
+// UpdateWishlist is the resolver for the updateWishlist field.
+func (r *mutationResolver) UpdateWishlist(ctx context.Context, input model.NewWishlist) (*model.Wishlist, error) {
+	panic(fmt.Errorf("not implemented: UpdateWishlist - updateWishlist"))
 }
 
 // DeleteWishlist is the resolver for the deleteWishlist field.
 func (r *mutationResolver) DeleteWishlist(ctx context.Context, wishlistID string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteWishlist - deleteWishlist"))
+}
+
+// CreateWishlistDetail is the resolver for the createWishlistDetail field.
+func (r *mutationResolver) CreateWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (*model.WishlistDetail, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	wishlist := new(model.WishlistDetail)
+
+	if err := db.First(wishlist, "wishlist_id = ? AND product_id = ?", wishlistID, productID); err != nil {
+		wishlist.Quantity = quantity
+		return wishlist, db.Save(wishlist).Error
+	} else {
+		wishlist = &model.WishlistDetail{
+			WishlistID: wishlistID,
+			ProductID:  productID,
+			Quantity:   quantity,
+		}
+		return wishlist, db.Create(wishlist).Error
+	}
+
+}
+
+// DeleteWishlistDetail is the resolver for the deleteWishlistDetail field.
+func (r *mutationResolver) DeleteWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteWishlistDetail - deleteWishlistDetail"))
 }
 
 // Cart is the resolver for the cart field.
@@ -67,29 +143,38 @@ func (r *queryResolver) Wishlists(ctx context.Context) ([]*model.Wishlist, error
 	panic(fmt.Errorf("not implemented: Wishlists - wishlists"))
 }
 
-// ID is the resolver for the id field.
-func (r *wishlistResolver) ID(ctx context.Context, obj *model.Wishlist) (string, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
-}
-
-// Name is the resolver for the name field.
-func (r *wishlistResolver) Name(ctx context.Context, obj *model.Wishlist) (string, error) {
-	panic(fmt.Errorf("not implemented: Name - name"))
+// WishlistDetails is the resolver for the wishlistDetails field.
+func (r *queryResolver) WishlistDetails(ctx context.Context, wishlistID string) ([]*model.Wishlist, error) {
+	panic(fmt.Errorf("not implemented: WishlistDetails - wishlistDetails"))
 }
 
 // User is the resolver for the user field.
 func (r *wishlistResolver) User(ctx context.Context, obj *model.Wishlist) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	db := config.GetDB()
+	user := new(model.User)
+
+	return user, db.First(user, "id = ?", obj.UserID).Error
 }
 
-// Privacy is the resolver for the privacy field.
-func (r *wishlistResolver) Privacy(ctx context.Context, obj *model.Wishlist) (string, error) {
-	panic(fmt.Errorf("not implemented: Privacy - privacy"))
+// WishlistDetails is the resolver for the wishlistDetails field.
+func (r *wishlistResolver) WishlistDetails(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistDetail, error) {
+	panic(fmt.Errorf("not implemented: WishlistDetails - wishlistDetails"))
 }
 
-// DateCreated is the resolver for the dateCreated field.
-func (r *wishlistResolver) DateCreated(ctx context.Context, obj *model.Wishlist) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: DateCreated - dateCreated"))
+// Wishlist is the resolver for the wishlist field.
+func (r *wishlistDetailResolver) Wishlist(ctx context.Context, obj *model.WishlistDetail) (*model.Wishlist, error) {
+	db := config.GetDB()
+	wishlist := new(model.Wishlist)
+
+	return wishlist, db.First(wishlist, "id = ?", obj.WishlistID).Error
+}
+
+// Product is the resolver for the product field.
+func (r *wishlistDetailResolver) Product(ctx context.Context, obj *model.WishlistDetail) (*model.Product, error) {
+	db := config.GetDB()
+	product := new(model.Product)
+
+	return product, db.Where("id = ?", obj.ProductID).Order("valid_to ASC").Limit(1).Find(&product).Error
 }
 
 // Cart returns CartResolver implementation.
@@ -98,5 +183,9 @@ func (r *Resolver) Cart() CartResolver { return &cartResolver{r} }
 // Wishlist returns WishlistResolver implementation.
 func (r *Resolver) Wishlist() WishlistResolver { return &wishlistResolver{r} }
 
+// WishlistDetail returns WishlistDetailResolver implementation.
+func (r *Resolver) WishlistDetail() WishlistDetailResolver { return &wishlistDetailResolver{r} }
+
 type cartResolver struct{ *Resolver }
 type wishlistResolver struct{ *Resolver }
+type wishlistDetailResolver struct{ *Resolver }
