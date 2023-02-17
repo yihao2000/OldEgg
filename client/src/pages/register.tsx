@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import styles from '@/styles/home.module.css';
+import styles from '@/styles/home.module.scss';
 import Link from 'next/link';
 import { links } from '@/util/route';
 import Image from 'next/image';

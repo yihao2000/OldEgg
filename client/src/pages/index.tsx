@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from '@next/font/google';
-import styles from '@/styles/home.module.css';
+import styles from '@/styles/home.module.scss';
 import Link from 'next/link';
 import { links } from '@/util/route';
 import Layout from '@/components/layout';

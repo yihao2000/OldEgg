@@ -1,0 +1,1300 @@
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[116.811ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[9.080ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.504ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[8.363ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[8.056ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[2.073ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.510ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.505ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.506ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.011ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[1.507ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'banned') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:33
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'role') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[1.066ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[3.909ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'promos'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "promos" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[6.238ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[6.421ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'promos'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'promos'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.505ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.514ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:34
+[0m[33m[0.512ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'promos' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'promos' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.502ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[3.887ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "brands" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[7.507ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[6.084ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:35
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[4.237ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[0.509ms] [34;1m[rows:-][0m SELECT * FROM "product_groups" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[5.298ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[5.780ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:36
+[0m[33m[0.502ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'product_groups' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[3.666ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "categories" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[6.120ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[6.578ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:37
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[3.757ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "shops" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[7.316ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[6.769ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.514ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:38
+[0m[33m[0.509ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'aboutus') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "product_groups" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[1.209ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'product_groups' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "brands" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[1.505ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.504ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.508ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "categories" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[1.005ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.504ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "shops" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[1.506ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.520ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.502ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'aboutus') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "products" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[2.514ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'products' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[1.921ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'productgroup_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'brand_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'category_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'shop_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'price') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'quantity') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'valid_to') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_productgroup'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_brand'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_category'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:39
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_shop'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.006ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.905ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.506ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.502ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.513ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.517ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'banned') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.516ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'role') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "product_groups" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.006ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.006ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'product_groups' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "brands" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.507ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.506ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.515ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.519ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "categories" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.006ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.010ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "shops" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.506ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.525ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.502ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'aboutus') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.005ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "products" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.506ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'products' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.533ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'productgroup_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'brand_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'category_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'shop_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'price') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'quantity') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'valid_to') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[1.012ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_productgroup'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_brand'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_category'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_shop'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'wishlists' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'wishlists'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "wishlists" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'wishlists' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'wishlists'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'wishlists'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'wishlists' AND column_name = 'user_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'wishlists' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'wishlists' AND column_name = 'product_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'wishlists' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'wishlists' AND constraint_name = 'fk_wishlists_user'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:40
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'wishlists' AND constraint_name = 'fk_wishlists_product'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.511ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.511ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "categories" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'categories'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'categories' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'categories' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "shops" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.506ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.677ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'shops'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.520ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.570ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'shops' AND column_name = 'aboutus') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'shops' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.018ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "product_groups" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.550ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'product_groups'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'product_groups' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'product_groups' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.512ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "brands" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.512ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.523ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'brands'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'brands' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'brands' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "products" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[2.513ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'products' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[2.823ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'products'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.539ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'productgroup_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'brand_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'category_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'shop_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'description') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.511ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'price') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'image') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'quantity') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND column_name = 'valid_to') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'products' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_category'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_shop'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_productgroup'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'products' AND constraint_name = 'fk_products_brand'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.005ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.005ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[1.513ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'users'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'banned') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'role') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'carts' AND table_type = 'BASE TABLE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'tpaweb' AND table_schema = CURRENT_SCHEMA() AND table_name = 'carts'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT * FROM "carts" LIMIT 1
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.502ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'carts' AND constraint_type = 'UNIQUE'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.504ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'tpaweb' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'carts'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'carts'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'carts' AND column_name = 'user_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'carts' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.502ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'carts' AND column_name = 'product_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'carts' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'carts' AND column_name = 'quantity') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'carts' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'carts' AND constraint_name = 'fk_carts_user'
+
+2023/02/17 10:28:40 [32mD:/Projects/Web/TPA/server/server.go:41
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'carts' AND constraint_name = 'fk_carts_product'
+
+2023/02/17 10:29:12 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[115.020ms] [34;1m[rows:2][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 2
+
+2023/02/17 10:31:24 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[109.420ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:31:24 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:31:24 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[31.910ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:31:24 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[34.712ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:31:24 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[40.913ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:31:24 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:31:24 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[106.531ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[101.287ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[102.221ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[0.515ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[0.515ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[28.224ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[34.333ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[41.481ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[46.820ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[1.028ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[55.632ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:34:47 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.504ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:38:20 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[111.833ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:38:20 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:38:20 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[37.677ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:38:20 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[43.874ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:38:20 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[108.942ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:38:20 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.523ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:38:20 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[102.879ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20
+
+2023/02/17 10:39:40 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[105.314ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:39:40 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:39:41 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[29.965ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:39:41 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[31.787ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:39:41 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[106.570ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:39:41 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.526ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:39:41 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[101.829ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20
+
+2023/02/17 10:40:49 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[114.382ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:40:49 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:40:49 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[27.823ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:40:49 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[33.660ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:40:49 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[109.019ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:40:49 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.517ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:40:49 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[102.892ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20
+
+2023/02/17 10:43:22 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[102.254ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:43:22 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[1.035ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:43:22 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[29.122ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:43:22 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[32.233ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:43:22 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[107.237ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:43:22 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.519ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:43:22 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[103.296ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20
+
+2023/02/17 10:47:25 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[109.755ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:47:25 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[0.503ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:47:25 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[28.753ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:47:25 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[32.515ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:47:25 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[108.010ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:47:25 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.518ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:47:25 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[113.202ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20
+
+2023/02/17 10:47:57 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[112.518ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = '7d990294-2ecd-4f96-98f1-ca52ce8f8a33' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:47:57 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[0.515ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:47:57 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[29.481ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:47:57 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[34.447ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = 'a78944f0-d990-41b0-b912-56eb49cada09' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:47:57 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[107.654ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '85a4c59e-1aae-46f8-8104-625b8e961236' LIMIT 1
+
+2023/02/17 10:47:57 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.514ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '85a4c59e-1aae-46f8-8104-625b8e961236'
+
+2023/02/17 10:47:57 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[102.121ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20
+
+2023/02/17 10:52:14 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[30.436ms] [34;1m[rows:3][0m SELECT * FROM "promos"
+
+2023/02/17 10:52:14 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[35.208ms] [34;1m[rows:5][0m SELECT * FROM "products" WHERE valid_to IS NULL LIMIT 5
+
+2023/02/17 10:52:14 [32mD:/Projects/Web/TPA/server/graph/promo.resolvers.go:43
+[0m[33m[111.393ms] [34;1m[rows:3][0m SELECT * FROM "promos"
+
+2023/02/17 10:52:14 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[112.932ms] [34;1m[rows:5][0m SELECT * FROM "products" WHERE valid_to IS NULL LIMIT 5
+
+2023/02/17 10:52:14 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[114.912ms] [34;1m[rows:5][0m SELECT * FROM "products" WHERE valid_to IS NULL LIMIT 5 OFFSET 5
+
+2023/02/17 10:54:42 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[103.635ms] [34;1m[rows:4][0m SELECT * FROM "products" WHERE valid_to IS NULL LIMIT 5 OFFSET 10
+
+2023/02/17 10:54:42 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.621ms] [34;1m[rows:0][0m SELECT * FROM "products" WHERE valid_to IS NULL LIMIT 5 OFFSET 15
+
+2023/02/17 10:54:43 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[111.889ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = 'c4d5f3a9-b1ee-46cc-960b-b45cd8734356' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:54:43 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[0.502ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:54:43 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[106.047ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = 'c4d5f3a9-b1ee-46cc-960b-b45cd8734356' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:54:43 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[1.029ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:54:43 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[1.029ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:54:43 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[34.140ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '746ae507-fce4-4169-a199-116019844e5a' LIMIT 1
+
+2023/02/17 10:54:43 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[36.449ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = '571e9103-b8a9-416c-80a4-a2ba7ae0d773' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:54:44 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[43.483ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:54:44 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[50.803ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '746ae507-fce4-4169-a199-116019844e5a' LIMIT 1
+
+2023/02/17 10:54:44 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.512ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '746ae507-fce4-4169-a199-116019844e5a'
+
+2023/02/17 10:54:44 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[58.102ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = '571e9103-b8a9-416c-80a4-a2ba7ae0d773' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:54:44 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.514ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '746ae507-fce4-4169-a199-116019844e5a'
+
+2023/02/17 10:54:53 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[107.455ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = 'c4d5f3a9-b1ee-46cc-960b-b45cd8734356' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:54:53 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[0.511ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:54:53 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[31.376ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = '571e9103-b8a9-416c-80a4-a2ba7ae0d773' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:54:53 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[35.159ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:54:53 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[109.428ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '746ae507-fce4-4169-a199-116019844e5a' LIMIT 1
+
+2023/02/17 10:54:53 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[110.386ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '746ae507-fce4-4169-a199-116019844e5a'
+
+2023/02/17 10:55:03 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:245
+[0m[33m[105.239ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE id = 'c4d5f3a9-b1ee-46cc-960b-b45cd8734356' ORDER BY valid_to ASC LIMIT 1
+
+2023/02/17 10:55:03 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:182
+[0m[33m[0.511ms] [34;1m[rows:1][0m SELECT * FROM "categories" WHERE id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY "categories"."id" LIMIT 1
+
+2023/02/17 10:55:03 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:174
+[0m[33m[28.718ms] [34;1m[rows:1][0m SELECT * FROM "brands" WHERE id = 'b3c07dd5-ff10-49c7-a7eb-101fbb790e38' ORDER BY "brands"."id" LIMIT 1
+
+2023/02/17 10:55:03 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:190
+[0m[33m[31.653ms] [34;1m[rows:1][0m SELECT * FROM "shops" WHERE id = '571e9103-b8a9-416c-80a4-a2ba7ae0d773' ORDER BY "shops"."id" LIMIT 1
+
+2023/02/17 10:55:03 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:166
+[0m[33m[107.889ms] [34;1m[rows:1][0m SELECT * FROM "product_groups" WHERE id = '746ae507-fce4-4169-a199-116019844e5a' LIMIT 1
+
+2023/02/17 10:55:03 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[0.513ms] [34;1m[rows:1][0m SELECT * FROM "products" WHERE valid_to IS NULL AND productgroup_id = '746ae507-fce4-4169-a199-116019844e5a'
+
+2023/02/17 10:55:03 [32mD:/Projects/Web/TPA/server/graph/product.resolvers.go:237
+[0m[33m[102.912ms] [34;1m[rows:13][0m SELECT * FROM "products" WHERE valid_to IS NULL AND category_id = '60273be6-1379-40c3-9926-977533f54f39' ORDER BY RANDOM() LIMIT 20

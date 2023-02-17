@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { ReactNode } from 'react';
 import { links } from '../util/route';
-import styles from '@/styles/home.module.css';
+import styles from '@/styles/home.module.scss';
 
 interface Product {
   id: string;
@@ -16,12 +16,11 @@ interface Product {
 const ProductCard = (props: Product) => {
   if (props.style == 'compact') {
     return (
-      <div className={styles.productcard}>
-        <div className={styles.productcardimagecontainer}>
-          <Link href={links.productDetail(props.id)} passHref>
-            <img src={props.image} alt="" className={styles.productcardimage} />
-          </Link>
-        </div>
+      <div className={styles.productcardcompact}>
+        <Link href={links.productDetail(props.id)} passHref>
+          <img src={props.image} alt="" className={styles.productcardimage} />
+        </Link>
+
         <div className={styles.productdescriptioncontainer}>
           <Link href={links.productDetail(props.id)} passHref>
             <p className={styles.productcarddetailname}>
@@ -35,11 +34,10 @@ const ProductCard = (props: Product) => {
   } else {
     return (
       <div className={styles.productcard}>
-        <div className={styles.productcardimagecontainer}>
-          <Link href={links.productDetail(props.id)} passHref>
-            <img src={props.image} alt="" className={styles.productcardimage} />
-          </Link>
-        </div>
+        <Link href={links.productDetail(props.id)} passHref>
+          <img src={props.image} alt="" className={styles.productcardimage} />
+        </Link>
+
         <div className={styles.productdescriptioncontainer}>
           <Link href={links.productDetail(props.id)} passHref>
             <p className={styles.productcarddetailname}>

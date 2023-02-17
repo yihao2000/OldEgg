@@ -161,20 +161,50 @@
 .productcardcontainer {
   margin: 0 auto;
   display: grid;
-  gap: 0.8%;
+  gap: 2%;
+  margin-left: 2%;
+  margin-right: 2%;
+  // padding-left: 2%;
+  // padding-right: 2%;
   grid-template-columns: repeat(5, 1fr);
 }
 
+@mixin cardstyle($bgcolor, $maxwidth, $padding, $height, $width) {
+  background-color: $bgcolor;
+  max-width: $maxwidth;
+  width: $width;
+  height: $height;
+  max-height: $height;
+  padding: $padding;
+}
+
 .productcard {
-  background-color: rgb(var(--foreground-lighter-rgb));
-  max-width: 90%;
-  padding: 5%;
+  @include cardstyle(
+    rgb(var(--foreground-lighter-rgb)),
+    90%,
+    7.5%,
+    300px,
+    250px
+  );
+}
+
+.productcardcompact {
+  @include cardstyle(
+    rgb(var(--foreground-lighter-rgb)),
+    20%,
+    0.8%,
+    280px,
+    200px
+  );
 }
 
 .productcardimage {
+  height: 70%;
+  max-height: 70%;
+  width: 100%;
   max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+
+  object-fit: cover;
 }
 
 .productcardimage:hover {
@@ -184,7 +214,8 @@
 .productcarddetailname {
   text-overflow: ellipsis;
   overflow: hidden;
-  white-space: normal;
+  white-space: nowrap;
+
   max-width: 100%;
   max-height: 100%;
 }

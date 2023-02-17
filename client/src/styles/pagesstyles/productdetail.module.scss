@@ -149,15 +149,11 @@
 
 .pricelabel {
   @include labelinfo(block, 30px);
+  display: block;
 }
 
 .similarproductsection {
-}
-
-.similarproductcontainer {
-  padding: 40px;
-  overflow: auto;
-  white-space: nowrap;
+  max-width: 100%;
 }
 
 @mixin marginvertical($top, $bottom) {
@@ -165,15 +161,73 @@
   margin-bottom: $bottom;
 }
 
+.similarproductcontainer {
+  background-color: rgb(var(--foreground-lighter-rgb));
+  margin: 40px;
+  overflow-x: scroll;
+  padding: 10px;
+  overflow: auto;
+  white-space: nowrap;
+  max-height: fit-content;
+}
+.similarproductcontainer > * {
+  display: inline-block;
+}
+
 .horizontaldivider {
   @include marginvertical(15px, 15px);
+}
+
+.quantityformcontainer {
+  display: flex;
+  column-gap: 10px;
 }
 
 .productdescriptionscontainer {
 }
 
+.addformcontainer {
+  display: inline;
+  column-gap: 10px;
+  max-width: fit-content;
+}
+
+@media (max-width: 1200px) {
+  .sectionone {
+    width: 100%;
+  }
+  .sectionthree {
+    width: 100%;
+  }
+
+  .addtocartbutton {
+    width: 50%;
+  }
+
+  .pricelabel {
+    @include labelinfo(inline, 30px);
+  }
+}
+
 @media (max-width: 701px) {
   .pagedivider {
     flex-direction: column;
+  }
+  .sectionone {
+    flex-direction: column;
+    width: 90%;
+  }
+  .sectiontwo,
+  .productimagebrandcontainer {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .sectionthree {
+    max-width: 90%;
+  }
+  .productimage {
+    max-width: 100%;
   }
 }

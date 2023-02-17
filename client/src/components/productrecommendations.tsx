@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { GRAPHQLAPI, PRODUCTS_QUERY, PROMOS_QUERY } from '@/util/constant';
-import styles from '@/styles/home.module.css';
+import styles from '@/styles/home.module.scss';
 import { Product } from '@/components/interfaces/interfaces';
 import { useIsFirstRender } from 'usehooks-ts';
 import ProductCard from './productcard';

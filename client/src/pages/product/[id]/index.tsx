@@ -28,6 +28,7 @@ import {
 import { useSessionStorage } from 'usehooks-ts';
 import { ClipLoader } from 'react-spinners';
 import ProductCard from '@/components/productcard';
+import Modal from '@/components/modal/modal';
 
 const ProductDetail: NextPage = () => {
   interface ProductVariant {
@@ -57,6 +58,8 @@ const ProductDetail: NextPage = () => {
   >(null);
 
   const [variantList, setVariantList] = useState([]);
+
+  const [openModal, setOpenModal] = useState(true);
 
   const limit = 20;
 
@@ -135,19 +138,21 @@ const ProductDetail: NextPage = () => {
     }
   };
 
-  const querySimilarProducts = () => {
-    axios
-      .post(GRAPHQLAPI, {
-        query: PRODUCT_CATEGORY_QUERY,
-        variables: {
-          limit: limit,
-          categoryId: product?.category.id,
-        },
-      })
-      .then((res) => {
-        setSimilarProducts(res.data.data.products);
-      });
-  };
+  useEffect(() => {
+    if (product) {
+      axios
+        .post(GRAPHQLAPI, {
+          query: PRODUCT_CATEGORY_QUERY,
+          variables: {
+            limit: limit,
+            categoryId: product?.category.id,
+          },
+        })
+        .then((res) => {
+          setSimilarProducts(res.data.data.products);
+        });
+    }
+  }, [product]);
 
   useEffect(() => {
     // var items = window.location.pathname.split('/');
@@ -175,8 +180,6 @@ const ProductDetail: NextPage = () => {
           if (res.data.data.product.quantity > 0) {
             setAvailable(true);
           }
-
-          querySimilarProducts();
 
           axios
             .post(GRAPHQLAPI, {
@@ -285,7 +288,7 @@ const ProductDetail: NextPage = () => {
               <b>${product?.price}</b>
             </span>
 
-            <div style={{ display: 'flex', columnGap: '10px' }}>
+            <div className={styles.quantityformcontainer}>
               <div className={styles.quantitycontainer}>
                 <input
                   type="number"
@@ -341,19 +344,23 @@ const ProductDetail: NextPage = () => {
         </div>
         <div className={styles.similarproductsection}>
           <div className={styles.similarproductcontainer}>
-            {similarProducts.map((e) => (
-              <ProductCard
-                id={e.id}
-                image={e.image}
-                name={e.name}
-                price={e.price}
-                key={e.id}
-                style="compact"
-              />
-            ))}
+            {/* Try */}
+            {similarProducts &&
+              similarProducts.map((e) => (
+                <ProductCard
+                  id={e.id}
+                  image={e.image}
+                  name={e.name}
+                  price={e.price}
+                  key={e.id}
+                  style="compact"
+                />
+              ))}
           </div>
         </div>
+        <div>aas</div>
       </div>
+      {openModal && <Modal />}
     </Layout>
   );
 };
