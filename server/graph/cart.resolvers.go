@@ -7,48 +7,24 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
-	"github.com/vektah/gqlparser/v2/gqlerror"
-	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
-	"github.com/yihao2000/gqlgen-todos/service"
 )
 
 // User is the resolver for the user field.
 func (r *cartResolver) User(ctx context.Context, obj *model.Cart) (*model.User, error) {
-	db := config.GetDB()
-	user := new(model.User)
-
-	return user, db.First(user, "id = ?", obj.UserID).Error
+	panic(fmt.Errorf("not implemented: User - user"))
 }
 
 // Product is the resolver for the product field.
 func (r *cartResolver) Product(ctx context.Context, obj *model.Cart) (*model.Product, error) {
-	db := config.GetDB()
-	product := new(model.Product)
-
-	return product, db.Where("id = ?", obj.ProductID).Order("valid_to ASC").Limit(1).Find(&product).Error
+	panic(fmt.Errorf("not implemented: Product - product"))
 }
 
 // CreateCart is the resolver for the createCart field.
 func (r *mutationResolver) CreateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error) {
-	db := config.GetDB()
-	if ctx.Value("auth") == nil {
-		return nil, &gqlerror.Error{
-			Message: "Invalid Token !",
-		}
-	}
-
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
-
-	cart, _ := service.CartGetByUserProduct(ctx, userID, productID)
-
-	if cart != nil {
-		cart.Quantity += quantity
-
-		return cart, db.Save(cart).Error
-	}
-	return service.CartCreate(ctx, userID, productID, quantity)
+	panic(fmt.Errorf("not implemented: CreateCart - createCart"))
 }
 
 // UpdateCart is the resolver for the updateCart field.
@@ -62,12 +38,17 @@ func (r *mutationResolver) DeleteCart(ctx context.Context, productID string) (bo
 }
 
 // CreateWishlist is the resolver for the createWishlist field.
-func (r *mutationResolver) CreateWishlist(ctx context.Context, productID string) (*model.Wishlist, error) {
+func (r *mutationResolver) CreateWishlist(ctx context.Context, wishlistID string) (*model.Wishlist, error) {
 	panic(fmt.Errorf("not implemented: CreateWishlist - createWishlist"))
 }
 
+// UpdataeWishlist is the resolver for the updataeWishlist field.
+func (r *mutationResolver) UpdataeWishlist(ctx context.Context, wishlistID string, name *string, privacy *string) (*model.Wishlist, error) {
+	panic(fmt.Errorf("not implemented: UpdataeWishlist - updataeWishlist"))
+}
+
 // DeleteWishlist is the resolver for the deleteWishlist field.
-func (r *mutationResolver) DeleteWishlist(ctx context.Context, productID string) (bool, error) {
+func (r *mutationResolver) DeleteWishlist(ctx context.Context, wishlistID string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteWishlist - deleteWishlist"))
 }
 
@@ -86,14 +67,29 @@ func (r *queryResolver) Wishlists(ctx context.Context) ([]*model.Wishlist, error
 	panic(fmt.Errorf("not implemented: Wishlists - wishlists"))
 }
 
+// ID is the resolver for the id field.
+func (r *wishlistResolver) ID(ctx context.Context, obj *model.Wishlist) (string, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// Name is the resolver for the name field.
+func (r *wishlistResolver) Name(ctx context.Context, obj *model.Wishlist) (string, error) {
+	panic(fmt.Errorf("not implemented: Name - name"))
+}
+
 // User is the resolver for the user field.
 func (r *wishlistResolver) User(ctx context.Context, obj *model.Wishlist) (*model.User, error) {
 	panic(fmt.Errorf("not implemented: User - user"))
 }
 
-// Product is the resolver for the product field.
-func (r *wishlistResolver) Product(ctx context.Context, obj *model.Wishlist) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+// Privacy is the resolver for the privacy field.
+func (r *wishlistResolver) Privacy(ctx context.Context, obj *model.Wishlist) (string, error) {
+	panic(fmt.Errorf("not implemented: Privacy - privacy"))
+}
+
+// DateCreated is the resolver for the dateCreated field.
+func (r *wishlistResolver) DateCreated(ctx context.Context, obj *model.Wishlist) (*time.Time, error) {
+	panic(fmt.Errorf("not implemented: DateCreated - dateCreated"))
 }
 
 // Cart returns CartResolver implementation.

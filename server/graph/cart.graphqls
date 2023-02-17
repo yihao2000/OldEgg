@@ -1,5 +1,3 @@
-
-
 type Cart{
   user: User! @goField(forceResolver: true)
   product: Product! @goField(forceResolver: true)
@@ -7,9 +5,21 @@ type Cart{
 }
 
 type Wishlist{
-  user: User! @goField(forceResolver: true)
-  product: Product! @goField(forceResolver: true)
+  id: ID! 
+  name: String!
+  user: User! @goField(forceResolver:true)
+  privacy: String! 
+  dateCreated: Time!
+
+#   wishlistDetails: [WishlistDetail!]! @goField(forceResolver:true)
 }
+
+# type WishlistDetail{
+#   wishlist: Wishlist! @goField(forceResolver:true)
+#   product: Product! @goField(forceResolver:true)
+#   quantity: Int!
+#   dateAdded: Time!
+# }
 
 
 extend type Mutation{
@@ -17,8 +27,12 @@ extend type Mutation{
   updateCart(productID: ID!, quantity: Int!): Cart! @auth
   deleteCart(productID: ID!): Boolean! @auth
 
-  createWishlist(productID: ID!): Wishlist! @auth
-  deleteWishlist(productID: ID!): Boolean! @auth
+  createWishlist(wishlistId: ID!): Wishlist! @auth
+  updataeWishlist(wishlistId: ID!, name: String, privacy: String): Wishlist! @auth
+  deleteWishlist(wishlistId: ID!): Boolean! @auth
+
+  # addWishListDetail(wishlistId: ID!, productId: ID!): WishlistDetail! @auth
+
 } 
 
 extend type Query{
@@ -26,5 +40,6 @@ extend type Query{
   carts: [Cart!]! @auth
 
   wishlists: [Wishlist!]! @auth
+  # wishlistDetails(wishlistId: ID!): [Wishlist!]!
 }
 
