@@ -82,6 +82,7 @@ const ProductRecommendations = () => {
         {products.map((product) => {
           return (
             <ProductCard
+              style="original"
               id={product.id}
               image={product.image}
               name={LAPTOP_NAME_CONVERTER(product.name)}

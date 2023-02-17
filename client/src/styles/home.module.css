@@ -164,6 +164,7 @@
   gap: 0.8%;
   grid-template-columns: repeat(5, 1fr);
 }
+
 .productcard {
   background-color: rgb(var(--foreground-lighter-rgb));
   max-width: 90%;

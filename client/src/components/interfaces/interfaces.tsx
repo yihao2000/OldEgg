@@ -58,3 +58,10 @@ export interface User {
   banned: boolean;
   role: string;
 }
+
+export interface ProductCardData {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+}

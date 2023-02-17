@@ -9,17 +9,25 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import {
   GRAPHQLAPI,
+  PRODUCT_CATEGORY_QUERY,
   PRODUCT_PRODUCTSGROUP_QUERY,
   PRODUCT_QUERY,
+  USER_ADD_CART_MUTATION,
 } from '@/util/constant';
 import { FaTruck } from 'react-icons/fa';
-import { Product, ProductDetail } from '@/components/interfaces/interfaces';
+import {
+  Product,
+  ProductCardData,
+  ProductDetail,
+} from '@/components/interfaces/interfaces';
 import {
   GET_LAPTOP_COMPONENT_VARIANT,
   LAPTOP_COMPONENTS_CONVERTER,
   LAPTOP_NAME_CONVERTER,
 } from '@/components/converter/converter';
 import { useSessionStorage } from 'usehooks-ts';
+import { ClipLoader } from 'react-spinners';
+import ProductCard from '@/components/productcard';
 
 const ProductDetail: NextPage = () => {
   interface ProductVariant {
@@ -37,8 +45,12 @@ const ProductDetail: NextPage = () => {
   const [descriptions, setDescriptions] = useState([]);
   const [productName, setProductName] = useState('');
   const [productCategory, setProductCategory] = useState('');
-
+  const [loading, setLoading] = useState(false);
   const [productQuantity, setProductQuantity] = useState(1);
+
+  const [similarProducts, setSimilarProducts] = useState<ProductCardData[]>([]);
+
+  const [success, setSuccess] = useState(false);
 
   const [productsVariant, setProductsVariant] = useState<
     ProductDetail[] | null
@@ -46,9 +58,17 @@ const ProductDetail: NextPage = () => {
 
   const [variantList, setVariantList] = useState([]);
 
+  const limit = 20;
+
   const handleQuantityChange = (event: any) => {
     if (event.target.value >= 20) {
-      setProductQuantity(20);
+      if (product?.quantity) {
+        if (event.target.value > product?.quantity) {
+          setProductQuantity(event.target.value);
+        } else {
+          setProductQuantity(20);
+        }
+      }
     } else if (event.target.value <= 0) {
       setProductQuantity(1);
     } else {
@@ -58,7 +78,11 @@ const ProductDetail: NextPage = () => {
 
   const handleIncreaseQuantity = () => {
     if (productQuantity < 20) {
-      setProductQuantity(productQuantity + 1);
+      if (product?.quantity) {
+        if (productQuantity < product?.quantity) {
+          setProductQuantity(productQuantity + 1);
+        }
+      }
     }
   };
 
@@ -72,7 +96,57 @@ const ProductDetail: NextPage = () => {
     console.log(token);
     if (!token) {
       router.push('/login');
+    } else {
+      console.log('Masuk');
+      setLoading(true);
+      setTimeout(() => {
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: USER_ADD_CART_MUTATION,
+              variables: {
+                productID: id,
+                quantity: productQuantity,
+              },
+            },
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          )
+          .then((res) => {
+            console.log(loading);
+          })
+          .catch(() => {
+            console.log(id);
+            console.log(productQuantity);
+            router.push('/login');
+          });
+        setLoading(false);
+
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+        }, 7000);
+      }, 2000);
     }
+  };
+
+  const querySimilarProducts = () => {
+    axios
+      .post(GRAPHQLAPI, {
+        query: PRODUCT_CATEGORY_QUERY,
+        variables: {
+          limit: limit,
+          categoryId: product?.category.id,
+        },
+      })
+      .then((res) => {
+        setSimilarProducts(res.data.data.products);
+      });
   };
 
   useEffect(() => {
@@ -101,6 +175,8 @@ const ProductDetail: NextPage = () => {
           if (res.data.data.product.quantity > 0) {
             setAvailable(true);
           }
+
+          querySimilarProducts();
 
           axios
             .post(GRAPHQLAPI, {
@@ -238,11 +314,43 @@ const ProductDetail: NextPage = () => {
                   productQuantity > 0 ? handleSubmit() : null;
                 }}
               >
-                {product?.quantity && product?.quantity > 0
-                  ? 'Add To Cart'
-                  : 'Out of Stock'}
+                {!loading ? (
+                  product?.quantity && product?.quantity > 0 ? (
+                    'Add To Cart'
+                  ) : (
+                    'Out of Stock'
+                  )
+                ) : (
+                  <ClipLoader size={20} />
+                )}
               </button>
             </div>
+            {success ? (
+              <span
+                style={{
+                  color: 'green',
+                  fontWeight: 'bold',
+                }}
+              >
+                Item added to cart successfully !
+              </span>
+            ) : null}
+
+            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+          </div>
+        </div>
+        <div className={styles.similarproductsection}>
+          <div className={styles.similarproductcontainer}>
+            {similarProducts.map((e) => (
+              <ProductCard
+                id={e.id}
+                image={e.image}
+                name={e.name}
+                price={e.price}
+                key={e.id}
+                style="compact"
+              />
+            ))}
           </div>
         </div>
       </div>

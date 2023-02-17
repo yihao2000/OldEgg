@@ -230,6 +230,10 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *s
 		temp = temp.Where("productgroup_id = ?", productGroupID)
 	}
 
+	if categoryID != nil {
+		temp = temp.Where("category_id = ?", categoryID).Order("RANDOM()")
+	}
+
 	return models, temp.Find(&models).Error
 }
 

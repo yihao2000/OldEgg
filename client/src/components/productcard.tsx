@@ -10,26 +10,47 @@ interface Product {
   image: string;
   name: string;
   price: number;
+  style: string;
 }
 
 const ProductCard = (props: Product) => {
-  return (
-    <div className={styles.productcard}>
-      <div className={styles.productcardimagecontainer}>
-        <Link href={links.productDetail(props.id)} passHref>
-          <img src={props.image} alt="" className={styles.productcardimage} />
-        </Link>
+  if (props.style == 'compact') {
+    return (
+      <div className={styles.productcard}>
+        <div className={styles.productcardimagecontainer}>
+          <Link href={links.productDetail(props.id)} passHref>
+            <img src={props.image} alt="" className={styles.productcardimage} />
+          </Link>
+        </div>
+        <div className={styles.productdescriptioncontainer}>
+          <Link href={links.productDetail(props.id)} passHref>
+            <p className={styles.productcarddetailname}>
+              <b>{props.name}</b>
+            </p>
+          </Link>
+          <p style={{ fontSize: '1.2em' }}>$ {props.price}</p>
+        </div>
       </div>
-      <div className={styles.productdescriptioncontainer}>
-        <Link href={links.productDetail(props.id)} passHref>
-          <p className={styles.productcarddetailname}>
-            <b>{props.name}</b>
-          </p>
-        </Link>
-        <p style={{ fontSize: '1.2em' }}>$ {props.price}</p>
+    );
+  } else {
+    return (
+      <div className={styles.productcard}>
+        <div className={styles.productcardimagecontainer}>
+          <Link href={links.productDetail(props.id)} passHref>
+            <img src={props.image} alt="" className={styles.productcardimage} />
+          </Link>
+        </div>
+        <div className={styles.productdescriptioncontainer}>
+          <Link href={links.productDetail(props.id)} passHref>
+            <p className={styles.productcarddetailname}>
+              <b>{props.name}</b>
+            </p>
+          </Link>
+          <p style={{ fontSize: '1.2em' }}>$ {props.price}</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default ProductCard;

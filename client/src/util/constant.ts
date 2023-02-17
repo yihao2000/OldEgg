@@ -106,3 +106,23 @@ export const USER_UPDATE_PASSWORD_MUTATION = `mutation($currentPassword:String!,
     id
   }
 }`;
+
+export const USER_ADD_CART_MUTATION = `mutation($productID:ID!, $quantity:Int!){
+  createCart(productID:$productID, quantity:$quantity){
+   user{
+    id
+  }
+    product{
+      id
+    }
+  }
+}`;
+
+export const PRODUCT_CATEGORY_QUERY = `query($categoryId:String!, $limit:Int!){
+  products(limit:$limit, categoryId:$categoryId){
+    id
+    name
+    image
+    price
+  }
+}`;
