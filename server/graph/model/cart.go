@@ -21,9 +21,9 @@ type Wishlist struct {
 
 type WishlistDetail struct {
 	WishlistID string    `json:"wishlistID" gorm:"primaryKey"`
-	Wishlist   *Wishlist `json:"wishlist"`
+	Wishlist   *Wishlist `json:"wishlist" gorm:"foreignKey:WishlistID"`
 	ProductID  string    `json:"productID" gorm:"primaryKey"`
-	Product    *Product  `json:"product"`
+	Product    *Product  `json:"product" gorm:"foreignKey:ProductID"`
 	Quantity   int       `json:"quantity"`
 	DateAdded  time.Time `json:"dateAdded"`
 }

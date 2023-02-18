@@ -29,3 +29,17 @@
 .closebutton:hover {
   cursor: pointer;
 }
+
+@media (max-width: 950px) {
+  .modalcontainer {
+    width: 50vw !important;
+    height: 32vh !important;
+  }
+}
+
+@media (max-width: 501px) {
+  .modalcontainer {
+    width: 70vw !important;
+    height: 50vh !important;
+  }
+}

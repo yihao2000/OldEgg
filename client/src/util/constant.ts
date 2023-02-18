@@ -126,3 +126,25 @@ export const PRODUCT_CATEGORY_QUERY = `query($categoryId:String!, $limit:Int!){
     price
   }
 }`;
+
+export const CREATE_WISHLIST_MUTATION = `mutation($name:String!, $privacy:String!){
+  createWishlist(input:{
+    name:$name,
+    privacy:$privacy
+  }){
+id
+  }
+}`;
+
+export const WISHLISTDETAILS_QUERY = `query{
+  wishlistDetails(wishlistId:"93b49b21-911d-4305-8aee-5f427dc5ebc0"){
+    wishlist{
+      id
+    }
+    product{
+      id
+      name
+      image
+    }
+  }
+}`;

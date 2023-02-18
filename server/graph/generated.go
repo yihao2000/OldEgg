@@ -144,6 +144,7 @@ type ComplexityRoot struct {
 		Shop            func(childComplexity int, id *string, name *string) int
 		Shops           func(childComplexity int) int
 		User            func(childComplexity int, id *string, email *string) int
+		Userwishlists   func(childComplexity int) int
 		WishlistDetails func(childComplexity int, wishlistID string) int
 		Wishlists       func(childComplexity int) int
 	}
@@ -229,7 +230,8 @@ type QueryResolver interface {
 	Cart(ctx context.Context, productID string) (*model.Cart, error)
 	Carts(ctx context.Context) ([]*model.Cart, error)
 	Wishlists(ctx context.Context) ([]*model.Wishlist, error)
-	WishlistDetails(ctx context.Context, wishlistID string) ([]*model.Wishlist, error)
+	Userwishlists(ctx context.Context) ([]*model.Wishlist, error)
+	WishlistDetails(ctx context.Context, wishlistID string) ([]*model.WishlistDetail, error)
 	Brands(ctx context.Context) ([]*model.Brand, error)
 	Brand(ctx context.Context, id *string, name *string) (*model.Brand, error)
 	Categories(ctx context.Context) ([]*model.Category, error)
@@ -895,6 +897,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.User(childComplexity, args["id"].(*string), args["email"].(*string)), true
+
+	case "Query.userwishlists":
+		if e.complexity.Query.Userwishlists == nil {
+			break
+		}
+
+		return e.complexity.Query.Userwishlists(childComplexity), true
 
 	case "Query.wishlistDetails":
 		if e.complexity.Query.WishlistDetails == nil {
@@ -5353,6 +5362,63 @@ func (ec *executionContext) fieldContext_Query_wishlists(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_userwishlists(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userwishlists(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Userwishlists(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Wishlist)
+	fc.Result = res
+	return ec.marshalNWishlist2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userwishlists(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Wishlist_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Wishlist_name(ctx, field)
+			case "user":
+				return ec.fieldContext_Wishlist_user(ctx, field)
+			case "privacy":
+				return ec.fieldContext_Wishlist_privacy(ctx, field)
+			case "dateCreated":
+				return ec.fieldContext_Wishlist_dateCreated(ctx, field)
+			case "wishlistDetails":
+				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_wishlistDetails(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_wishlistDetails(ctx, field)
 	if err != nil {
@@ -5378,9 +5444,9 @@ func (ec *executionContext) _Query_wishlistDetails(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Wishlist)
+	res := resTmp.([]*model.WishlistDetail)
 	fc.Result = res
-	return ec.marshalNWishlist2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistᚄ(ctx, field.Selections, res)
+	return ec.marshalNWishlistDetail2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistDetailᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_wishlistDetails(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5391,20 +5457,16 @@ func (ec *executionContext) fieldContext_Query_wishlistDetails(ctx context.Conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Wishlist_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Wishlist_name(ctx, field)
-			case "user":
-				return ec.fieldContext_Wishlist_user(ctx, field)
-			case "privacy":
-				return ec.fieldContext_Wishlist_privacy(ctx, field)
-			case "dateCreated":
-				return ec.fieldContext_Wishlist_dateCreated(ctx, field)
-			case "wishlistDetails":
-				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
+			case "wishlist":
+				return ec.fieldContext_WishlistDetail_wishlist(ctx, field)
+			case "product":
+				return ec.fieldContext_WishlistDetail_product(ctx, field)
+			case "quantity":
+				return ec.fieldContext_WishlistDetail_quantity(ctx, field)
+			case "dateAdded":
+				return ec.fieldContext_WishlistDetail_dateAdded(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type WishlistDetail", field.Name)
 		},
 	}
 	defer func() {
@@ -10262,6 +10324,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_wishlists(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "userwishlists":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userwishlists(ctx, field)
 				return res
 			}
 

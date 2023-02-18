@@ -34,3 +34,15 @@ func CartGetByUserProduct(ctx context.Context, userID string, productID string) 
 
 	return &cart, nil
 }
+
+func WishlistDetailGetByWishlistAndProduct(ctx context.Context, wishlistID string, productID string) (*model.WishlistDetail, error) {
+	db := config.GetDB()
+
+	var wishlistdetail model.WishlistDetail
+
+	if err := db.Model(wishlistdetail).Where("product_id = ? AND wishlist_id = ?", productID, wishlistID).Take(&wishlistdetail).Error; err != nil {
+		return nil, err
+	}
+
+	return &wishlistdetail, nil
+}

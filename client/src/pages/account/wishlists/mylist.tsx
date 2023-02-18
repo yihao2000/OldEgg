@@ -8,6 +8,7 @@ import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import {
+  CREATE_WISHLIST_MUTATION,
   GRAPHQLAPI,
   PRODUCT_CATEGORY_QUERY,
   PRODUCT_PRODUCTSGROUP_QUERY,
@@ -26,14 +27,27 @@ import { ClipLoader } from 'react-spinners';
 
 import WishlistNav from '@/components/wishlistnav';
 import Modal from '@/components/modal/modal';
+import WishlistCard from '@/components/wishlistcard';
 
 interface MyListModalParameter {
   newListName: string;
   handleNewListNameChange: ChangeEventHandler<HTMLInputElement>;
   newListPrivacy: string;
   handleNewListPrivacyChange: Function;
+  handleCloseModal: Function;
 }
 const MyListModalContent = (props: MyListModalParameter) => {
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [token, setToken] = useSessionStorage('token', '');
+  const [refresh, setRefresh] = useState(false);
+
+  // const [wishtlists, setWishlists] = useState<>([])
+
+  const refreshComponent = () => {
+    setRefresh(!refresh);
+  };
+
   const handlePublicPrivacyChange = () => {
     props.handleNewListPrivacyChange('Public');
   };
@@ -42,19 +56,73 @@ const MyListModalContent = (props: MyListModalParameter) => {
     props.handleNewListPrivacyChange('Private');
   };
 
+  useEffect(() => {}, []);
+
+  const handleCreateButtonClick = () => {
+    console.log(props.newListName);
+    if (props.newListName == '') {
+      setError(true);
+      return;
+    }
+    setError(false);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CREATE_WISHLIST_MUTATION,
+            variables: {
+              name: props.newListName,
+              privacy: props.newListPrivacy,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          props.handleCloseModal();
+        })
+        .catch((error) => {
+          setError(true);
+        });
+    }, 3000);
+  };
+
   return (
     <div className={styles.mylistmodalcontent}>
       <div className={styles.mylistcreatelistlabel}>Create a List</div>
       <div className={styles.mylistnamecontainer}>
-        <h5>Name</h5>
+        <h5
+          style={{
+            margin: '0',
+            padding: '0',
+          }}
+        >
+          Name
+        </h5>
         <input
+          required
+          className={styles.inputfield}
           type="text"
           value={props.newListName}
           onChange={props.handleNewListNameChange}
         />
       </div>
       <div className={styles.mylistprivacycontainer}>
-        <h5>Privacy</h5>
+        <h5
+          style={{
+            margin: '0',
+            padding: '0',
+          }}
+        >
+          Privacy
+        </h5>
         <div className={styles.buttoncontainer}>
           <button
             className={`${styles.selectionbutton} ${
@@ -74,6 +142,29 @@ const MyListModalContent = (props: MyListModalParameter) => {
           </button>
         </div>
       </div>
+      <hr
+        style={{
+          width: '100%',
+          marginTop: '10px',
+        }}
+      />
+      <div className={styles.submitcontainer}>
+        <div
+          style={{
+            color: 'red',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <b>{error ? 'Please fill all fields !' : ''}</b>
+        </div>
+        <button
+          className={styles.submitbutton}
+          onClick={handleCreateButtonClick}
+        >
+          {loading ? <ClipLoader size={10} /> : 'CREATE'}
+        </button>
+      </div>
     </div>
   );
 };
@@ -86,7 +177,6 @@ const Mylist: NextPage = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListPrivacy, setNewListPrivacy] = useState('Public');
-  const [loading, setLoading] = useState(false);
 
   const handleOpenCreateModal = () => {
     setOpenCreateModal(true);
@@ -120,9 +210,15 @@ const Mylist: NextPage = () => {
           <button className={styles.lightbutton}>MANAGE LISTS</button>
         </div>
       </div>
+      <div className={styles.mylistcontainer}>
+        <WishlistCard productId="Aaa" wishlistId="aaa" />
+        <WishlistCard productId="Aaa" wishlistId="aaa" />
+        <WishlistCard productId="Aaa" wishlistId="aaa" />
+      </div>
       {openCreateModal && (
-        <Modal closeModal={handleCloseCreateModal} width={35} height={50}>
+        <Modal closeModal={handleCloseCreateModal} width={35} height={45}>
           <MyListModalContent
+            handleCloseModal={handleCloseCreateModal}
             newListPrivacy={newListPrivacy}
             handleNewListPrivacyChange={handleNewListPrivacyChange}
             handleNewListNameChange={handleNewListNameChange}

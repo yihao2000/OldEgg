@@ -107,20 +107,22 @@ func (r *mutationResolver) CreateWishlistDetail(ctx context.Context, wishlistID 
 		}
 	}
 
-	wishlist := new(model.WishlistDetail)
+	wishlist, _ := service.WishlistDetailGetByWishlistAndProduct(ctx, wishlistID, productID)
 
-	if err := db.First(wishlist, "wishlist_id = ? AND product_id = ?", wishlistID, productID); err != nil {
+	if wishlist != nil {
 		wishlist.Quantity = quantity
+
 		return wishlist, db.Save(wishlist).Error
-	} else {
-		wishlist = &model.WishlistDetail{
-			WishlistID: wishlistID,
-			ProductID:  productID,
-			Quantity:   quantity,
-		}
-		return wishlist, db.Create(wishlist).Error
 	}
 
+	wishlist = &model.WishlistDetail{
+		WishlistID: wishlistID,
+		ProductID:  productID,
+		Quantity:   quantity,
+		DateAdded:  time.Now(),
+	}
+
+	return wishlist, db.Model(wishlist).Create(&wishlist).Error
 }
 
 // DeleteWishlistDetail is the resolver for the deleteWishlistDetail field.
@@ -140,12 +142,34 @@ func (r *queryResolver) Carts(ctx context.Context) ([]*model.Cart, error) {
 
 // Wishlists is the resolver for the wishlists field.
 func (r *queryResolver) Wishlists(ctx context.Context) ([]*model.Wishlist, error) {
-	panic(fmt.Errorf("not implemented: Wishlists - wishlists"))
+	db := config.GetDB()
+
+	var models []*model.Wishlist
+	return models, db.Find(&models).Error
+}
+
+// Userwishlists is the resolver for the userwishlists field.
+func (r *queryResolver) Userwishlists(ctx context.Context) ([]*model.Wishlist, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.Wishlist
+	return models, db.Where("user_id = ?", id).Find(&models).Error
 }
 
 // WishlistDetails is the resolver for the wishlistDetails field.
-func (r *queryResolver) WishlistDetails(ctx context.Context, wishlistID string) ([]*model.Wishlist, error) {
-	panic(fmt.Errorf("not implemented: WishlistDetails - wishlistDetails"))
+func (r *queryResolver) WishlistDetails(ctx context.Context, wishlistID string) ([]*model.WishlistDetail, error) {
+	db := config.GetDB()
+
+	var models []*model.WishlistDetail
+	return models, db.Where("wishlist_id = ?  ", wishlistID).Find(&models).Error
 }
 
 // User is the resolver for the user field.

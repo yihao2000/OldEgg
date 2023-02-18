@@ -46,6 +46,7 @@ extend type Query{
   carts: [Cart!]! @auth
 
   wishlists: [Wishlist!]!  @goField(forceResolver:true)
-  wishlistDetails(wishlistId: ID!): [Wishlist!]!
+  userwishlists: [Wishlist!]! @goField(forceResolver:true)
+  wishlistDetails(wishlistId: ID!): [WishlistDetail!]!
 }
 
