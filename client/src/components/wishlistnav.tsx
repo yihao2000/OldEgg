@@ -25,13 +25,28 @@ export default function WishlistNav() {
             <h1 className={styles.wishlistlabel}>WISH LIST</h1>
           </div>
           <div className={styles.listnavcontainer}>
-            <a href="" className={styles.navtabcell}>
+            <a
+              href=""
+              className={`${styles.navtabcell} ${
+                firstActive ? styles.activetabcell : ''
+              }`}
+            >
               My Lists
             </a>
-            <a href="" className={styles.navtabcell}>
+            <a
+              href=""
+              className={`${styles.navtabcell} ${
+                secondActive ? styles.activetabcell : ''
+              }`}
+            >
               Followed Lists
             </a>
-            <a href="" className={styles.navtabcell}>
+            <a
+              href=""
+              className={`${styles.navtabcell} ${
+                thirdActive ? styles.activecell : ''
+              }`}
+            >
               Public Lists
             </a>
           </div>

@@ -50,7 +50,7 @@
     --foreground-rgb: 255, 255, 255;
     --foreground-lighter-rgb: 40, 36, 36;
     --background-start-rgb: 18, 18, 18;
-    --background-end-rgb: 18, 18, 18;
+    --background-end-rgb: 68, 68, 68;
 
     --secondary-foreground-rgb: 8, 12, 44;
     --secondary-secondary-rgb: 32, 12, 92;
@@ -100,12 +100,7 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--background-start-rgb));
 }
 
 a {

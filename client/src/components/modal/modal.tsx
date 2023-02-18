@@ -1,13 +1,34 @@
 import styles from '@/styles/componentstyles/modal.module.scss';
+import { ReactNode } from 'react';
+import { FaTimes } from 'react-icons/fa';
 
-export default function Modal() {
+type Props = {
+  children: ReactNode;
+  closeModal: Function;
+  width: number;
+  height: number;
+};
+export default function Modal(props: Props) {
+  const handleCloseButtonClick = () => {
+    props.closeModal();
+  };
   return (
     <div className={styles.modalbackground}>
-      <div className={styles.modalcontainer}>
-        <div className={styles.modalcontent}>
-          <h3>Manage Wish Lists</h3>
-          test
+      <div
+        className={styles.modalcontainer}
+        style={{
+          width: `${props.width}vw`,
+          height: `${props.height}vh`,
+        }}
+      >
+        <div style={{ width: '100%', position: 'relative', height: '25px' }}>
+          {' '}
+          <FaTimes
+            className={styles.closebutton}
+            onClick={handleCloseButtonClick}
+          />
         </div>
+        {props.children}
       </div>
     </div>
   );

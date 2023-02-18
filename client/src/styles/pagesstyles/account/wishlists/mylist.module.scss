@@ -61,7 +61,7 @@
   border-bottom: 0;
   cursor: pointer;
   display: block;
-  background-color: var;
+  background-color: rgb(var(--background-end-rgb));
   font-size: 13px;
   // height: 35px;
   line-height: 35px;
@@ -70,4 +70,75 @@
   text-align: center;
   padding-bottom: 1px;
   z-index: 1;
+}
+
+.activetabcell {
+  background-color: rgb(var(--background-start-rgb));
+}
+
+.mylistoutercontainer {
+  padding: 40px 20px;
+}
+
+.listbuttoncontainer {
+  display: flex;
+  column-gap: 15px;
+}
+
+.lightbutton {
+  background: #e6e6e6;
+  border-color: #a9a9a9;
+  color: rgb(var(--background-start-rgb));
+  font-size: 12px;
+  padding: 6px 0.85em;
+  letter-spacing: 1px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.lightbutton:hover {
+  background-color: #afafaf;
+}
+
+.mylistmodalcontent {
+  width: 100%;
+}
+
+.mylistcreatelistlabel {
+  display: block;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.mylistnamecontainer {
+}
+
+.mylistprivacycontainer {
+}
+
+.buttoncontainer {
+  display: flex;
+  column-gap: 20px;
+}
+
+.selectedbutton {
+  border-bottom: 4px solid !important;
+  border-bottom-color: #cc4a00 !important;
+}
+
+.selectionbutton {
+  background: rgb(var(--background-end-rgb));
+  border: 0px;
+  color: rgb(var(--foreground-rgb));
+  font-size: 12px;
+  padding: 6px 0.85em;
+  letter-spacing: 1px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.selectionbutton:hover {
+  border-bottom: 3px solid !important;
+  border-bottom-color: #cc4a00 !important;
 }
