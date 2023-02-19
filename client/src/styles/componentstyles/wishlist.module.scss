@@ -1,4 +1,51 @@
 .wishlistcontainer {
-  width: 50%;
+  width: 45%;
   border: 0.5px solid rgb(var(--background-end-rgb));
+  height: 40vh;
+  padding: 2%;
+  margin-bottom: 1em;
+}
+
+.wishlistcontent {
+  width: 100%;
+  height: 100%;
+}
+
+.wishlisttitle {
+  display: flex;
+  justify-content: space-between;
+}
+
+@mixin nogap {
+  padding: 0;
+  margin: 0;
+}
+
+.titlelabel {
+  @include nogap();
+}
+
+.wishlistactioncontainer {
+  display: flex;
+  align-items: row;
+}
+
+.managelink {
+  color: blue;
+  font-size: small;
+  display: none;
+}
+
+.wishlistcontainer:hover {
+  .managelink {
+    display: block;
+  }
+  cursor: pointer;
+  border: 0.5px solid rgb(var(--foreground-rgb));
+}
+
+.managelink:hover {
+  color: rgb(var(--accent-rgb));
+  text-decoration: underline;
+  cursor: pointer;
 }

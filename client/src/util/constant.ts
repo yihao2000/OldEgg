@@ -136,15 +136,20 @@ id
   }
 }`;
 
-export const WISHLISTDETAILS_QUERY = `query{
-  wishlistDetails(wishlistId:"93b49b21-911d-4305-8aee-5f427dc5ebc0"){
-    wishlist{
-      id
-    }
+export const WISHLISTDETAILS_QUERY = `query($wishlistId: ID!){
+  wishlistDetails(wishlistId:$wishlistId){
     product{
       id
       name
       image
     }
+  }
+}`;
+
+export const USER_WISHLISTS_QUERY = `query{
+  userwishlists{
+    id
+    name
+    privacy
   }
 }`;

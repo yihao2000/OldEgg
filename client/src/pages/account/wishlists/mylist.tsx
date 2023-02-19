@@ -14,6 +14,7 @@ import {
   PRODUCT_PRODUCTSGROUP_QUERY,
   PRODUCT_QUERY,
   USER_ADD_CART_MUTATION,
+  USER_WISHLISTS_QUERY,
 } from '@/util/constant';
 import { FaTruck } from 'react-icons/fa';
 import {
@@ -40,13 +41,6 @@ const MyListModalContent = (props: MyListModalParameter) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useSessionStorage('token', '');
-  const [refresh, setRefresh] = useState(false);
-
-  // const [wishtlists, setWishlists] = useState<>([])
-
-  const refreshComponent = () => {
-    setRefresh(!refresh);
-  };
 
   const handlePublicPrivacyChange = () => {
     props.handleNewListPrivacyChange('Public');
@@ -55,8 +49,6 @@ const MyListModalContent = (props: MyListModalParameter) => {
   const handlePrivatePrivacyChange = () => {
     props.handleNewListPrivacyChange('Private');
   };
-
-  useEffect(() => {}, []);
 
   const handleCreateButtonClick = () => {
     console.log(props.newListName);
@@ -170,6 +162,12 @@ const MyListModalContent = (props: MyListModalParameter) => {
 };
 
 const Mylist: NextPage = () => {
+  interface Wishlist {
+    id: string;
+    name: string;
+    privacy: string;
+  }
+
   const router = useRouter();
 
   // const [id, setId] = useState('');
@@ -177,6 +175,33 @@ const Mylist: NextPage = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListPrivacy, setNewListPrivacy] = useState('Public');
+  const [refresh, setRefresh] = useState(false);
+
+  const [wishlists, setWishlists] = useState<Wishlist[]>([]);
+
+  const refreshComponent = () => {
+    setRefresh(!refresh);
+  };
+
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_WISHLISTS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setWishlists(res.data.data.userwishlists);
+      })
+
+      .catch((err) => console.log(err));
+  }, [refreshComponent]);
 
   const handleOpenCreateModal = () => {
     setOpenCreateModal(true);
@@ -211,9 +236,16 @@ const Mylist: NextPage = () => {
         </div>
       </div>
       <div className={styles.mylistcontainer}>
-        <WishlistCard productId="Aaa" wishlistId="aaa" />
-        <WishlistCard productId="Aaa" wishlistId="aaa" />
-        <WishlistCard productId="Aaa" wishlistId="aaa" />
+        {wishlists.map((res) => {
+          return (
+            <WishlistCard
+              wishlistName={res.name}
+              wishlistPrivacy={res.privacy}
+              refreshComponent={refreshComponent}
+              wishlistId={res.id}
+            />
+          );
+        })}
       </div>
       {openCreateModal && (
         <Modal closeModal={handleCloseCreateModal} width={35} height={45}>
