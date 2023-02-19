@@ -6,6 +6,7 @@
   top: 0;
   left: 0;
   z-index: 100;
+  cursor: default;
 }
 
 .modalcontainer {
@@ -16,6 +17,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 2rem;
+  cursor: default;
 }
 
 .closebutton {
@@ -33,13 +35,11 @@
 @media (max-width: 950px) {
   .modalcontainer {
     width: 50vw !important;
-    height: 32vh !important;
   }
 }
 
 @media (max-width: 501px) {
   .modalcontainer {
     width: 70vw !important;
-    height: 50vh !important;
   }
 }

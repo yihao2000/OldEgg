@@ -17,8 +17,7 @@ export default function Modal(props: Props) {
       <div
         className={styles.modalcontainer}
         style={{
-          width: `${props.width}vw`,
-          height: `${props.height}vh`,
+          width: '30vw',
         }}
       >
         <div style={{ width: '100%', position: 'relative', height: '25px' }}>

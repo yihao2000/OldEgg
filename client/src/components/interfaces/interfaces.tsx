@@ -65,3 +65,10 @@ export interface ProductCardData {
   price: number;
   image: string;
 }
+
+export interface Wishlist {
+  id: string;
+  name: string;
+  privacy: string;
+  dateCreated: string;
+}

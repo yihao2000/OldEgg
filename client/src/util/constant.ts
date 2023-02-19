@@ -153,3 +153,12 @@ export const USER_WISHLISTS_QUERY = `query{
     privacy
   }
 }`;
+
+export const WISHLIST_QUERY = `query{
+  wishlist(wishlistId:"206a375c-73ae-432c-92bf-e7e1ae5ec4a6"){
+    id
+    name
+    privacy
+    dateCreated
+  }
+}`;

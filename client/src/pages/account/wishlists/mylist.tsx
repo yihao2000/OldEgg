@@ -201,7 +201,7 @@ const Mylist: NextPage = () => {
       })
 
       .catch((err) => console.log(err));
-  }, [refreshComponent]);
+  }, [refresh]);
 
   const handleOpenCreateModal = () => {
     setOpenCreateModal(true);

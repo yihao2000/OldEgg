@@ -172,6 +172,14 @@ func (r *queryResolver) WishlistDetails(ctx context.Context, wishlistID string) 
 	return models, db.Where("wishlist_id = ?  ", wishlistID).Find(&models).Error
 }
 
+// Wishlist is the resolver for the wishlist field.
+func (r *queryResolver) Wishlist(ctx context.Context, wishlistID string) (*model.Wishlist, error) {
+	db := config.GetDB()
+	wishlist := new(model.Wishlist)
+
+	return wishlist, db.First(wishlist, "id = ?", wishlistID).Error
+}
+
 // User is the resolver for the user field.
 func (r *wishlistResolver) User(ctx context.Context, obj *model.Wishlist) (*model.User, error) {
 	db := config.GetDB()

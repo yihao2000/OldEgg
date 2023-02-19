@@ -48,5 +48,7 @@ extend type Query{
   wishlists: [Wishlist!]!  @goField(forceResolver:true)
   userwishlists: [Wishlist!]! @goField(forceResolver:true)
   wishlistDetails(wishlistId: ID!): [WishlistDetail!]!
+
+  wishlist(wishlistId: ID!): Wishlist!
 }
 
