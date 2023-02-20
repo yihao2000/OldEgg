@@ -222,7 +222,7 @@ const ProductDetail: NextPage = () => {
 
   const AddToWishlistModalContent = (props: AddToWishlistModalParameter) => {
     const [wishlists, setWishlists] = useState<Wishlist[]>([]);
-    const [checkedWishlists, setCheckedWishlists] = useState<string[]>([]);
+    const [checkedWishlists, setCheckedWishlists] = useState<Wishlist[]>([]);
 
     useEffect(() => {
       axios
@@ -238,7 +238,6 @@ const ProductDetail: NextPage = () => {
           },
         )
         .then((res) => {
-          // console.log(res.data.data.userwishlists);
           setWishlists(res.data.data.userwishlists);
         })
         .catch((error) => {
@@ -264,7 +263,7 @@ const ProductDetail: NextPage = () => {
             },
           )
           .then((res) => {
-            console.log(res.data.data.productUserWishlists);
+            setCheckedWishlists(res.data.data.productUserWishlists);
           })
           .catch((error) => {
             // setError(true);
@@ -282,6 +281,19 @@ const ProductDetail: NextPage = () => {
         >
           Manage Wish Lists{' '}
         </div>
+        {wishlists.map((e) => {
+          console.log(checkedWishlists.find((x) => e.id === x.id));
+          return (
+            <div>
+              <input
+                type="checkbox"
+                checked={
+                  checkedWishlists.find((x) => e.id === x.id) != undefined
+                }
+              ></input>
+            </div>
+          );
+        })}
       </div>
     );
   };
