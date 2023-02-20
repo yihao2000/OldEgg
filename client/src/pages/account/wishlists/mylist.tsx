@@ -36,6 +36,7 @@ interface MyListModalParameter {
   newListPrivacy: string;
   handleNewListPrivacyChange: Function;
   handleCloseModal: Function;
+  refreshComponent: Function;
 }
 const MyListModalContent = (props: MyListModalParameter) => {
   const [error, setError] = useState(false);
@@ -79,6 +80,7 @@ const MyListModalContent = (props: MyListModalParameter) => {
         )
         .then((res) => {
           props.handleCloseModal();
+          props.refreshComponent();
         })
         .catch((error) => {
           setError(true);
@@ -181,9 +183,11 @@ const Mylist: NextPage = () => {
 
   const refreshComponent = () => {
     setRefresh(!refresh);
+    console.log('Refresh nig');
   };
 
   useEffect(() => {
+    console.log('Nge load ulang');
     axios
       .post(
         GRAPHQLAPI,
@@ -197,6 +201,7 @@ const Mylist: NextPage = () => {
         },
       )
       .then((res) => {
+        console.log(res);
         setWishlists(res.data.data.userwishlists);
       })
 
@@ -205,6 +210,8 @@ const Mylist: NextPage = () => {
 
   const handleOpenCreateModal = () => {
     setOpenCreateModal(true);
+    setNewListName('');
+    setNewListPrivacy('Public');
   };
 
   const handleCloseCreateModal = () => {
@@ -250,6 +257,7 @@ const Mylist: NextPage = () => {
       {openCreateModal && (
         <Modal closeModal={handleCloseCreateModal} width={35} height={45}>
           <MyListModalContent
+            refreshComponent={refreshComponent}
             handleCloseModal={handleCloseCreateModal}
             newListPrivacy={newListPrivacy}
             handleNewListPrivacyChange={handleNewListPrivacyChange}

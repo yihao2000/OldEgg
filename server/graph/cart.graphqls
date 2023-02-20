@@ -39,6 +39,7 @@ extend type Mutation{
 
   createWishlistDetail(wishlistId: ID!, productId: ID!, quantity: Int!): WishlistDetail! @auth
   deleteWishlistDetail(wishlistId: ID!, productId: ID!, quantity: Int!): Boolean! @auth
+  deleteAllWishlistWishlistDetail(wishlistId: ID!): Boolean! @auth
 } 
 
 extend type Query{

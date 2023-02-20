@@ -154,11 +154,19 @@ export const USER_WISHLISTS_QUERY = `query{
   }
 }`;
 
-export const WISHLIST_QUERY = `query{
-  wishlist(wishlistId:"206a375c-73ae-432c-92bf-e7e1ae5ec4a6"){
+export const WISHLIST_QUERY = `query($wishlistId: ID!){
+  wishlist(wishlistId:$wishlistId){
     id
     name
     privacy
     dateCreated
   }
+}`;
+
+export const DELETE_WISHLIST_WISHLISTDETAIL_MUTATION = `mutation($wishlistId:ID!){
+  deleteAllWishlistWishlistDetail(wishlistId:$wishlistId)
+}`;
+
+export const DELETE_WISHLIST_MUTATION = `mutation($wishlistId:ID!){
+  deleteWishlist(wishlistId:$wishlistId)
 }`;

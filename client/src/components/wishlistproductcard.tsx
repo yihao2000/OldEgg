@@ -12,7 +12,7 @@ interface Product {
 }
 
 const WishlistProductCard = (props: Product) => {
-  console.log(props);
+  // console.log(props);
   return (
     <div className={styles.wishlistproductcardcontainer}>
       <div className={styles.wishlistproductcardimagecontainer}>

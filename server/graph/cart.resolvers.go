@@ -95,7 +95,20 @@ func (r *mutationResolver) UpdateWishlist(ctx context.Context, input model.NewWi
 
 // DeleteWishlist is the resolver for the deleteWishlist field.
 func (r *mutationResolver) DeleteWishlist(ctx context.Context, wishlistID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteWishlist - deleteWishlist"))
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	model := new(model.Wishlist)
+	if err := db.First(model, "id = ?", wishlistID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // CreateWishlistDetail is the resolver for the createWishlistDetail field.
@@ -128,6 +141,24 @@ func (r *mutationResolver) CreateWishlistDetail(ctx context.Context, wishlistID 
 // DeleteWishlistDetail is the resolver for the deleteWishlistDetail field.
 func (r *mutationResolver) DeleteWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteWishlistDetail - deleteWishlistDetail"))
+}
+
+// DeleteAllWishlistWishlistDetail is the resolver for the deleteAllWishlistWishlistDetail field.
+func (r *mutationResolver) DeleteAllWishlistWishlistDetail(ctx context.Context, wishlistID string) (bool, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	var models []*model.WishlistDetail
+	if err := db.Where("wishlist_id = ?", wishlistID).Find(&models).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(&models).Error
 }
 
 // Cart is the resolver for the cart field.
