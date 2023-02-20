@@ -143,6 +143,9 @@ export const WISHLISTDETAILS_QUERY = `query($wishlistId: ID!){
       name
       image
     }
+    quantity
+    dateAdded
+
   }
 }`;
 
@@ -169,4 +172,19 @@ export const DELETE_WISHLIST_WISHLISTDETAIL_MUTATION = `mutation($wishlistId:ID!
 
 export const DELETE_WISHLIST_MUTATION = `mutation($wishlistId:ID!){
   deleteWishlist(wishlistId:$wishlistId)
+}`;
+
+export const CREATE_WISHLIST_DETAIL_MUTATION = `mutation($wishlistId:ID!, $productId:ID!, $quantity:Int!){
+  createWishlistDetail(wishlistId:$wishlistId, productId:$productId, quantity:$quantity){
+    dateAdded
+  }
+}`;
+
+export const UPDATE_WISHLIST_MUTATION = `mutation($wishlistId:ID!, $wishlistName:String!, $wishlistPrivacy:String!){
+  updateWishlist(wishlistID:$wishlistId, input:{
+name:$wishlistName,
+    privacy:$wishlistPrivacy
+  }){
+    id
+  }
 }`;

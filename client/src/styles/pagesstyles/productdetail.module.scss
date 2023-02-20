@@ -192,6 +192,23 @@
   max-width: fit-content;
 }
 
+.addtowishlistcontainer {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.addtowishlistcontainer:hover {
+  color: rgb(var(--accent-rgb));
+  cursor: pointer;
+}
+
+.addtowishlistmodalcontent {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20%;
+}
+
 @media (max-width: 1200px) {
   .sectionone {
     width: 100%;

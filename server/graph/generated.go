@@ -99,7 +99,7 @@ type ComplexityRoot struct {
 		UpdateProductVariant            func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
 		UpdatePromo                     func(childComplexity int, input model.NewPromo) int
 		UpdateShop                      func(childComplexity int, input model.NewShop) int
-		UpdateWishlist                  func(childComplexity int, input model.NewWishlist) int
+		UpdateWishlist                  func(childComplexity int, wishlistID string, input model.NewWishlist) int
 		UserUpdateInformation           func(childComplexity int, currentPassword *string, newPassword *string, phone *string) int
 	}
 
@@ -201,7 +201,7 @@ type MutationResolver interface {
 	UpdateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error)
 	DeleteCart(ctx context.Context, productID string) (bool, error)
 	CreateWishlist(ctx context.Context, input model.NewWishlist) (*model.Wishlist, error)
-	UpdateWishlist(ctx context.Context, input model.NewWishlist) (*model.Wishlist, error)
+	UpdateWishlist(ctx context.Context, wishlistID string, input model.NewWishlist) (*model.Wishlist, error)
 	DeleteWishlist(ctx context.Context, wishlistID string) (bool, error)
 	CreateWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (*model.WishlistDetail, error)
 	DeleteWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (bool, error)
@@ -631,7 +631,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateWishlist(childComplexity, args["input"].(model.NewWishlist)), true
+		return e.complexity.Mutation.UpdateWishlist(childComplexity, args["wishlistID"].(string), args["input"].(model.NewWishlist)), true
 
 	case "Mutation.userUpdateInformation":
 		if e.complexity.Mutation.UserUpdateInformation == nil {
@@ -1637,15 +1637,24 @@ func (ec *executionContext) field_Mutation_updateShop_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_updateWishlist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewWishlist
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewWishlist2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewWishlist(ctx, tmp)
+	var arg0 string
+	if tmp, ok := rawArgs["wishlistID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("wishlistID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["wishlistID"] = arg0
+	var arg1 model.NewWishlist
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNNewWishlist2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewWishlist(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -3067,7 +3076,7 @@ func (ec *executionContext) _Mutation_updateWishlist(ctx context.Context, field 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateWishlist(rctx, fc.Args["input"].(model.NewWishlist))
+			return ec.resolvers.Mutation().UpdateWishlist(rctx, fc.Args["wishlistID"].(string), fc.Args["input"].(model.NewWishlist))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.Auth == nil {

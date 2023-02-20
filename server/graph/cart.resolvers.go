@@ -89,8 +89,24 @@ func (r *mutationResolver) CreateWishlist(ctx context.Context, input model.NewWi
 }
 
 // UpdateWishlist is the resolver for the updateWishlist field.
-func (r *mutationResolver) UpdateWishlist(ctx context.Context, input model.NewWishlist) (*model.Wishlist, error) {
-	panic(fmt.Errorf("not implemented: UpdateWishlist - updateWishlist"))
+func (r *mutationResolver) UpdateWishlist(ctx context.Context, wishlistID string, input model.NewWishlist) (*model.Wishlist, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, Invalid Token !",
+		}
+	}
+
+	var wishlist model.Wishlist
+	if err := db.Model(wishlist).Where("id LIKE ?", wishlistID).Take(&wishlist).Error; err != nil {
+		return nil, err
+	}
+
+	wishlist.Name = input.Name
+	wishlist.Privacy = input.Privacy
+
+	return &wishlist, db.Save(wishlist).Error
 }
 
 // DeleteWishlist is the resolver for the deleteWishlist field.

@@ -7,9 +7,12 @@ import styles from '@/styles/componentstyles/wishlist.module.scss';
 import styles2 from '@/styles/pagesstyles/account/wishlists/mylist.module.scss';
 import axios from 'axios';
 import {
+  CREATE_WISHLIST_DETAIL_MUTATION,
+  CREATE_WISHLIST_MUTATION,
   DELETE_WISHLIST_MUTATION,
   DELETE_WISHLIST_WISHLISTDETAIL_MUTATION,
   GRAPHQLAPI,
+  UPDATE_WISHLIST_MUTATION,
   WISHLISTDETAILS_QUERY,
   WISHLIST_QUERY,
 } from '@/util/constant';
@@ -33,16 +36,18 @@ interface ModalParameter {
   refreshComponent: Function;
 }
 
-const WishlistCard = (props: Parameter) => {
-  interface Product {
-    id: string;
-    image: string;
-    name: string;
-  }
-  interface WishlistDetail {
-    product: Product;
-  }
+interface Product {
+  id: string;
+  image: string;
+  name: string;
+}
+interface WishlistDetail {
+  product: Product;
+  quantity: number;
+  dateAdded: string;
+}
 
+const WishlistCard = (props: Parameter) => {
   const [token, setToken] = useSessionStorage('token', '');
   const [loading, setLoading] = useState(false);
   const [wishlistDetails, setWishlistDetails] = useState<WishlistDetail[]>([]);
@@ -84,15 +89,175 @@ const WishlistCard = (props: Parameter) => {
       })
 
       .catch((err) => console.log(err));
-  }, []);
+  }, [props.refreshComponent]);
 
   const handleDeleteClick = () => {
     // document.body.style.overflow = 'hidden';
     setOpenDeleteModal(true);
   };
 
-  const handleUpdateClick = () => {
+  const handleDuplicateClick = () => {
     setOpenDuplicateModal(true);
+  };
+
+  const handleSettingsClick = () => {
+    setOpenSettingsModal(true);
+  };
+
+  const SettingsModalContent = (props: ModalParameter) => {
+    const [wishlist, setWishlist] = useState<Wishlist | null>(null);
+    const [newListName, setNewListName] = useState('');
+    const [newListPrivacy, setNewListPrivacy] = useState('');
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleNewListNameChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      setNewListName(event.target.value);
+    };
+
+    const handleSaveButtonClick = () => {
+      if (newListName == '') {
+        setError(true);
+        return;
+      }
+      setError(false);
+      setLoading(true);
+
+      setTimeout(() => {
+        setLoading(false);
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: UPDATE_WISHLIST_MUTATION,
+              variables: {
+                wishlistId: props.wishlistId,
+                wishlistName: newListName,
+                wishlistPrivacy: newListPrivacy,
+              },
+            },
+            {
+              headers: {
+                Authorization: 'Bearer ' + token,
+              },
+            },
+          )
+          .then((res) => {
+            props.refreshComponent();
+            props.closeModal();
+          })
+
+          .catch((err) => console.log(err));
+      }, 3000);
+    };
+    useEffect(() => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: WISHLIST_QUERY,
+            variables: {
+              wishlistId: props.wishlistId,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setWishlist(res.data.data.wishlist);
+        })
+
+        .catch((err) => console.log(err));
+    }, []);
+
+    useEffect(() => {
+      if (wishlist) {
+        setNewListName(wishlist.name);
+        setNewListPrivacy(wishlist.privacy);
+      }
+    }, [wishlist]);
+    return (
+      <div className={styles2.mylistmodalcontent}>
+        <div className={styles2.mylistcreatelistlabel}>List Settings</div>
+        <div className={styles2.mylistnamecontainer}>
+          <h5
+            style={{
+              margin: '0',
+              padding: '0',
+            }}
+          >
+            Name
+          </h5>
+          <input
+            required
+            className={styles2.inputfield}
+            type="text"
+            value={newListName}
+            onChange={handleNewListNameChange}
+          />
+        </div>
+        <div className={styles2.mylistprivacycontainer}>
+          <h5
+            style={{
+              margin: '0',
+              padding: '0',
+            }}
+          >
+            Privacy
+          </h5>
+          <div className={styles2.buttoncontainer}>
+            <button
+              className={`${styles2.selectionbutton} ${
+                newListPrivacy == 'Public' ? styles2.selectedbutton : ''
+              }`}
+              onClick={() => {
+                setNewListPrivacy('Public');
+              }}
+            >
+              Public
+            </button>
+            <button
+              className={`${styles2.selectionbutton} ${
+                newListPrivacy == 'Private' ? styles2.selectedbutton : ''
+              }`}
+              onClick={() => {
+                setNewListPrivacy('Private');
+              }}
+            >
+              Private
+            </button>
+          </div>
+        </div>
+        <hr
+          style={{
+            width: '100%',
+            marginTop: '10px',
+          }}
+        />
+        <div className={styles2.submitcontainer}>
+          <div
+            style={{
+              color: 'red',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <b>{error ? 'Please fill all fields !' : ''}</b>
+          </div>
+          <button
+            className={styles2.submitbutton}
+            onClick={handleSaveButtonClick}
+          >
+            {loading ? <ClipLoader size={10} /> : 'SAVE'}
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const DeleteModalContent = (props: ModalParameter) => {
@@ -165,10 +330,10 @@ const WishlistCard = (props: Parameter) => {
                 props.refreshComponent();
               })
 
-              .catch((err) => console.log(err));
+              .catch((err) => console.log('Masuk Error'));
           })
 
-          .catch((err) => console.log(err));
+          .catch((err) => console.log('mASSUK ERROR'));
 
         setLoading(false);
       }, 2000);
@@ -203,6 +368,95 @@ const WishlistCard = (props: Parameter) => {
 
   const DuplicateModalContent = (props: ModalParameter) => {
     const [wishlist, setWishlist] = useState<Wishlist | null>(null);
+    const [newListName, setNewListName] = useState('');
+    const [newListPrivacy, setNewListPrivacy] = useState('');
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleNewListNameChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      setNewListName(event.target.value);
+    };
+
+    const handleNewListPrivacyChange = (value: string) => {
+      setNewListPrivacy(value);
+    };
+
+    const handleDuplicateButtonClick = () => {
+      if (newListName == '') {
+        setError(true);
+        return;
+      }
+      setError(false);
+      setLoading(true);
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CREATE_WISHLIST_MUTATION,
+            variables: {
+              name: newListName,
+              privacy: newListPrivacy,
+            },
+          },
+
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          axios
+            .post(
+              GRAPHQLAPI,
+              {
+                query: WISHLISTDETAILS_QUERY,
+                variables: {
+                  wishlistId: props.wishlistId,
+                },
+              },
+              {
+                headers: {
+                  Authorization: 'Bearer ' + token,
+                },
+              },
+            )
+            .then((details) => {
+              var data: WishlistDetail[] = details.data.data.wishlistDetails;
+              data.map((e) => {
+                axios
+                  .post(
+                    GRAPHQLAPI,
+                    {
+                      query: CREATE_WISHLIST_DETAIL_MUTATION,
+                      variables: {
+                        wishlistId: res.data.data.createWishlist.id,
+                        productId: e.product.id,
+                        quantity: e.quantity,
+                      },
+                    },
+                    {
+                      headers: {
+                        Authorization: 'Bearer ' + token,
+                      },
+                    },
+                  )
+                  .then((res) => {});
+              });
+              setTimeout(() => {
+                setLoading(false);
+                props.refreshComponent();
+                props.closeModal();
+              }, 3000);
+            })
+            .catch((err) => console.log(err));
+        })
+
+        .catch((err) => console.log(err));
+    };
     useEffect(() => {
       axios
         .post(
@@ -226,7 +480,12 @@ const WishlistCard = (props: Parameter) => {
         .catch((err) => console.log(err));
     }, []);
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+      if (wishlist) {
+        setNewListName(wishlist.name);
+        setNewListPrivacy(wishlist.privacy);
+      }
+    }, [wishlist]);
     return (
       <div className={styles2.mylistmodalcontent}>
         <div className={styles2.mylistcreatelistlabel}>Duplicate List</div>
@@ -243,8 +502,8 @@ const WishlistCard = (props: Parameter) => {
             required
             className={styles2.inputfield}
             type="text"
-            // value={props.newListName}
-            // onChange={props.handleNewListNameChange}
+            value={newListName}
+            onChange={handleNewListNameChange}
           />
         </div>
         <div className={styles2.mylistprivacycontainer}>
@@ -258,18 +517,22 @@ const WishlistCard = (props: Parameter) => {
           </h5>
           <div className={styles2.buttoncontainer}>
             <button
-            // className={`${styles.selectionbutton} ${
-            //   props.newListPrivacy == 'Public' ? styles.selectedbutton : ''
-            // }`}
-            // onClick={handlePublicPrivacyChange}
+              className={`${styles2.selectionbutton} ${
+                newListPrivacy == 'Public' ? styles2.selectedbutton : ''
+              }`}
+              onClick={() => {
+                setNewListPrivacy('Public');
+              }}
             >
               Public
             </button>
             <button
-            // className={`${styles.selectionbutton} ${
-            //   props.newListPrivacy == 'Private' ? styles.selectedbutton : ''
-            // }`}
-            // onClick={handlePrivatePrivacyChange}
+              className={`${styles2.selectionbutton} ${
+                newListPrivacy == 'Private' ? styles2.selectedbutton : ''
+              }`}
+              onClick={() => {
+                setNewListPrivacy('Private');
+              }}
             >
               Private
             </button>
@@ -289,13 +552,13 @@ const WishlistCard = (props: Parameter) => {
               alignItems: 'center',
             }}
           >
-            {/* <b>{error ? 'Please fill all fields !' : ''}</b> */}
+            <b>{error ? 'Please fill all fields !' : ''}</b>
           </div>
           <button
             className={styles2.submitbutton}
-            // onClick={handleCreateButtonClick}
+            onClick={handleDuplicateButtonClick}
           >
-            {loading ? <ClipLoader size={10} /> : 'CREATE'}
+            {loading ? <ClipLoader size={10} /> : 'DUPLICATE'}
           </button>
         </div>
       </div>
@@ -312,11 +575,13 @@ const WishlistCard = (props: Parameter) => {
               Delete
             </span>
             <div className={styles.verticalseparator}></div>
-            <span className={styles.managelink} onClick={handleUpdateClick}>
+            <span className={styles.managelink} onClick={handleDuplicateClick}>
               Duplicate
             </span>
             <div className={styles.verticalseparator}></div>
-            <span className={styles.managelink}>Settings</span>
+            <span className={styles.managelink} onClick={handleSettingsClick}>
+              Settings
+            </span>
           </div>
         </div>
         <div className={styles.productcontainer}>
@@ -346,6 +611,16 @@ const WishlistCard = (props: Parameter) => {
         <Modal closeModal={closeDuplicateModal} height={15} width={30}>
           <DuplicateModalContent
             closeModal={closeDuplicateModal}
+            refreshComponent={props.refreshComponent}
+            wishlistId={props.wishlistId}
+          />
+        </Modal>
+      )}
+
+      {openSettingsModal && (
+        <Modal closeModal={closeSettingsModal} height={15} width={30}>
+          <SettingsModalContent
+            closeModal={closeSettingsModal}
             refreshComponent={props.refreshComponent}
             wishlistId={props.wishlistId}
           />

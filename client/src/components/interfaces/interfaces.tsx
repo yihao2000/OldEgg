@@ -72,3 +72,8 @@ export interface Wishlist {
   privacy: string;
   dateCreated: string;
 }
+
+export interface AddToWishlistModalParameter {
+  productId: string | undefined;
+  handleCloseModal: Function;
+}

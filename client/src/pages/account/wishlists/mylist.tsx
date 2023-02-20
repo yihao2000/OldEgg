@@ -182,12 +182,11 @@ const Mylist: NextPage = () => {
   const [wishlists, setWishlists] = useState<Wishlist[]>([]);
 
   const refreshComponent = () => {
+    // location.reload();
     setRefresh(!refresh);
-    console.log('Refresh nig');
   };
 
   useEffect(() => {
-    console.log('Nge load ulang');
     axios
       .post(
         GRAPHQLAPI,
@@ -201,7 +200,6 @@ const Mylist: NextPage = () => {
         },
       )
       .then((res) => {
-        console.log(res);
         setWishlists(res.data.data.userwishlists);
       })
 
@@ -244,6 +242,7 @@ const Mylist: NextPage = () => {
       </div>
       <div className={styles.mylistcontainer}>
         {wishlists.map((res) => {
+          console.log('Mapping');
           return (
             <WishlistCard
               wishlistName={res.name}

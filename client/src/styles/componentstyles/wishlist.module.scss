@@ -21,6 +21,11 @@
   margin: 0;
 }
 
+@mixin paddinghorizontal($left, $right) {
+  padding-left: $left;
+  padding-right: $right;
+}
+
 .titlelabel {
   @include nogap();
 }
@@ -136,4 +141,44 @@
   padding: 7px;
   border-radius: 2px;
   cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .wishlistcontainer {
+    width: 95%;
+    height: 25vh;
+  }
+}
+
+@media (max-width: 550px) {
+  .wishlistproductcardcontainer {
+    width: 31%;
+  }
+  .wishlistproductcardimage {
+    height: 100px;
+    width: 100%;
+  }
+  .wishlisttitle {
+    padding-top: 5px;
+    padding-left: 10px;
+  }
+  .wishlistproductcarddescriptioncontainer {
+    font-size: 10px;
+  }
+  .wishlistproductcardcontainer {
+    height: 80%;
+  }
+
+  .wishlistactioncontainer > * {
+    margin-left: 7px;
+  }
+
+  .managelink {
+    color: blue;
+    font-size: x-small;
+    display: none;
+  }
+  .verticalseparator {
+    height: 70%;
+  }
 }

@@ -34,7 +34,7 @@ extend type Mutation{
   deleteCart(productID: ID!): Boolean! @auth
 
   createWishlist(input: NewWishlist!): Wishlist! @auth
-  updateWishlist(input: NewWishlist!): Wishlist! @auth
+  updateWishlist(wishlistID: ID!, input: NewWishlist!): Wishlist! @auth
   deleteWishlist(wishlistId: ID!): Boolean! @auth
 
   createWishlistDetail(wishlistId: ID!, productId: ID!, quantity: Int!): WishlistDetail! @auth

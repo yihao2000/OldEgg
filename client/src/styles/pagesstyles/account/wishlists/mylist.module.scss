@@ -182,3 +182,48 @@
   flex-wrap: wrap;
   column-gap: 1em;
 }
+
+@media (max-width: 550px) {
+  .listnavcontainer {
+  }
+
+  .navtabcell {
+    border: 1px solid #ccc;
+    border-bottom: 0;
+    cursor: pointer;
+    display: block;
+    background-color: rgb(var(--background-end-rgb));
+    font-size: 8px;
+    // height: 35px;
+    line-height: 30px;
+    margin-left: -1px;
+    // padding: 0 20px;
+    text-align: center;
+    padding-bottom: 1px;
+    z-index: 1;
+  }
+
+  .wishlistlabel {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 430px) {
+  .wishlistlabel {
+    font-size: 10px;
+  }
+  .navtabcell {
+    font-size: 6px;
+    line-height: 30px;
+  }
+
+  .listbuttoncontainer {
+    justify-content: center;
+    column-gap: 10px;
+  }
+
+  .mylistcontainer {
+    // width: 100%;
+    padding: 0px;
+  }
+}

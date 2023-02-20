@@ -13,9 +13,11 @@ import {
   PRODUCT_PRODUCTSGROUP_QUERY,
   PRODUCT_QUERY,
   USER_ADD_CART_MUTATION,
+  USER_WISHLISTS_QUERY,
 } from '@/util/constant';
-import { FaTruck } from 'react-icons/fa';
+import { FaTruck, FaHeart, FaRegHeart } from 'react-icons/fa';
 import {
+  AddToWishlistModalParameter,
   Product,
   ProductCardData,
   ProductDetail,
@@ -35,6 +37,8 @@ const ProductDetail: NextPage = () => {
     id: string;
     name: string;
   }
+
+  const limit = 20;
 
   const router = useRouter();
   const { id } = router.query;
@@ -59,9 +63,15 @@ const ProductDetail: NextPage = () => {
 
   const [variantList, setVariantList] = useState([]);
 
-  const [openModal, setOpenModal] = useState(true);
+  const [openAddToWishlistModal, setOpenAddToWishlistModal] = useState(true);
 
-  const limit = 20;
+  const closeAddToWishlistModal = () => {
+    setOpenAddToWishlistModal(false);
+  };
+
+  const handleAddToWishlistClick = () => {
+    setOpenAddToWishlistModal(true);
+  };
 
   const handleQuantityChange = (event: any) => {
     if (event.target.value >= 20) {
@@ -208,6 +218,44 @@ const ProductDetail: NextPage = () => {
 
     var variantlist;
   }, [productsVariant]);
+
+  const AddToWishlistModalContent = (props: AddToWishlistModalParameter) => {
+    useEffect(() => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: USER_WISHLISTS_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          console.log(res);
+          // props.handleCloseModal();
+          // props.refreshComponent();
+        })
+        .catch((error) => {
+          // setError(true);
+        });
+    }, []);
+    return (
+      <div className={styles.addtowishlistmodalcontent}>
+        <div
+          style={{
+            fontWeight: 'bold',
+            fontSize: '16px',
+          }}
+        >
+          Manage Wish Lists{' '}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Layout>
       <div className={styles.pagedivider}>
@@ -340,6 +388,12 @@ const ProductDetail: NextPage = () => {
             ) : null}
 
             <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+            <div
+              className={styles.addtowishlistcontainer}
+              onClick={handleAddToWishlistClick}
+            >
+              <FaHeart fontSize={20} /> Add to wishlist
+            </div>
           </div>
         </div>
         <div className={styles.similarproductsection}>
@@ -360,7 +414,14 @@ const ProductDetail: NextPage = () => {
         </div>
         <div>aas</div>
       </div>
-      {/* {openModal && <Modal />} */}
+      {openAddToWishlistModal && (
+        <Modal closeModal={closeAddToWishlistModal} height={35} width={40}>
+          <AddToWishlistModalContent
+            handleCloseModal={closeAddToWishlistModal}
+            productId={product?.id}
+          />
+        </Modal>
+      )}
     </Layout>
   );
 };
