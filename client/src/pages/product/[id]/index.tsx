@@ -12,6 +12,7 @@ import {
   PRODUCT_CATEGORY_QUERY,
   PRODUCT_PRODUCTSGROUP_QUERY,
   PRODUCT_QUERY,
+  PRODUCT_USER_WISHLISTS_QUERY,
   USER_ADD_CART_MUTATION,
   USER_WISHLISTS_QUERY,
 } from '@/util/constant';
@@ -21,6 +22,7 @@ import {
   Product,
   ProductCardData,
   ProductDetail,
+  Wishlist,
 } from '@/components/interfaces/interfaces';
 import {
   GET_LAPTOP_COMPONENT_VARIANT,
@@ -63,7 +65,7 @@ const ProductDetail: NextPage = () => {
 
   const [variantList, setVariantList] = useState([]);
 
-  const [openAddToWishlistModal, setOpenAddToWishlistModal] = useState(true);
+  const [openAddToWishlistModal, setOpenAddToWishlistModal] = useState(false);
 
   const closeAddToWishlistModal = () => {
     setOpenAddToWishlistModal(false);
@@ -211,7 +213,6 @@ const ProductDetail: NextPage = () => {
     if (productCategory == 'Laptop') {
       // setVariantList(GET_LAPTOP_COMPONENT_VARIANT(productsVariant))
       if (productsVariant != null) {
-        console.log(productsVariant);
         // console.log(GET_LAPTOP_COMPONENT_VARIANT(productsVariant));
       }
     }
@@ -220,6 +221,9 @@ const ProductDetail: NextPage = () => {
   }, [productsVariant]);
 
   const AddToWishlistModalContent = (props: AddToWishlistModalParameter) => {
+    const [wishlists, setWishlists] = useState<Wishlist[]>([]);
+    const [checkedWishlists, setCheckedWishlists] = useState<string[]>([]);
+
     useEffect(() => {
       axios
         .post(
@@ -234,14 +238,40 @@ const ProductDetail: NextPage = () => {
           },
         )
         .then((res) => {
-          console.log(res);
-          // props.handleCloseModal();
-          // props.refreshComponent();
+          // console.log(res.data.data.userwishlists);
+          setWishlists(res.data.data.userwishlists);
         })
         .catch((error) => {
           // setError(true);
         });
     }, []);
+
+    useEffect(() => {
+      if (wishlists) {
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: PRODUCT_USER_WISHLISTS_QUERY,
+              variables: {
+                productId: props.productId,
+              },
+            },
+            {
+              headers: {
+                Authorization: 'Bearer ' + token,
+              },
+            },
+          )
+          .then((res) => {
+            console.log(res.data.data.productUserWishlists);
+          })
+          .catch((error) => {
+            // setError(true);
+          });
+      }
+    }, [wishlists]);
+
     return (
       <div className={styles.addtowishlistmodalcontent}>
         <div

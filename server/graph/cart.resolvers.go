@@ -219,6 +219,26 @@ func (r *queryResolver) WishlistDetails(ctx context.Context, wishlistID string) 
 	return models, db.Where("wishlist_id = ?  ", wishlistID).Find(&models).Error
 }
 
+// ProductUserWishlists is the resolver for the productUserWishlists field.
+func (r *queryResolver) ProductUserWishlists(ctx context.Context, productID string) ([]*model.Wishlist, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.Wishlist
+
+	if err := db.Raw("SELECT w.id, w.name, w.user_id, w.privacy, w.date_created FROM wishlists w JOIN wishlist_details wd ON wd.wishlist_id = w.id WHERE wd.product_id = ? AND w.user_id = ?", productID, userID).Scan(&models).Error; err != nil {
+		return models, err
+	}
+
+	return models, nil
+}
+
 // Wishlist is the resolver for the wishlist field.
 func (r *queryResolver) Wishlist(ctx context.Context, wishlistID string) (*model.Wishlist, error) {
 	db := config.GetDB()

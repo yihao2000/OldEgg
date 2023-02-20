@@ -58,6 +58,7 @@ export const PRODUCTS_QUERY = `query($shopId:String, $brandId:String, $categoryI
 
 export const PRODUCT_QUERY = `query($id:ID, $name:String){
   product(id:$id, name:$name){
+    id
    name
     description
     brand{
@@ -188,3 +189,11 @@ name:$wishlistName,
     id
   }
 }`;
+
+export const PRODUCT_USER_WISHLISTS_QUERY = `query($productId:ID!){
+  productUserWishlists(productId:$productId){
+    id
+    name
+    privacy
+  }
+} `;
