@@ -14,6 +14,7 @@ type User{
   role: String!
   verificationcode: String
   verificationcodevalidtime: Time
+  newslettersubscribe: Boolean!
 }
 
 
@@ -26,6 +27,7 @@ type User{
   password: String!
   banned: Boolean!
   role: String!
+  newslettersubscribe: Boolean!
 }
 
 

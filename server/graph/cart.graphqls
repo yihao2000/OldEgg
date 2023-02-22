@@ -26,6 +26,14 @@ type WishlistDetail{
   dateAdded: Time!
 }
 
+type SavedForLater{
+  user: User! @goField(forceResolver:true)
+  product: Product! @goField(forceResolver:true)
+  quantity: Int!
+  dateAdded: Time!
+}
+
+
 
 
 extend type Mutation{
@@ -41,12 +49,17 @@ extend type Mutation{
   deleteWishlistDetail(wishlistId: ID!, productId: ID!, quantity: Int!): Boolean! @auth
   deleteAllWishlistWishlistDetail(wishlistId: ID!): Boolean! @auth
   deleteProductFromWishlistDetails(productId: ID!): Boolean!
-  
+
+  createSavedForLater(userId: ID!, productId: ID!, quantity: Int!): SavedForLater! @auth
+  deleteSavedForLater(userId: ID!, productId: ID!): Boolean! @auth
+  deleteAllSavedForLater(userId: ID!): Boolean! @auth
 } 
 
 extend type Query{
   cart(productID: ID!): Cart! @auth
   carts: [Cart!]! @auth
+  updateCart(userID: ID!, productID: ID!, quantity: Int!): Cart! @auth
+  
 
   wishlists: [Wishlist!]!  @goField(forceResolver:true)
   userwishlists: [Wishlist!]! @goField(forceResolver:true)

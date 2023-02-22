@@ -8,4 +8,9 @@ export const links = {
 
   profile: '/account/settings',
   profilePhone: '/account/mobilephone',
+  search: (query: string = '') => {
+    return '/search' + query;
+  },
+
+  cart: '/cart',
 };

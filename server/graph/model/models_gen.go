@@ -61,15 +61,23 @@ type NewShop struct {
 }
 
 type NewUser struct {
-	Name     string  `json:"name"`
-	Email    string  `json:"email"`
-	Phone    *string `json:"phone"`
-	Password string  `json:"password"`
-	Banned   bool    `json:"banned"`
-	Role     string  `json:"role"`
+	Name                string  `json:"name"`
+	Email               string  `json:"email"`
+	Phone               *string `json:"phone"`
+	Password            string  `json:"password"`
+	Banned              bool    `json:"banned"`
+	Role                string  `json:"role"`
+	Newslettersubscribe bool    `json:"newslettersubscribe"`
 }
 
 type NewWishlist struct {
 	Name    string `json:"name"`
 	Privacy string `json:"privacy"`
+}
+
+type SavedForLater struct {
+	User      *User     `json:"user"`
+	Product   *Product  `json:"product"`
+	Quantity  int       `json:"quantity"`
+	DateAdded time.Time `json:"dateAdded"`
 }

@@ -16,6 +16,7 @@ type User struct {
 	Role                      string     `json:"role"`
 	VerificationCode          string     `json:"verificationcode"`
 	VerificationCodeValidTime *time.Time `json:"verificationcodevalidtime"`
+	NewsLetterSubscribe       bool       `json:"newslettersubscribe"`
 }
 
 func HashPassword(s string) string {

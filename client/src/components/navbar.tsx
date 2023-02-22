@@ -1,6 +1,7 @@
 import styles from '@/styles/componentstyles/navbar.module.css';
 import { links } from '@/util/route';
 import Image from 'next/image';
+import Link from 'next/link';
 import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
@@ -71,7 +72,7 @@ export default function Navbar() {
         ></i>
 
         <form
-          action="/action_page.php"
+          action={links.search()}
           style={{
             width: '40%',
             display: 'flex',
@@ -82,6 +83,8 @@ export default function Navbar() {
               type="text"
               placeholder="Search.."
               name="search"
+              defaultValue={search ? search : ''}
+              id="search"
               className={styles.navbarsearch}
               value={search}
               onChange={handleSearchChange}
@@ -121,15 +124,16 @@ export default function Navbar() {
           <div style={{ color: 'gray' }}>Returns</div>
           <div style={{}}>{/* <b>& Orders</b> */}</div>
         </div>
-
-        <div className={styles.cartcontainer}>
-          <i
-            className="fa fa-shopping-cart"
-            style={{
-              fontSize: '1.7em',
-            }}
-          ></i>
-        </div>
+        <Link href={links.cart}>
+          <div className={styles.cartcontainer}>
+            <i
+              className="fa fa-shopping-cart"
+              style={{
+                fontSize: '1.7em',
+              }}
+            ></i>
+          </div>
+        </Link>
       </div>
       <div className={styles.navbarsecondarycontainer}>
         <form

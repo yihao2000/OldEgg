@@ -100,6 +100,7 @@ export default function Signup() {
                 password: password,
                 banned: false,
                 role: 'User',
+                newslettersubscribe: subscribe,
               },
             })
             .then((res) => {

@@ -1,0 +1,122 @@
+.pagedivider {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 60px;
+}
+
+.leftsection {
+  width: 70%;
+}
+
+.rightsection {
+  width: 30%;
+}
+
+.headercontainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.titlelabelcontainer {
+}
+
+.cartactioncontainer {
+  display: flex;
+  align-items: center;
+}
+
+.noborderbutton {
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  border-radius: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  font-stretch: condensed;
+  letter-spacing: 1px;
+  margin: 0;
+  padding: 8px 1em;
+  position: relative;
+  text-align: center;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  vertical-align: middle;
+  background-color: transparent;
+  border: transparent;
+}
+
+.buttonlabel {
+  font-size: 15px;
+  margin-left: 5px;
+}
+
+.cartproductcontainer {
+  padding: 20px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.cartproductcontainerleftside {
+  width: 20%;
+  max-width: 20%;
+}
+
+.cartproductimagecontainer {
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
+.cartproductimage {
+  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.cartproductcontainerrightside {
+  width: 75%;
+}
+
+.cartproductinformationcontainer {
+  width: 60%;
+  max-width: 60%;
+  min-width: 60%;
+}
+
+.iteminfo {
+}
+
+.itemname {
+  width: 100%;
+}
+
+.itemshop {
+  width: 100%;
+}
+
+.cartquantityformcontainer {
+  width: fit-content;
+}
+
+.producttotalpricecontainer {
+}
+
+.upperpart {
+  height: 33%;
+  max-height: 33%;
+  width: 100%;
+  display: flex;
+  column-gap: 10%;
+}
+
+.middlepart {
+  height: 33%;
+  max-height: 33%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}

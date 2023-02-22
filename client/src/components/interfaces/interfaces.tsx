@@ -77,3 +77,23 @@ export interface AddToWishlistModalParameter {
   productId: string | undefined;
   handleCloseModal: Function;
 }
+
+export interface CartProduct {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  shop: CartShop;
+  quantity: number;
+}
+
+export interface CartShop {
+  id: string;
+  name: string;
+}
+
+export interface Cart {
+  product: CartProduct;
+  quantity: number;
+}

@@ -55,12 +55,53 @@ func (r *mutationResolver) CreateCart(ctx context.Context, productID string, qua
 
 // UpdateCart is the resolver for the updateCart field.
 func (r *mutationResolver) UpdateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error) {
-	panic(fmt.Errorf("not implemented: UpdateCart - updateCart"))
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var cart model.Cart
+	if err := db.Model(cart).Where("user_id LIKE ? AND product_id LIKE ?", userID, productID).Take(&cart).Error; err != nil {
+		return nil, err
+	}
+
+	var product model.Product
+	if err := db.Model(product).Where("id LIKE ?", productID).Take(&product).Error; err != nil {
+		return nil, err
+	}
+
+	if quantity <= product.Quantity && quantity > 0 {
+		cart.Quantity = quantity
+
+		return &cart, db.Save(cart).Error
+	}
+
+	return nil, &gqlerror.Error{
+		Message: "Error, Jumlah Product Ga nyampe !",
+	}
 }
 
 // DeleteCart is the resolver for the deleteCart field.
 func (r *mutationResolver) DeleteCart(ctx context.Context, productID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteCart - deleteCart"))
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.Cart)
+	if err := db.First(model, "user_id = ? AND product_id = ?", userID, productID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // CreateWishlist is the resolver for the createWishlist field.
@@ -196,6 +237,21 @@ func (r *mutationResolver) DeleteProductFromWishlistDetails(ctx context.Context,
 	return true, nil
 }
 
+// CreateSavedForLater is the resolver for the createSavedForLater field.
+func (r *mutationResolver) CreateSavedForLater(ctx context.Context, userID string, productID string, quantity int) (*model.SavedForLater, error) {
+	panic(fmt.Errorf("not implemented: CreateSavedForLater - createSavedForLater"))
+}
+
+// DeleteSavedForLater is the resolver for the deleteSavedForLater field.
+func (r *mutationResolver) DeleteSavedForLater(ctx context.Context, userID string, productID string) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteSavedForLater - deleteSavedForLater"))
+}
+
+// DeleteAllSavedForLater is the resolver for the deleteAllSavedForLater field.
+func (r *mutationResolver) DeleteAllSavedForLater(ctx context.Context, userID string) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteAllSavedForLater - deleteAllSavedForLater"))
+}
+
 // Cart is the resolver for the cart field.
 func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart, error) {
 	panic(fmt.Errorf("not implemented: Cart - cart"))
@@ -203,7 +259,23 @@ func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart
 
 // Carts is the resolver for the carts field.
 func (r *queryResolver) Carts(ctx context.Context) ([]*model.Cart, error) {
-	panic(fmt.Errorf("not implemented: Carts - carts"))
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.Cart
+	return models, db.Where("user_id = ?", id).Find(&models).Error
+}
+
+// UpdateCart is the resolver for the updateCart field.
+func (r *queryResolver) UpdateCart(ctx context.Context, userID string, productID string, quantity int) (*model.Cart, error) {
+	panic(fmt.Errorf("not implemented: UpdateCart - updateCart"))
 }
 
 // Wishlists is the resolver for the wishlists field.
@@ -267,6 +339,16 @@ func (r *queryResolver) Wishlist(ctx context.Context, wishlistID string) (*model
 }
 
 // User is the resolver for the user field.
+func (r *savedForLaterResolver) User(ctx context.Context, obj *model.SavedForLater) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: User - user"))
+}
+
+// Product is the resolver for the product field.
+func (r *savedForLaterResolver) Product(ctx context.Context, obj *model.SavedForLater) (*model.Product, error) {
+	panic(fmt.Errorf("not implemented: Product - product"))
+}
+
+// User is the resolver for the user field.
 func (r *wishlistResolver) User(ctx context.Context, obj *model.Wishlist) (*model.User, error) {
 	db := config.GetDB()
 	user := new(model.User)
@@ -298,6 +380,9 @@ func (r *wishlistDetailResolver) Product(ctx context.Context, obj *model.Wishlis
 // Cart returns CartResolver implementation.
 func (r *Resolver) Cart() CartResolver { return &cartResolver{r} }
 
+// SavedForLater returns SavedForLaterResolver implementation.
+func (r *Resolver) SavedForLater() SavedForLaterResolver { return &savedForLaterResolver{r} }
+
 // Wishlist returns WishlistResolver implementation.
 func (r *Resolver) Wishlist() WishlistResolver { return &wishlistResolver{r} }
 
@@ -305,5 +390,6 @@ func (r *Resolver) Wishlist() WishlistResolver { return &wishlistResolver{r} }
 func (r *Resolver) WishlistDetail() WishlistDetailResolver { return &wishlistDetailResolver{r} }
 
 type cartResolver struct{ *Resolver }
+type savedForLaterResolver struct{ *Resolver }
 type wishlistResolver struct{ *Resolver }
 type wishlistDetailResolver struct{ *Resolver }

@@ -2,7 +2,7 @@
 
 export const GRAPHQLAPI = 'http://localhost:8080/query';
 
-export const REGISTER_QUERY = `mutation($name:String!, $email:String!, $phone:String!, $password:String!, $banned:Boolean!, $role:String!){
+export const REGISTER_QUERY = `mutation($name:String!, $email:String!, $phone:String!, $password:String!, $banned:Boolean!, $role:String!, $newslettersubscribe:Boolean!){
   auth{
     register(input:{
       name: $name,
@@ -11,6 +11,7 @@ export const REGISTER_QUERY = `mutation($name:String!, $email:String!, $phone:St
       password:$password
       banned:$banned
       role:$role
+      newslettersubscribe:$newslettersubscribe
     })
   }
 }`;
@@ -210,4 +211,37 @@ id
 
 export const VALIDATE_USER_VERIFICATION_CODE = `mutation($email:String!, $verificationcode:String!){
   validateUserVerificationCode(email:$email, verificationcode:$verificationcode)
+}`;
+
+export const USER_CART_QUERY = `query{
+  carts{
+   product{
+    id
+    name
+    shop{
+      id
+      name
+    }
+    price
+    image
+    description
+  }
+    quantity
+  }
+}`;
+
+export const UPDATE_CART_MUTATION = `mutation($productID:ID!, $quantity:Int!){
+  updateCart(productID:$productID, quantity:$quantity){
+    product{
+      id
+    }
+    user{
+      id
+    }
+    quantity
+  }
+}`;
+
+export const DELETE_CART_MUTATION = `mutation($productID:ID!){
+  deleteCart(productID:$productID)
 }`;
