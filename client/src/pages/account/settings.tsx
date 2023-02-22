@@ -18,7 +18,10 @@ import {
   ProductDetail,
   User,
 } from '@/components/interfaces/interfaces';
-import { LAPTOP_NAME_CONVERTER } from '@/components/converter/converter';
+import {
+  LAPTOP_NAME_CONVERTER,
+  NAME_SPLITTER,
+} from '@/components/converter/converter';
 import { useSessionStorage } from 'usehooks-ts';
 
 const Profile: NextPage = () => {
@@ -27,8 +30,18 @@ const Profile: NextPage = () => {
   const [token, setToken] = useSessionStorage('token', '');
 
   const [user, setUser] = useState<User | null>(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
+    if (user) {
+      var arr = NAME_SPLITTER(user.name);
+      if (arr != null) {
+        setFirstName(arr[0]);
+        setLastName(arr[1]);
+      }
+    }
+
     if (token) {
       axios
         .post(
@@ -65,7 +78,7 @@ const Profile: NextPage = () => {
                     padding: 0,
                   }}
                 >
-                  HI, {user.name}
+                  HI, {firstName} {lastName}
                 </h2>
                 <p
                   style={{

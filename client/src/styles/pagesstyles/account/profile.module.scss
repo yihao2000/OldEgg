@@ -96,3 +96,36 @@
     width: 20%;
   }
 }
+
+@media (max-width: 600px) {
+  .divider {
+    flex-direction: column-reverse;
+  }
+
+  .leftside {
+  }
+  .rightside {
+    width: 100%;
+    padding: 5%;
+    justify-content: center;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  .userinformationtable {
+    width: 100%;
+  }
+  .leftside {
+    padding: 5%;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  .listitems {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 370px) {
+}

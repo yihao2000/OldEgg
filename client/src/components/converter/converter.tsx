@@ -30,3 +30,7 @@ export const GET_LAPTOP_COMPONENT_VARIANT = (variantList: ProductDetail[]) => {
 
   return variantCount;
 };
+
+export const NAME_SPLITTER = (fullname: string) => {
+  return fullname.match(/[A-Z][a-z]+/g);
+};
