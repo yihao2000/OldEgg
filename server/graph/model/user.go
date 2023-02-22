@@ -1,15 +1,21 @@
 package model
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
-	Banned   bool   `json:"banned"`
-	Role     string `json:"role"`
+	ID                        string     `json:"id"`
+	Name                      string     `json:"name"`
+	Email                     string     `json:"email"`
+	Phone                     string     `json:"phone"`
+	Password                  string     `json:"password"`
+	Banned                    bool       `json:"banned"`
+	Role                      string     `json:"role"`
+	VerificationCode          string     `json:"verificationcode"`
+	VerificationCodeValidTime *time.Time `json:"verificationcodevalidtime"`
 }
 
 func HashPassword(s string) string {

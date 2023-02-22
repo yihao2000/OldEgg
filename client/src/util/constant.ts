@@ -97,8 +97,8 @@ export const PRODUCT_PRODUCTSGROUP_QUERY = `query($id:ID){
 }`;
 
 export const USER_UPDATE_PHONE_MUTATION = `mutation($phone:String!){
-  userUpdatePhone(phone:$phone){
-    phone
+  userUpdateInformation(phone:$phone){
+	id
   }
 }`;
 
@@ -200,4 +200,14 @@ export const PRODUCT_USER_WISHLISTS_QUERY = `query($productId:ID!){
 
 export const DELETE_PRODUCT_FROM_WISHLIST_DETAILS = `mutation($productId:ID!){
   deleteProductFromWishlistDetails(productId:$productId)
+}`;
+
+export const INSERT_USER_VERIFICATION_CODE = `mutation($email:String!, $verificationcode:String!){
+  userInputVerificationCode(email:$email, verificationcode:$verificationcode){
+id
+  }
+}`;
+
+export const VALIDATE_USER_VERIFICATION_CODE = `mutation($email:String!, $verificationcode:String!){
+  validateUserVerificationCode(email:$email, verificationcode:$verificationcode)
 }`;

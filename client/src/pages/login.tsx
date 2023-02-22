@@ -1,15 +1,23 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from '@next/font/google';
-import React, { useState } from 'react';
+import React, { LegacyRef, useEffect, useRef, useState } from 'react';
 import styles from '@/styles/home.module.scss';
 import Link from 'next/link';
 import { links } from '@/util/route';
 import axios from 'axios';
-import { GRAPHQLAPI, LOGIN_QUERY, USER_QUERY } from '@/util/constant';
+import {
+  GRAPHQLAPI,
+  INSERT_USER_VERIFICATION_CODE,
+  LOGIN_QUERY,
+  USER_QUERY,
+  VALIDATE_USER_VERIFICATION_CODE,
+} from '@/util/constant';
 import { FaArrowCircleLeft } from 'react-icons/fa';
 import { useSessionStorage } from 'usehooks-ts';
 import Router, { useRouter } from 'next/router';
+import emailjs from '@emailjs/browser';
+import { v4 } from 'uuid';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -19,8 +27,72 @@ export default function Login() {
   const [loginInvalid, setLoginInvalid] = useState(false);
   const [token, setToken] = useSessionStorage('token', '');
 
+  const [verificationCode, setVerificationCode] = useState('');
+  const [emailRegistered, setEmailRegistered] = useState(false);
+  const [generateVerificationCode, setGenerateVerificationCode] =
+    useState(false);
+  const [verificationCodePrompt, setVerificationCodePrompt] = useState(false);
+  const [inputtedVerificationCode, setInputtedVerificationCode] = useState('');
+  const [verificationCodeInvalid, setVerificationCodeInvalid] = useState(false);
+
+  const form = useRef<HTMLFormElement>(null);
+  const sendVerificationCode = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    axios
+      .post(GRAPHQLAPI, {
+        query: USER_QUERY,
+        variables: {
+          email: email,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.data.data.user != null) {
+          setEmailRegistered(true);
+          setVerificationCodePrompt(true);
+
+          emailjs
+            .sendForm(
+              'service_dsn89wa',
+              'template_upusifi',
+              form.current!,
+              'gM8J9ZjItBS3Hw4je',
+            )
+            .then(
+              (result) => {},
+              (error) => {
+                console.log(error.text);
+              },
+            );
+
+          axios
+            .post(GRAPHQLAPI, {
+              query: INSERT_USER_VERIFICATION_CODE,
+              variables: {
+                email: email,
+                verificationcode: verificationCode,
+              },
+            })
+            .then((res) => {})
+            .catch(() => {
+              console.log('Error');
+            });
+        }
+      })
+      .catch(() => {
+        console.log('Error');
+      });
+  };
+
+  const handleInputtedVerificationCodeChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setInputtedVerificationCode(event.target.value);
+  };
+
   const handleEmailContainerClick = () => {
     setNextPrompt(false);
+    setVerificationCodePrompt(false);
   };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,10 +103,14 @@ export default function Login() {
     setPassword(event.target.value);
   };
 
+  useEffect(() => {
+    setVerificationCode(v4().slice(0, 6));
+  }, [generateVerificationCode]);
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
-    if (!nextPrompt) {
+    if (!nextPrompt && !verificationCodePrompt) {
       axios
         .post(GRAPHQLAPI, {
           query: USER_QUERY,
@@ -55,7 +131,7 @@ export default function Login() {
         .catch(() => {
           console.log('Error');
         });
-    } else {
+    } else if (nextPrompt) {
       axios
         .post(GRAPHQLAPI, {
           query: LOGIN_QUERY,
@@ -73,6 +149,27 @@ export default function Login() {
             setLoginInvalid(false);
             setToken(res.data.data.auth.login.token);
             Router.push('/');
+          }
+        })
+        .catch(() => {
+          console.log('Error');
+        });
+    } else {
+      axios
+        .post(GRAPHQLAPI, {
+          query: VALIDATE_USER_VERIFICATION_CODE,
+          variables: {
+            email: email,
+            verificationcode: inputtedVerificationCode,
+          },
+        })
+        .then((res) => {
+          if (res.data.data.validateUserVerificationCode.token) {
+            setVerificationCodeInvalid(false);
+            setToken(res.data.data.validateUserVerificationCode.token);
+            Router.push('/');
+          } else {
+            setVerificationCodeInvalid(true);
           }
         })
         .catch(() => {
@@ -105,7 +202,7 @@ export default function Login() {
               }}
               onSubmit={handleSubmit}
             >
-              {!nextPrompt && (
+              {!nextPrompt && !verificationCodePrompt && (
                 <input
                   type="email"
                   style={{
@@ -164,6 +261,49 @@ export default function Login() {
                 </div>
               )}
 
+              {verificationCodePrompt && (
+                <div className={styles.formcontainer}>
+                  <div
+                    className={styles.loginemailcontainer}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      columnGap: '0.6em',
+                    }}
+                    onClick={handleEmailContainerClick}
+                  >
+                    <div>
+                      <FaArrowCircleLeft />
+                    </div>
+                    <div
+                      style={{
+                        paddingBottom: '1em',
+                      }}
+                    >
+                      {email}
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    className={styles.formtextinput}
+                    id="verificationcode"
+                    name="verificationcode"
+                    placeholder="Verification Code"
+                    value={inputtedVerificationCode}
+                    style={{ marginBottom: '0.5em' }}
+                    onChange={handleInputtedVerificationCodeChange}
+                  />
+                  {verificationCodeInvalid && (
+                    <div
+                      className={styles.errorMessage}
+                      style={{ paddingBottom: '1em' }}
+                    >
+                      Invalid Verification Code !
+                    </div>
+                  )}
+                </div>
+              )}
+
               {isEmailExist && (
                 <h4
                   className={styles.errorMessage}
@@ -184,9 +324,27 @@ export default function Login() {
               </button>
             </form>
 
-            <button className={styles.formbutton}>
-              GET ONE-TIME SIGN IN CODE
-            </button>
+            <form onSubmit={sendVerificationCode} ref={form}>
+              <input
+                type="text"
+                name="email"
+                defaultValue={email}
+                style={{
+                  display: 'none',
+                }}
+              />
+              <input
+                type="text"
+                defaultValue={verificationCode}
+                style={{
+                  display: 'none',
+                }}
+                name="code"
+              />
+              <button className={styles.formbutton}>
+                GET ONE-TIME SIGN IN CODE
+              </button>
+            </form>
             <h4 className={`${styles.nopadding} ${styles.nomargin}`}>
               <u>What's the One-Time Code?</u>
             </h4>

@@ -84,6 +84,7 @@ export default function UpdateMobilePhone() {
       return;
     }
 
+    console.log(token);
     axios
       .post(
         GRAPHQLAPI,

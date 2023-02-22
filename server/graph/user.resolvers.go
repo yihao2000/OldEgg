@@ -7,7 +7,10 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 	"github.com/yihao2000/gqlgen-todos/service"
 )
@@ -30,6 +33,54 @@ func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
 // UserUpdateInformation is the resolver for the userUpdateInformation field.
 func (r *mutationResolver) UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string) (*model.User, error) {
 	return service.UserUpdateInformation(ctx, currentPassword, newPassword, phone)
+}
+
+// UserInputVerificationCode is the resolver for the userInputVerificationCode field.
+func (r *mutationResolver) UserInputVerificationCode(ctx context.Context, email string, verificationcode string) (*model.User, error) {
+	db := config.GetDB()
+
+	var user model.User
+	if err := db.Model(user).Where("email LIKE ?", email).Take(&user).Error; err != nil {
+		return nil, err
+	}
+
+	user.VerificationCode = verificationcode
+	validtime := time.Now().Add(time.Minute * 15)
+	user.VerificationCodeValidTime = &validtime
+
+	return &user, db.Save(user).Error
+}
+
+// ValidateUserVerificationCode is the resolver for the validateUserVerificationCode field.
+func (r *mutationResolver) ValidateUserVerificationCode(ctx context.Context, email string, verificationcode string) (interface{}, error) {
+	db := config.GetDB()
+
+	var user model.User
+	if err := db.Model(user).Where("email LIKE ?", email).Take(&user).Error; err != nil {
+		return false, err
+	}
+
+	if user.VerificationCode == verificationcode {
+		if time.Now().Before(*user.VerificationCodeValidTime) {
+			token, err := service.JwtGenerate(ctx, user.ID)
+			if err != nil {
+				return nil, err
+			}
+
+			return map[string]interface{}{
+				"token": token,
+			}, nil
+		} else {
+			return false, &gqlerror.Error{
+				Message: "Error, Verification Code Expired !",
+			}
+		}
+
+	}
+
+	return false, &gqlerror.Error{
+		Message: "Error, Verification Code Ga Sama!",
+	}
 }
 
 // User is the resolver for the user field.
@@ -73,4 +124,8 @@ type queryResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *userResolver) Verificationcodevalidtime(ctx context.Context, obj *model.User) (*time.Time, error) {
+	panic(fmt.Errorf("not implemented: Verificationcodevalidtime - verificationcodevalidtime"))
+}
+
 type userResolver struct{ *Resolver }
