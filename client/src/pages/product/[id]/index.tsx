@@ -4,10 +4,12 @@ import Image from 'next/image';
 import styles from '../../../styles/pagesstyles/productdetail.module.scss';
 import Layout from '@/components/layout';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { SyntheticEvent, use, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import {
+  CREATE_WISHLIST_DETAIL_MUTATION,
+  DELETE_PRODUCT_FROM_WISHLIST_DETAILS,
   GRAPHQLAPI,
   PRODUCT_CATEGORY_QUERY,
   PRODUCT_PRODUCTSGROUP_QUERY,
@@ -108,11 +110,9 @@ const ProductDetail: NextPage = () => {
   };
 
   const handleSubmit = () => {
-    console.log(token);
     if (!token) {
       router.push('/login');
     } else {
-      console.log('Masuk');
       setLoading(true);
       setTimeout(() => {
         axios
@@ -132,12 +132,8 @@ const ProductDetail: NextPage = () => {
               },
             },
           )
-          .then((res) => {
-            console.log(loading);
-          })
+          .then((res) => {})
           .catch(() => {
-            console.log(id);
-            console.log(productQuantity);
             router.push('/login');
           });
         setLoading(false);
@@ -220,16 +216,41 @@ const ProductDetail: NextPage = () => {
     var variantlist;
   }, [productsVariant]);
 
-  const AddToWishlistModalContent = (props: AddToWishlistModalParameter) => {
-    const [wishlists, setWishlists] = useState<Wishlist[]>([]);
-    const [checkedWishlists, setCheckedWishlists] = useState<Wishlist[]>([]);
+  const [wishlists, setWishlists] = useState<Wishlist[]>([]);
+  const [checkedWishlists, setCheckedWishlists] = useState<Wishlist[]>([]);
+  const [loadChecked, setLoadChecked] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_WISHLISTS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setWishlists(res.data.data.userwishlists);
+      })
+      .catch((error) => {
+        // setError(true);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (wishlists && product) {
       axios
         .post(
           GRAPHQLAPI,
           {
-            query: USER_WISHLISTS_QUERY,
+            query: PRODUCT_USER_WISHLISTS_QUERY,
+            variables: {
+              productId: product?.id,
+            },
           },
           {
             headers: {
@@ -238,38 +259,98 @@ const ProductDetail: NextPage = () => {
           },
         )
         .then((res) => {
-          setWishlists(res.data.data.userwishlists);
+          setCheckedWishlists(res.data.data.productUserWishlists);
         })
         .catch((error) => {
           // setError(true);
         });
-    }, []);
+    }
+  }, [wishlists, loadChecked, product]);
 
-    useEffect(() => {
-      if (wishlists) {
-        axios
-          .post(
-            GRAPHQLAPI,
-            {
-              query: PRODUCT_USER_WISHLISTS_QUERY,
-              variables: {
-                productId: props.productId,
-              },
+  const AddToWishlistModalContent = (props: AddToWishlistModalParameter) => {
+    const [addingToWishlist, setAddingToWishlist] = useState(false);
+    const handleWishlistSave = () => {
+      setAddingToWishlist(true);
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: DELETE_PRODUCT_FROM_WISHLIST_DETAILS,
+            variables: {
+              productId: props.productId,
             },
-            {
-              headers: {
-                Authorization: 'Bearer ' + token,
-              },
+          },
+
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          )
-          .then((res) => {
-            setCheckedWishlists(res.data.data.productUserWishlists);
-          })
-          .catch((error) => {
-            // setError(true);
+          },
+        )
+        .then((res) => {
+          checkedWishlists.map((c) => {
+            axios
+              .post(
+                GRAPHQLAPI,
+                {
+                  query: CREATE_WISHLIST_DETAIL_MUTATION,
+                  variables: {
+                    wishlistId: c.id,
+                    productId: props.productId,
+                    quantity: 1,
+                  },
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                },
+              )
+              .then((res) => {})
+              .catch(() => {});
           });
+
+          setTimeout(() => {
+            props.handleCloseModal();
+            setLoadChecked(!loadChecked);
+            setAddingToWishlist(false);
+          }, 3000);
+        })
+        .catch(() => {
+          console.log('ERROR');
+        });
+    };
+
+    const handleCheckboxChange = (
+      event: SyntheticEvent,
+      wishlist: Wishlist,
+    ) => {
+      var exist = false;
+      const target = event.target as HTMLInputElement;
+      checkedWishlists.map((c) => {
+        if (c.id == wishlist.id) {
+          setCheckedWishlists(
+            checkedWishlists.filter((item) => {
+              return item.id !== wishlist.id;
+            }),
+          );
+          target.checked = false;
+
+          exist = true;
+        }
+      });
+
+      if (exist) {
+        return;
       }
-    }, [wishlists]);
+
+      var temp = checkedWishlists;
+
+      temp.push(wishlist);
+
+      target.checked = true;
+      setCheckedWishlists(temp);
+    };
 
     return (
       <div className={styles.addtowishlistmodalcontent}>
@@ -282,18 +363,48 @@ const ProductDetail: NextPage = () => {
           Manage Wish Lists{' '}
         </div>
         {wishlists.map((e) => {
-          console.log(checkedWishlists.find((x) => e.id === x.id));
           return (
             <div>
               <input
                 type="checkbox"
-                checked={
+                defaultChecked={
                   checkedWishlists.find((x) => e.id === x.id) != undefined
+                    ? true
+                    : false
                 }
+                value={e.id}
+                id={e.id}
+                title={e.name}
+                onChange={(event: SyntheticEvent) => {
+                  handleCheckboxChange(event, e);
+                }}
               ></input>
+              <label
+                htmlFor={e.id}
+                style={{
+                  // display: 'block',
+                  marginLeft: '5px',
+                  fontSize: '15px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {e.name}
+              </label>
             </div>
           );
         })}
+        <hr style={{ width: '100%' }} />
+        <button
+          className={styles.savewishlistbutton}
+          style={{
+            maxWidth: '20%',
+            alignSelf: 'end',
+          }}
+          onClick={handleWishlistSave}
+        >
+          {addingToWishlist ? <ClipLoader size={15} /> : 'Save'}
+        </button>
       </div>
     );
   };

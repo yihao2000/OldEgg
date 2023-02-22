@@ -197,3 +197,7 @@ export const PRODUCT_USER_WISHLISTS_QUERY = `query($productId:ID!){
     privacy
   }
 } `;
+
+export const DELETE_PRODUCT_FROM_WISHLIST_DETAILS = `mutation($productId:ID!){
+  deleteProductFromWishlistDetails(productId:$productId)
+}`;

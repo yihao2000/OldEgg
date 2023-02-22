@@ -177,6 +177,25 @@ func (r *mutationResolver) DeleteAllWishlistWishlistDetail(ctx context.Context, 
 	return true, db.Delete(&models).Error
 }
 
+// DeleteProductFromWishlistDetails is the resolver for the deleteProductFromWishlistDetails field.
+func (r *mutationResolver) DeleteProductFromWishlistDetails(ctx context.Context, productID string) (bool, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	mutation := fmt.Sprintf("DELETE FROM wishlist_details WHERE wishlist_id IN (SELECT id FROM wishlists WHERE user_id = '%s') AND product_id = '%s'", userID, productID)
+	if err := db.Exec(mutation).Error; err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // Cart is the resolver for the cart field.
 func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart, error) {
 	panic(fmt.Errorf("not implemented: Cart - cart"))

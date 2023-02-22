@@ -205,8 +205,11 @@ export default function UpdateMobilePhone() {
               </button>
 
               <button
+                type="button"
                 className={`${styles.formbutton} ${styles.themebglight}`}
-                onClick={handleSubmit}
+                onClick={() => {
+                  Router.back();
+                }}
               >
                 CANCEL
               </button>

@@ -77,30 +77,31 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		Auth                            func(childComplexity int) int
-		CreateBrand                     func(childComplexity int, input model.NewBrand) int
-		CreateCart                      func(childComplexity int, productID string, quantity int) int
-		CreateCategory                  func(childComplexity int, input model.NewCategory) int
-		CreateProduct                   func(childComplexity int, input model.NewProduct) int
-		CreateProductGroup              func(childComplexity int) int
-		CreateProductVariant            func(childComplexity int, input model.NewProductVariant) int
-		CreatePromo                     func(childComplexity int, input model.NewPromo) int
-		CreateShop                      func(childComplexity int, input model.NewShop) int
-		CreateWishlist                  func(childComplexity int, input model.NewWishlist) int
-		CreateWishlistDetail            func(childComplexity int, wishlistID string, productID string, quantity int) int
-		DeleteAllWishlistWishlistDetail func(childComplexity int, wishlistID string) int
-		DeleteCart                      func(childComplexity int, productID string) int
-		DeleteWishlist                  func(childComplexity int, wishlistID string) int
-		DeleteWishlistDetail            func(childComplexity int, wishlistID string, productID string, quantity int) int
-		UpdateBrand                     func(childComplexity int, input model.NewBrand, lastUpdateID string) int
-		UpdateCart                      func(childComplexity int, productID string, quantity int) int
-		UpdateCategory                  func(childComplexity int, input model.NewCategory, lastUpdateID string) int
-		UpdateProduct                   func(childComplexity int, input model.NewProduct, lastUpdateID string) int
-		UpdateProductVariant            func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
-		UpdatePromo                     func(childComplexity int, input model.NewPromo) int
-		UpdateShop                      func(childComplexity int, input model.NewShop) int
-		UpdateWishlist                  func(childComplexity int, wishlistID string, input model.NewWishlist) int
-		UserUpdateInformation           func(childComplexity int, currentPassword *string, newPassword *string, phone *string) int
+		Auth                             func(childComplexity int) int
+		CreateBrand                      func(childComplexity int, input model.NewBrand) int
+		CreateCart                       func(childComplexity int, productID string, quantity int) int
+		CreateCategory                   func(childComplexity int, input model.NewCategory) int
+		CreateProduct                    func(childComplexity int, input model.NewProduct) int
+		CreateProductGroup               func(childComplexity int) int
+		CreateProductVariant             func(childComplexity int, input model.NewProductVariant) int
+		CreatePromo                      func(childComplexity int, input model.NewPromo) int
+		CreateShop                       func(childComplexity int, input model.NewShop) int
+		CreateWishlist                   func(childComplexity int, input model.NewWishlist) int
+		CreateWishlistDetail             func(childComplexity int, wishlistID string, productID string, quantity int) int
+		DeleteAllWishlistWishlistDetail  func(childComplexity int, wishlistID string) int
+		DeleteCart                       func(childComplexity int, productID string) int
+		DeleteProductFromWishlistDetails func(childComplexity int, productID string) int
+		DeleteWishlist                   func(childComplexity int, wishlistID string) int
+		DeleteWishlistDetail             func(childComplexity int, wishlistID string, productID string, quantity int) int
+		UpdateBrand                      func(childComplexity int, input model.NewBrand, lastUpdateID string) int
+		UpdateCart                       func(childComplexity int, productID string, quantity int) int
+		UpdateCategory                   func(childComplexity int, input model.NewCategory, lastUpdateID string) int
+		UpdateProduct                    func(childComplexity int, input model.NewProduct, lastUpdateID string) int
+		UpdateProductVariant             func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
+		UpdatePromo                      func(childComplexity int, input model.NewPromo) int
+		UpdateShop                       func(childComplexity int, input model.NewShop) int
+		UpdateWishlist                   func(childComplexity int, wishlistID string, input model.NewWishlist) int
+		UserUpdateInformation            func(childComplexity int, currentPassword *string, newPassword *string, phone *string) int
 	}
 
 	Product struct {
@@ -207,6 +208,7 @@ type MutationResolver interface {
 	CreateWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (*model.WishlistDetail, error)
 	DeleteWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (bool, error)
 	DeleteAllWishlistWishlistDetail(ctx context.Context, wishlistID string) (bool, error)
+	DeleteProductFromWishlistDetails(ctx context.Context, productID string) (bool, error)
 	CreateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error)
 	UpdateBrand(ctx context.Context, input model.NewBrand, lastUpdateID string) (*model.Brand, error)
 	CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error)
@@ -514,6 +516,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteCart(childComplexity, args["productID"].(string)), true
+
+	case "Mutation.deleteProductFromWishlistDetails":
+		if e.complexity.Mutation.DeleteProductFromWishlistDetails == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteProductFromWishlistDetails_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteProductFromWishlistDetails(childComplexity, args["productId"].(string)), true
 
 	case "Mutation.deleteWishlist":
 		if e.complexity.Mutation.DeleteWishlist == nil {
@@ -1447,6 +1461,21 @@ func (ec *executionContext) field_Mutation_deleteCart_args(ctx context.Context, 
 		}
 	}
 	args["productID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteProductFromWishlistDetails_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["productId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["productId"] = arg0
 	return args, nil
 }
 
@@ -3478,6 +3507,60 @@ func (ec *executionContext) fieldContext_Mutation_deleteAllWishlistWishlistDetai
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteAllWishlistWishlistDetail_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteProductFromWishlistDetails(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteProductFromWishlistDetails(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteProductFromWishlistDetails(rctx, fc.Args["productId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteProductFromWishlistDetails(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteProductFromWishlistDetails_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -10196,6 +10279,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteAllWishlistWishlistDetail(ctx, field)
+			})
+
+		case "deleteProductFromWishlistDetails":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteProductFromWishlistDetails(ctx, field)
 			})
 
 		case "createBrand":

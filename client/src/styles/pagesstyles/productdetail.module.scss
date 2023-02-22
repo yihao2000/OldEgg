@@ -206,7 +206,27 @@
 .addtowishlistmodalcontent {
   display: flex;
   flex-direction: column;
-  row-gap: 20%;
+  row-gap: 20px;
+}
+
+.savewishlistbutton {
+  display: inline-block;
+  position: relative;
+  padding: 8px 1em;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: 1px solid rgb(var(--accent-rgb));
+  background: rgb(var(--accent-rgb));
+  color: #222;
+  font-weight: bold;
+  font-stretch: condensed;
+  letter-spacing: 1px;
+  text-align: center;
+  text-decoration: none !important;
+
+  vertical-align: middle;
+  cursor: pointer;
 }
 
 @media (max-width: 1200px) {

@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import styles from '@/styles/pagesstyles/account/profile.module.css';
+import styles from '@/styles/pagesstyles/account/profile.module.scss';
 import Layout from '@/components/layout';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
