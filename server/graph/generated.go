@@ -147,7 +147,7 @@ type ComplexityRoot struct {
 		Product              func(childComplexity int, id *string, name *string) int
 		ProductGroup         func(childComplexity int, id *string) int
 		ProductUserWishlists func(childComplexity int, productID string) int
-		Products             func(childComplexity int, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string) int
+		Products             func(childComplexity int, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string, search *model.SearchProduct) int
 		ProductsGroup        func(childComplexity int, category *string, brand *string, productgroup *string, shop *string) int
 		Promos               func(childComplexity int) int
 		Protected            func(childComplexity int) int
@@ -270,7 +270,7 @@ type QueryResolver interface {
 	Brand(ctx context.Context, id *string, name *string) (*model.Brand, error)
 	Categories(ctx context.Context) ([]*model.Category, error)
 	Category(ctx context.Context, id *string, name *string) (*model.Category, error)
-	Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string) ([]*model.Product, error)
+	Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string, search *model.SearchProduct) ([]*model.Product, error)
 	Product(ctx context.Context, id *string, name *string) (*model.Product, error)
 	ProductsGroup(ctx context.Context, category *string, brand *string, productgroup *string, shop *string) ([]*model.Product, error)
 	ProductGroup(ctx context.Context, id *string) (*model.ProductGroup, error)
@@ -975,7 +975,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Products(childComplexity, args["shopId"].(*string), args["brandId"].(*string), args["categoryId"].(*string), args["limit"].(*int), args["offset"].(*int), args["productGroupId"].(*string)), true
+		return e.complexity.Query.Products(childComplexity, args["shopId"].(*string), args["brandId"].(*string), args["categoryId"].(*string), args["limit"].(*int), args["offset"].(*int), args["productGroupId"].(*string), args["search"].(*model.SearchProduct)), true
 
 	case "Query.productsGroup":
 		if e.complexity.Query.ProductsGroup == nil {
@@ -1303,6 +1303,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewShop,
 		ec.unmarshalInputNewUser,
 		ec.unmarshalInputNewWishlist,
+		ec.unmarshalInputSearchProduct,
 	)
 	first := true
 
@@ -2205,6 +2206,15 @@ func (ec *executionContext) field_Query_products_args(ctx context.Context, rawAr
 		}
 	}
 	args["productGroupId"] = arg5
+	var arg6 *model.SearchProduct
+	if tmp, ok := rawArgs["search"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("search"))
+		arg6, err = ec.unmarshalOSearchProduct2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐSearchProduct(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["search"] = arg6
 	return args, nil
 }
 
@@ -6958,7 +6968,7 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Products(rctx, fc.Args["shopId"].(*string), fc.Args["brandId"].(*string), fc.Args["categoryId"].(*string), fc.Args["limit"].(*int), fc.Args["offset"].(*int), fc.Args["productGroupId"].(*string))
+		return ec.resolvers.Query().Products(rctx, fc.Args["shopId"].(*string), fc.Args["brandId"].(*string), fc.Args["categoryId"].(*string), fc.Args["limit"].(*int), fc.Args["offset"].(*int), fc.Args["productGroupId"].(*string), fc.Args["search"].(*model.SearchProduct))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -11129,6 +11139,90 @@ func (ec *executionContext) unmarshalInputNewWishlist(ctx context.Context, obj i
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSearchProduct(ctx context.Context, obj interface{}) (model.SearchProduct, error) {
+	var it model.SearchProduct
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"keyword", "minPrice", "maxPrice", "orderBy", "categoryID", "isDiscount", "createdAtRange", "highRating"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "keyword":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
+			it.Keyword, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "minPrice":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minPrice"))
+			it.MinPrice, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "maxPrice":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxPrice"))
+			it.MaxPrice, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+			it.OrderBy, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "categoryID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
+			it.CategoryID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isDiscount":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDiscount"))
+			it.IsDiscount, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtRange":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtRange"))
+			it.CreatedAtRange, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "highRating":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("highRating"))
+			it.HighRating, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -14003,6 +14097,14 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOSearchProduct2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐSearchProduct(ctx context.Context, v interface{}) (*model.SearchProduct, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSearchProduct(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

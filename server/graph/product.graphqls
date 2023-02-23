@@ -68,6 +68,16 @@ input NewProductVariant{
     validTo: Time
 }
 
+input SearchProduct {
+  keyword: String
+  minPrice: Int
+  maxPrice: Int
+  orderBy: String
+  categoryID: String
+  isDiscount: Boolean
+  createdAtRange: Int
+  highRating: Boolean
+}
 
 
 
@@ -94,9 +104,11 @@ extend type Query{
     categories: [Category!]! @goField(forceResolver: true)
     category(id: ID, name: String): Category! @goField(forceResolver: true)
 
-    products(shopId:String, brandId: String, categoryId: String, limit: Int, offset: Int, productGroupId: ID): [Product!]! @goField(forceResolver: true)
+    products(shopId:String, brandId: String, categoryId: String, limit: Int, offset: Int, productGroupId: ID, search: SearchProduct): [Product!]! @goField(forceResolver: true)
     product(id: ID, name: String): Product! @goField(forceResolver: true)
     productsGroup(category: ID, brand: ID, productgroup: ID, shop: ID): [Product!]! @goField(forceResolver: true)
 
     productGroup(id: ID): ProductGroup! @goField(forceResolver: true)
+
+    
 }

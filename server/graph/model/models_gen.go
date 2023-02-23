@@ -74,3 +74,14 @@ type NewWishlist struct {
 	Name    string `json:"name"`
 	Privacy string `json:"privacy"`
 }
+
+type SearchProduct struct {
+	Keyword        *string `json:"keyword"`
+	MinPrice       *int    `json:"minPrice"`
+	MaxPrice       *int    `json:"maxPrice"`
+	OrderBy        *string `json:"orderBy"`
+	CategoryID     *string `json:"categoryID"`
+	IsDiscount     *bool   `json:"isDiscount"`
+	CreatedAtRange *int    `json:"createdAtRange"`
+	HighRating     *bool   `json:"highRating"`
+}

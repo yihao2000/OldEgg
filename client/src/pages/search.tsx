@@ -9,12 +9,12 @@ import { useEffect } from 'react';
 
 const Search: NextPage = () => {
   const router = useRouter();
-  const { keyword, category } = router.query;
+  const { search, category } = router.query;
 
   useEffect(() => {
-    console.log(keyword);
+    console.log(search);
     console.log(category);
-  }, [keyword]);
+  }, [search]);
   return (
     <Layout>
       <div></div>

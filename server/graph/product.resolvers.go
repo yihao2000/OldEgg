@@ -211,7 +211,7 @@ func (r *queryResolver) Category(ctx context.Context, id *string, name *string) 
 }
 
 // Products is the resolver for the products field.
-func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string) ([]*model.Product, error) {
+func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string, search *model.SearchProduct) ([]*model.Product, error) {
 	db := config.GetDB()
 
 	var models []*model.Product
@@ -232,6 +232,42 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *s
 
 	if categoryID != nil {
 		temp = temp.Where("category_id = ?", categoryID).Order("RANDOM()")
+	}
+
+	if search != nil {
+		if search.IsDiscount != nil && *search.IsDiscount {
+			temp = temp.Order("discount DESC").Limit(15)
+		} else {
+			if search.HighRating != nil && *search.HighRating {
+				temp = temp.Select("products.id, name, products.description, price, discount, metadata, category_id, shop_id, products.created_at, stock, original_product_id, valid_to").Joins("JOIN reviews ON products.id = reviews.product_id").Group("products.id").Having("AVG(reviews.rating) >= 4")
+			}
+			if search.MinPrice != nil {
+				temp = temp.Where("price >= ?", *search.MinPrice)
+			}
+			if search.MaxPrice != nil {
+				temp = temp.Where("price <= ?", *search.MaxPrice)
+			}
+			if search.Keyword != nil {
+				temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*search.Keyword+"%", "%"+*search.Keyword+"%")
+			}
+			if search.CategoryID != nil {
+				temp = temp.Where("category_id = ?", *search.CategoryID)
+			}
+			if search.OrderBy != nil {
+				if *search.OrderBy == "newest" {
+					temp = temp.Order("products.created_at DESC")
+				} else if *search.OrderBy == "highest-price" {
+					temp = temp.Order("price DESC")
+				} else if *search.OrderBy == "lowest-price" {
+					temp = temp.Order("price ASC")
+				}
+			}
+
+			if search.CreatedAtRange != nil {
+				temp = temp.Where("DATEDIFF(NOW(), products.created_at) <= ?", *search.CreatedAtRange)
+			}
+
+		}
 	}
 
 	return models, temp.Find(&models).Error
@@ -262,13 +298,3 @@ func (r *queryResolver) ProductGroup(ctx context.Context, id *string) (*model.Pr
 func (r *Resolver) Product() ProductResolver { return &productResolver{r} }
 
 type productResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *productResolver) Price(ctx context.Context, obj *model.Product) (float64, error) {
-	panic(fmt.Errorf("not implemented: Price - price"))
-}
