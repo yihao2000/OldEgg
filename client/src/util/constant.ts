@@ -57,6 +57,47 @@ export const PRODUCTS_QUERY = `query($shopId:String, $brandId:String, $categoryI
   }
 }`;
 
+export const SEARCH_PRODUCTS_QUERY = `query($keyword:String, $minPrice: Float, $maxPrice: Float, $orderBy: String, $categoryID: String, $createdAtRange: Int, $highRating: Boolean, $limit: Int, $offset: Int){
+  products(limit:$limit, offset:$offset,search:{
+    keyword:$keyword
+    minPrice:$minPrice
+    maxPrice:$maxPrice
+    orderBy:$orderBy
+    categoryID:$categoryID
+    createdAtRange:$createdAtRange
+    highRating:$highRating
+  }){
+    id
+    name
+    image
+    price
+    quantity
+    description
+    productgroup{
+      id
+    }
+    brand{
+      id
+      name
+      image
+      description
+    }
+    category{
+      id
+      name
+      description
+    }
+    shop{
+      id
+      name
+      image
+      aboutus
+      description
+    }
+
+  }
+}`;
+
 export const PRODUCT_QUERY = `query($id:ID, $name:String){
   product(id:$id, name:$name){
     id

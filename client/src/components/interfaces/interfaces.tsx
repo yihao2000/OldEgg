@@ -1,14 +1,18 @@
 export interface Product {
   id: string;
-  productgroupId: string;
-  brandId: string;
-  categoryId: string;
-  shopId: string;
+  productgroup: ProductGroup;
+  brand: Brand;
+  category: string;
+  shop: Shop;
   name: string;
   description: string[];
   price: number;
   image: string;
   quantity: number;
+}
+
+export interface ProductGroup {
+  id: string;
 }
 
 export interface Brand {

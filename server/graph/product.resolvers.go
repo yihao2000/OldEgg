@@ -190,6 +190,13 @@ func (r *productResolver) Shop(ctx context.Context, obj *model.Product) (*model.
 	return shop, db.First(shop, "id = ?", obj.ShopId).Error
 }
 
+// Reviews is the resolver for the reviews field.
+func (r *productResolver) Reviews(ctx context.Context, obj *model.Product) ([]*model.Review, error) {
+	db := config.GetDB()
+	var models []*model.Review
+	return models, db.Where("product_id = ?", obj.ID).Order("created_at DESC").Find(&models).Error
+}
+
 // Brands is the resolver for the brands field.
 func (r *queryResolver) Brands(ctx context.Context) ([]*model.Brand, error) {
 	panic(fmt.Errorf("not implemented: Brands - brands"))
@@ -256,9 +263,9 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *s
 			if search.OrderBy != nil {
 				if *search.OrderBy == "newest" {
 					temp = temp.Order("products.created_at DESC")
-				} else if *search.OrderBy == "highest-price" {
+				} else if *search.OrderBy == "highestprice" {
 					temp = temp.Order("price DESC")
-				} else if *search.OrderBy == "lowest-price" {
+				} else if *search.OrderBy == "lowestprice" {
 					temp = temp.Order("price ASC")
 				}
 			}
@@ -268,6 +275,9 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *s
 			}
 
 		}
+	}
+	if limit != nil {
+		temp = temp.Limit(*limit)
 	}
 
 	return models, temp.Find(&models).Error
@@ -298,3 +308,13 @@ func (r *queryResolver) ProductGroup(ctx context.Context, id *string) (*model.Pr
 func (r *Resolver) Product() ProductResolver { return &productResolver{r} }
 
 type productResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *productResolver) Review(ctx context.Context, obj *model.Product) ([]*model.Review, error) {
+	panic(fmt.Errorf("not implemented: Review - review"))
+}

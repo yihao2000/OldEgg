@@ -40,6 +40,8 @@ type Product{
   image: String!
   quantity: Int!
   validTo: Time
+  reviews: [Review!]! @goField(forceResolver: true)
+
 }
 
 
@@ -70,8 +72,8 @@ input NewProductVariant{
 
 input SearchProduct {
   keyword: String
-  minPrice: Int
-  maxPrice: Int
+  minPrice: Float
+  maxPrice: Float
   orderBy: String
   categoryID: String
   isDiscount: Boolean
