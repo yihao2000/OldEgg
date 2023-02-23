@@ -7,9 +7,11 @@ import {
 } from './interfaces/interfaces';
 import { useEffect, useState, SyntheticEvent } from 'react';
 import {
+  CREATE_SAVED_FOR_LATER_MUTATION,
   CREATE_WISHLIST_DETAIL_MUTATION,
   DELETE_CART_MUTATION,
   DELETE_PRODUCT_FROM_WISHLIST_DETAILS,
+  DELETE_SAVED_FOR_LATER_MUTATION,
   GRAPHQLAPI,
   PRODUCT_USER_WISHLISTS_QUERY,
   UPDATE_CART_MUTATION,
@@ -20,11 +22,13 @@ import { useSessionStorage } from 'usehooks-ts';
 import { FaHeart, FaTrashAlt, FaBookmark } from 'react-icons/fa';
 import { ClipLoader } from 'react-spinners';
 import Modal from './modal/modal';
+import { LAPTOP_NAME_CONVERTER } from './converter/converter';
 
 interface Parameter {
   cart: Cart;
   reloadComponent: Function;
   reload: boolean;
+  mode: string;
 }
 
 const CartCard = (props: Parameter) => {
@@ -48,6 +52,7 @@ const CartCard = (props: Parameter) => {
   };
 
   useEffect(() => {
+    // console.log(props.cart.quantity);
     setCartQuantity(props.cart.quantity);
   }, []);
 
@@ -177,7 +182,26 @@ const CartCard = (props: Parameter) => {
                   },
                 )
                 .then((res) => {
-                  console.log(res);
+                  props.reloadComponent();
+                })
+                .catch(() => {});
+
+              axios
+                .post(
+                  GRAPHQLAPI,
+                  {
+                    query: DELETE_SAVED_FOR_LATER_MUTATION,
+                    variables: {
+                      productID: param.productId,
+                    },
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  },
+                )
+                .then((res) => {
                   props.reloadComponent();
                 })
                 .catch(() => {});
@@ -355,6 +379,97 @@ const CartCard = (props: Parameter) => {
       });
   };
 
+  const handleRemoveClick = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: DELETE_CART_MUTATION,
+          variables: {
+            productID: props.cart.product.id,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then(() => {
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: DELETE_SAVED_FOR_LATER_MUTATION,
+              variables: {
+                productID: props.cart.product.id,
+              },
+            },
+            {
+              headers: {
+                Authorization: 'Bearer ' + token,
+              },
+            },
+          )
+          .then(() => {
+            props.reloadComponent();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleSaveForLaterClick = () => {
+    console.log(cartQuantity);
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CREATE_SAVED_FOR_LATER_MUTATION,
+          variables: {
+            productId: props.cart.product.id,
+            quantity: cartQuantity,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then(() => {
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: DELETE_CART_MUTATION,
+              variables: {
+                productID: props.cart.product.id,
+              },
+            },
+            {
+              headers: {
+                Authorization: 'Bearer ' + token,
+              },
+            },
+          )
+          .then(() => {
+            props.reloadComponent();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log('kesini');
+        console.log(err);
+      });
+  };
+
   return (
     <div className={styles.cartproductcontainer}>
       <div className={styles.cartproductcontainerleftside}>
@@ -370,7 +485,9 @@ const CartCard = (props: Parameter) => {
         <div className={styles.upperpart}>
           <div className={styles.cartproductinformationcontainer}>
             <div className={styles.iteminfo}>
-              <div className={styles.itemname}>{props.cart.product.name}</div>
+              <div className={styles.itemname}>
+                {LAPTOP_NAME_CONVERTER(props.cart.product.name)}
+              </div>
               <div className={styles.itemshop}>
                 Sold by{' '}
                 <span
@@ -385,29 +502,34 @@ const CartCard = (props: Parameter) => {
           </div>
 
           <div className={styles.cartquantityformcontainer}>
-            <div className={styles2.quantitycontainer}>
-              <input
-                style={{
-                  userSelect: 'none',
-                }}
-                type="number"
-                className={styles2.quantityfield}
-                value={cartQuantity}
-                onChange={handleQuantityChange}
-              />
-              <button
-                className={`${styles2.quantityarrow} ${styles2.uparrow}`}
-                onClick={handleIncreaseQuantity}
-              >
-                +
-              </button>
-              <button
-                className={`${styles2.quantityarrow} ${styles2.downarrow}`}
-                onClick={handleDecreaseQuantity}
-              >
-                -
-              </button>
-            </div>
+            {props.mode == 'cart' && (
+              <div className={styles2.quantitycontainer}>
+                <input
+                  style={{
+                    userSelect: 'none',
+                  }}
+                  type="number"
+                  className={styles2.quantityfield}
+                  value={cartQuantity}
+                  onChange={handleQuantityChange}
+                />
+
+                <button
+                  className={`${styles2.quantityarrow} ${styles2.uparrow}`}
+                  onClick={handleIncreaseQuantity}
+                >
+                  +
+                </button>
+                <button
+                  className={`${styles2.quantityarrow} ${styles2.downarrow}`}
+                  onClick={handleDecreaseQuantity}
+                >
+                  -
+                </button>
+              </div>
+            )}
+
+            {props.mode == 'savedforlater' && cartQuantity}
           </div>
           <div className={styles.producttotalpricecontainer}>${totalPrice}</div>
         </div>
@@ -423,13 +545,24 @@ const CartCard = (props: Parameter) => {
               <FaHeart fontSize={13} />
               <span className={styles.buttonlabel}>MOVE TO WISHLIST</span>
             </button>
-            <button>
+            {props.mode == 'cart' && (
+              <button onClick={handleSaveForLaterClick}>
+                {' '}
+                <FaBookmark fontSize={13} />
+                <span className={styles.buttonlabel}>SAVE FOR LATER </span>
+              </button>
+            )}
+          </div>
+          <div className={styles.cartactioncontainer}>
+            <button
+              onClick={handleRemoveClick}
+              className={styles.cartactioncontainer}
+            >
               {' '}
-              <FaBookmark fontSize={13} />
-              <span className={styles.buttonlabel}>SAVE FOR LATER </span>
+              <FaTrashAlt fontSize={13} />
+              <span className={styles.buttonlabel}>REMOVE</span>
             </button>
           </div>
-          <div className={styles.cartremovecontainer}>bb</div>
         </div>
       </div>
       {openAddToWishlistModal && (

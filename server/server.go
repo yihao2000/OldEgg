@@ -40,7 +40,7 @@ func main() {
 	db.AutoMigrate(&model.Wishlist{})
 	db.AutoMigrate(&model.WishlistDetail{})
 	db.AutoMigrate(&model.Cart{})
-
+	db.AutoMigrate(&model.SavedForLater{})
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{

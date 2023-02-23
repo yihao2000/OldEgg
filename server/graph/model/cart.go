@@ -27,3 +27,11 @@ type WishlistDetail struct {
 	Quantity   int       `json:"quantity"`
 	DateAdded  time.Time `json:"dateAdded"`
 }
+
+type SavedForLater struct {
+	UserID    string   `json:"userID" gorm:"primaryKey"`
+	User      *User    `json:"user"`
+	ProductID string   `json:"productID" gorm:"primaryKey"`
+	Product   *Product `json:"product"`
+	Quantity  int      `json:"quantity"`
+}

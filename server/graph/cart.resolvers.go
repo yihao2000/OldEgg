@@ -104,6 +104,25 @@ func (r *mutationResolver) DeleteCart(ctx context.Context, productID string) (bo
 	return true, db.Delete(model).Error
 }
 
+// DeleteAllCart is the resolver for the deleteAllCart field.
+func (r *mutationResolver) DeleteAllCart(ctx context.Context) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.Cart
+	if err := db.Where("user_id = ?", userID).Find(&models).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(&models).Error
+}
+
 // CreateWishlist is the resolver for the createWishlist field.
 func (r *mutationResolver) CreateWishlist(ctx context.Context, input model.NewWishlist) (*model.Wishlist, error) {
 	db := config.GetDB()
@@ -238,18 +257,61 @@ func (r *mutationResolver) DeleteProductFromWishlistDetails(ctx context.Context,
 }
 
 // CreateSavedForLater is the resolver for the createSavedForLater field.
-func (r *mutationResolver) CreateSavedForLater(ctx context.Context, userID string, productID string, quantity int) (*model.SavedForLater, error) {
-	panic(fmt.Errorf("not implemented: CreateSavedForLater - createSavedForLater"))
+func (r *mutationResolver) CreateSavedForLater(ctx context.Context, productID string, quantity int) (*model.SavedForLater, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	wishlist := &model.SavedForLater{
+		UserID:    userID,
+		ProductID: productID,
+		Quantity:  quantity,
+	}
+
+	return wishlist, db.Model(wishlist).Create(&wishlist).Error
 }
 
 // DeleteSavedForLater is the resolver for the deleteSavedForLater field.
-func (r *mutationResolver) DeleteSavedForLater(ctx context.Context, userID string, productID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteSavedForLater - deleteSavedForLater"))
+func (r *mutationResolver) DeleteSavedForLater(ctx context.Context, productID string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.SavedForLater)
+	if err := db.First(model, "user_id = ? AND product_id = ?", userID, productID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // DeleteAllSavedForLater is the resolver for the deleteAllSavedForLater field.
-func (r *mutationResolver) DeleteAllSavedForLater(ctx context.Context, userID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteAllSavedForLater - deleteAllSavedForLater"))
+func (r *mutationResolver) DeleteAllSavedForLater(ctx context.Context) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.SavedForLater
+	if err := db.Where("user_id = ?", userID).Find(&models).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(&models).Error
 }
 
 // Cart is the resolver for the cart field.
@@ -338,14 +400,36 @@ func (r *queryResolver) Wishlist(ctx context.Context, wishlistID string) (*model
 	return wishlist, db.First(wishlist, "id = ?", wishlistID).Error
 }
 
+// SavedForLaters is the resolver for the savedForLaters field.
+func (r *queryResolver) SavedForLaters(ctx context.Context) ([]*model.SavedForLater, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.SavedForLater
+	return models, db.Where("user_id = ?", id).Find(&models).Error
+}
+
 // User is the resolver for the user field.
 func (r *savedForLaterResolver) User(ctx context.Context, obj *model.SavedForLater) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	db := config.GetDB()
+	user := new(model.User)
+
+	return user, db.First(user, "id = ?", obj.UserID).Error
 }
 
 // Product is the resolver for the product field.
 func (r *savedForLaterResolver) Product(ctx context.Context, obj *model.SavedForLater) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+	db := config.GetDB()
+	product := new(model.Product)
+
+	return product, db.Where("id = ?", obj.ProductID).Order("valid_to ASC").Limit(1).Find(&product).Error
 }
 
 // User is the resolver for the user field.

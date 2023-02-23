@@ -245,3 +245,46 @@ export const UPDATE_CART_MUTATION = `mutation($productID:ID!, $quantity:Int!){
 export const DELETE_CART_MUTATION = `mutation($productID:ID!){
   deleteCart(productID:$productID)
 }`;
+
+export const CREATE_SAVED_FOR_LATER_MUTATION = `mutation($productId:ID!, $quantity:Int!){
+  createSavedForLater(productId:$productId, quantity:$quantity){
+    user{
+      id
+    }
+    product{
+      id
+    }
+    quantity
+  }
+}`;
+
+export const USER_SAVED_FOR_LATERS_QUERY = `query{
+  savedForLaters{
+    product{
+      id
+      name
+      price
+      image
+      description
+      quantity
+      shop{
+        id
+        name
+      }
+
+    }
+    quantity
+  }
+}`;
+
+export const DELETE_SAVED_FOR_LATER_MUTATION = `mutation($productID:ID!){
+  deleteSavedForLater(productId:$productID)
+}`;
+
+export const DELETE_ALL_SAVED_FOR_LATER = `mutation{
+  deleteAllSavedForLater
+}`;
+
+export const DELETE_ALL_CART = `mutation{
+  deleteAllCart
+}`;

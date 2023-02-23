@@ -74,10 +74,3 @@ type NewWishlist struct {
 	Name    string `json:"name"`
 	Privacy string `json:"privacy"`
 }
-
-type SavedForLater struct {
-	User      *User     `json:"user"`
-	Product   *Product  `json:"product"`
-	Quantity  int       `json:"quantity"`
-	DateAdded time.Time `json:"dateAdded"`
-}

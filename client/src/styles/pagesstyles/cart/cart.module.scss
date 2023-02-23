@@ -92,6 +92,11 @@
 
 .itemname {
   width: 100%;
+
+  text-overflow: ellipsis;
+  max-height: 20%;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .itemshop {

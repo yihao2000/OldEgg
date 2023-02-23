@@ -10,6 +10,7 @@ import axios from 'axios';
 import {
   CREATE_WISHLIST_DETAIL_MUTATION,
   DELETE_PRODUCT_FROM_WISHLIST_DETAILS,
+  DELETE_SAVED_FOR_LATER_MUTATION,
   GRAPHQLAPI,
   PRODUCT_CATEGORY_QUERY,
   PRODUCT_PRODUCTSGROUP_QUERY,
@@ -142,6 +143,26 @@ const ProductDetail: NextPage = () => {
         setTimeout(() => {
           setSuccess(false);
         }, 7000);
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: DELETE_SAVED_FOR_LATER_MUTATION,
+              variables: {
+                productID: id,
+              },
+            },
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          )
+          .then(() => {})
+          .catch(() => {
+            router.push('/login');
+          });
       }, 2000);
     }
   };
