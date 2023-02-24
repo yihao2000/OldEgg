@@ -41,7 +41,7 @@ type Product{
   quantity: Int!
   validTo: Time
   reviews: [Review!]! @goField(forceResolver: true)
-
+  discount: Float!
 }
 
 
@@ -55,6 +55,7 @@ input NewProduct{
     image: String!
     quantity: Int!
     validTo: Time
+    discount: Float!
 }
 
 input NewProductVariant{
@@ -68,6 +69,7 @@ input NewProductVariant{
     image: String!
     quantity: Int!
     validTo: Time
+    discount: Float!
 }
 
 input SearchProduct {

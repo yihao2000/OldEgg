@@ -2,6 +2,7 @@
   display: flex;
   flex-wrap: wrap;
   padding: 60px;
+  gap: 2%;
 }
 
 .leftsection {
@@ -9,7 +10,7 @@
 }
 
 .rightsection {
-  width: 30%;
+  width: 25%;
 }
 
 .headercontainer {
@@ -25,7 +26,7 @@
   align-items: center;
 }
 
-.noborderbutton {
+@mixin buttondefault {
   align-items: center;
   padding: 0;
   margin: 0;
@@ -42,6 +43,10 @@
   text-decoration: none !important;
   text-transform: uppercase;
   vertical-align: middle;
+}
+
+.noborderbutton {
+  @include buttondefault();
   background-color: transparent;
   border: transparent;
 }
@@ -124,4 +129,46 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+}
+
+.cartsummarycontainer {
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  row-gap: 20px;
+  flex-direction: column;
+}
+
+@mixin spacebetween() {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.totalitemcontainer {
+  @include spacebetween();
+}
+
+.estimateddeliverycontainer {
+  @include spacebetween();
+}
+
+.labelnopadding {
+  padding: 0;
+  margin: 0;
+}
+
+.horizontalline {
+  width: 100%;
+}
+
+.estimatedtotalcontainer {
+  @include spacebetween();
+}
+
+.checkoutbutton {
+  @include buttondefault();
+  background-color: rgba(var(--accent-rgb));
+  color: black;
+  font-weight: bold;
 }

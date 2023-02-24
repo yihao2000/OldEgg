@@ -54,6 +54,7 @@ export const PRODUCTS_QUERY = `query($shopId:String, $brandId:String, $categoryI
     name
     image
     price
+    discount
   }
 }`;
 
@@ -73,6 +74,7 @@ export const SEARCH_PRODUCTS_QUERY = `query($keyword:String, $minPrice: Float, $
     price
     quantity
     description
+    discount
     productgroup{
       id
     }
@@ -103,6 +105,7 @@ export const PRODUCT_QUERY = `query($id:ID, $name:String){
     id
    name
     description
+    discount
     brand{
       id
       name
@@ -167,6 +170,7 @@ export const PRODUCT_CATEGORY_QUERY = `query($categoryId:String!, $limit:Int!){
     name
     image
     price
+    discount
   }
 }`;
 

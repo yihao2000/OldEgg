@@ -10,6 +10,7 @@ interface Product {
   image: string;
   name: string;
   price: number;
+  discount: number;
 }
 
 const SearchProductcard = (props: Product) => {
@@ -25,7 +26,61 @@ const SearchProductcard = (props: Product) => {
             <b>{props.name}</b>
           </p>
         </Link>
-        <p style={{ fontSize: '1.2em' }}>$ {props.price}</p>
+        {props.discount == 0 && (
+          <p style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
+            $ {props.price.toFixed(2)}
+          </p>
+        )}
+
+        {props.discount != 0 && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  fontSize: '1.2em',
+                  display: 'inline ',
+                  fontWeight: 'bold',
+                }}
+              >
+                ${' '}
+                {(props.price - (props.price * props.discount) / 100).toFixed(
+                  2,
+                )}
+              </p>
+              <p
+                style={{
+                  display: 'inline',
+                  textDecoration: 'line-through',
+                  fontSize: '0.8em',
+                  color: 'gray',
+                  marginLeft: '5px',
+                }}
+              >
+                ${props.price}
+              </p>
+            </div>
+            <div>
+              <p
+                style={{
+                  display: 'inline',
+                  fontWeight: 'bold',
+                  fontSize: '0.8em',
+                  color: 'white',
+                  backgroundColor: 'red',
+                  padding: '0.5em',
+                  marginLeft: '5px',
+                }}
+              >
+                SAVE {props.discount}%
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

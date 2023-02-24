@@ -88,6 +88,7 @@ const ProductRecommendations = () => {
               name={LAPTOP_NAME_CONVERTER(product.name)}
               price={product.price}
               key={product.id}
+              discount={product.discount}
             />
           );
         })}

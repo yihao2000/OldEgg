@@ -506,9 +506,37 @@ const ProductDetail: NextPage = () => {
             <hr className={styles.horizontaldivider} />
 
             <span style={{ display: 'block' }}>Estimated GST Inclusive</span>
-            <span className={styles.pricelabel}>
-              <b>${product?.price}</b>
-            </span>
+            <div className={styles.pricecontainer}>
+              <div className={styles.pricelabelcontainer}>
+                {product?.discount == 0 && (
+                  <span className={styles.pricelabel}>
+                    <b>${product?.price.toFixed(2)}</b>
+                  </span>
+                )}
+                {product?.discount != 0 && product?.price && (
+                  <div style={{ display: 'flex' }}>
+                    {' '}
+                    <span className={styles.pricelabel}>
+                      <b>
+                        $
+                        {(
+                          product?.price -
+                          (product?.price * product?.discount) / 100
+                        ).toFixed(2)}
+                      </b>
+                    </span>
+                    <span className={styles.discountedpricelabel}>
+                      ${product.price}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {product?.discount != 0 && (
+                <p className={styles.discountlabel}>
+                  SAVE {product?.discount}%
+                </p>
+              )}
+            </div>
 
             <div className={styles.quantityformcontainer}>
               <div className={styles.quantitycontainer}>
@@ -576,6 +604,7 @@ const ProductDetail: NextPage = () => {
             {similarProducts &&
               similarProducts.map((e) => (
                 <ProductCard
+                  discount={e.discount}
                   id={e.id}
                   image={e.image}
                   name={e.name}

@@ -32,6 +32,7 @@ type NewProduct struct {
 	Image       string     `json:"image"`
 	Quantity    int        `json:"quantity"`
 	ValidTo     *time.Time `json:"validTo"`
+	Discount    float64    `json:"discount"`
 }
 
 type NewProductVariant struct {
@@ -45,6 +46,7 @@ type NewProductVariant struct {
 	Image          string     `json:"image"`
 	Quantity       int        `json:"quantity"`
 	ValidTo        *time.Time `json:"validTo"`
+	Discount       float64    `json:"discount"`
 }
 
 type NewPromo struct {

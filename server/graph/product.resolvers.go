@@ -134,6 +134,7 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewPro
 			Image:          input.Image,
 			Quantity:       input.Quantity,
 			ValidTo:        input.ValidTo,
+			Discount:       input.Discount,
 		}
 		if err := db.Model(product).Create(&product).Error; err != nil {
 			return nil, err
@@ -315,6 +316,9 @@ type productResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *productResolver) Discount(ctx context.Context, obj *model.Product) (float64, error) {
+	panic(fmt.Errorf("not implemented: Discount - discount"))
+}
 func (r *productResolver) Review(ctx context.Context, obj *model.Product) ([]*model.Review, error) {
 	panic(fmt.Errorf("not implemented: Review - review"))
 }

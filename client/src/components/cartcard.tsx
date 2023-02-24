@@ -59,8 +59,9 @@ const CartCard = (props: Parameter) => {
   useEffect(() => {
     if (cartQuantity != 0) {
       setTotalPrice(cartQuantity * props.cart.product.price);
+      props.reloadComponent();
     }
-  }, [reload, props.reload, cartQuantity]);
+  }, [reload, cartQuantity]);
 
   // useEffect(() => {
 

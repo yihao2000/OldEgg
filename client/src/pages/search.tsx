@@ -193,6 +193,7 @@ const Search: NextPage = () => {
                     name={e.name}
                     price={e.price}
                     key={e.id}
+                    discount={e.discount}
                   />
                 );
               })}

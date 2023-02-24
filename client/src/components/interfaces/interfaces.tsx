@@ -9,6 +9,7 @@ export interface Product {
   price: number;
   image: string;
   quantity: number;
+  discount: number;
 }
 
 export interface ProductGroup {
@@ -51,6 +52,7 @@ export interface ProductDetail {
   price: number;
   image: string;
   quantity: number;
+  discount: number;
   components: string[];
 }
 
@@ -68,6 +70,7 @@ export interface ProductCardData {
   name: string;
   price: number;
   image: string;
+  discount: number;
 }
 
 export interface Wishlist {
@@ -90,6 +93,7 @@ export interface CartProduct {
   description: string;
   shop: CartShop;
   quantity: number;
+  discount: number;
 }
 
 export interface CartShop {

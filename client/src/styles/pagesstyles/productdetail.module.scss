@@ -228,6 +228,35 @@
   vertical-align: middle;
   cursor: pointer;
 }
+.pricecontainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.pricelabelcontainer {
+  display: flex;
+  align-items: center;
+}
+
+.discountedpricelabel {
+  display: flex;
+  align-items: center;
+  text-decoration: line-through;
+  font-size: 1.2em;
+  color: gray;
+  margin-left: 10px;
+}
+
+.discountlabel {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1em;
+  color: white;
+  background-color: red;
+  padding: 0.4em;
+}
 
 @media (max-width: 1200px) {
   .sectionone {

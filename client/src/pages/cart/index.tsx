@@ -35,6 +35,7 @@ const Cart: NextPage = () => {
   const [savedForLaters, setSavedForLaters] = useState<Cart[]>([]);
   const router = useRouter();
   const [openAddToWishlistModal, setOpenAddToWishlistModal] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const [addToWishlistMode, setAddToWishlistMode] = useState('');
   const [removeAllMode, setRemoveAllMode] = useState('');
@@ -263,6 +264,7 @@ const Cart: NextPage = () => {
           },
         )
         .then((res) => {
+          console.log(res);
           setCarts(res.data.data.carts);
         });
 
@@ -286,6 +288,16 @@ const Cart: NextPage = () => {
       router.push('/login');
     }
   }, [reload]);
+
+  useEffect(() => {
+    var total: number = 0;
+    if (carts) {
+      carts.map((x) => {
+        total += x.product.price * x.quantity;
+      });
+      setTotalPrice(total);
+    }
+  }, [carts]);
 
   const handleMoveAllToWishlistClick = (type: string) => {
     setOpenAddToWishlistModal(true);
@@ -388,7 +400,7 @@ const Cart: NextPage = () => {
                 }}
               >
                 <div className={styles.titlelabelcontainer}>
-                  <h2>Shopping Cart</h2>
+                  <h2>Saved For Later</h2>
                 </div>
                 <div className={styles.cartactioncontainer}>
                   <button
@@ -427,7 +439,38 @@ const Cart: NextPage = () => {
                 );
               })}
           </div>
-          <div className={styles.rightsection}>aa</div>
+          <div className={styles.rightsection}>
+            <div className={styles.headercontainer}>
+              {' '}
+              <div className={styles.titlelabelcontainer}>
+                <h2>Checkout</h2>
+              </div>
+            </div>
+            <div className={styles.cartsummarycontainer}>
+              <div className={styles.titlelabelcontainer}>
+                <h3>Summary</h3>
+              </div>
+              <div className={styles.totalitemcontainer}>
+                <h5 className={styles.labelnopadding}>Item(s): </h5>
+                <h5 className={styles.labelnopadding}>
+                  ${totalPrice.toFixed(2)}
+                </h5>
+              </div>
+              <div className={styles.estimateddeliverycontainer}>
+                <h5 className={styles.labelnopadding}>Est. Delivery: </h5>
+                <h5 className={styles.labelnopadding}>$0.00</h5>
+              </div>
+              <hr className={styles.horizontalline} />
+              <div className={styles.estimatedtotalcontainer}>
+                <h4 className={styles.labelnopadding}>Est.Total: </h4>
+                <h4 className={styles.labelnopadding}>
+                  {' '}
+                  ${totalPrice.toFixed(2)}
+                </h4>
+              </div>
+              <button className={styles.checkoutbutton}>SECURE CHECKOUT</button>
+            </div>
+          </div>
         </div>
         {openAddToWishlistModal && (
           <Modal closeModal={closeAddToWishlistModal} height={30} width={50}>

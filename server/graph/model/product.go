@@ -30,6 +30,7 @@ type Product struct {
 	Image       string     `json:"image"`
 	Quantity    int        `json:"quantity"`
 	ValidTo     *time.Time `json:"validTo"`
+	Discount    float64    `json:"discount"`
 }
 
 type ProductGroup struct {

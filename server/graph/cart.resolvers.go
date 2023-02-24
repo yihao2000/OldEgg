@@ -332,7 +332,7 @@ func (r *queryResolver) Carts(ctx context.Context) ([]*model.Cart, error) {
 	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
 
 	var models []*model.Cart
-	return models, db.Where("user_id = ?", id).Find(&models).Error
+	return models, db.Where("user_id = ?", id).Order("product_id ASC").Find(&models).Error
 }
 
 // UpdateCart is the resolver for the updateCart field.
