@@ -1,31 +1,3 @@
-.pagedivider {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 60px;
-  gap: 2%;
-}
-
-.leftsection {
-  width: 70%;
-}
-
-.rightsection {
-  width: 25%;
-}
-
-.headercontainer {
-  display: flex;
-  justify-content: space-between;
-}
-
-.titlelabelcontainer {
-}
-
-.cartactioncontainer {
-  display: flex;
-  align-items: center;
-}
-
 @mixin buttondefault {
   align-items: center;
   padding: 0;
@@ -49,6 +21,46 @@
   @include buttondefault();
   background-color: transparent;
   border: transparent;
+  min-width: fit-content;
+}
+.pagedivider {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 60px;
+  gap: 2%;
+}
+
+.cartsection {
+  width: 75%;
+}
+
+.rightsection {
+  width: 20%;
+}
+
+.headercontainer {
+  display: flex;
+  justify-content: space-between;
+  max-width: 100%;
+}
+.editshoppingcartbutton {
+  @include buttondefault();
+  background-color: rgb(var(--foreground-rgb));
+  color: rgb(var(--background-start-rgb));
+  font-weight: bold;
+  height: fit-content;
+}
+
+.titlelabelcontainer {
+  display: flex;
+  // width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cartactioncontainer {
+  display: flex;
+  align-items: center;
 }
 
 .buttonlabel {
@@ -171,4 +183,61 @@
   background-color: rgba(var(--accent-rgb));
   color: black;
   font-weight: bold;
+}
+
+.checkoutcontainer {
+  width: 75%;
+}
+
+.shippingoutercontainer {
+  padding: 30px;
+  background-color: rgb(var(--background-end-rgb));
+}
+
+.headercontainer {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.locationselectioncontainer {
+  padding: 40px;
+  background-color: rgb(var(--background-start-rgb));
+}
+
+.shippinginnercontainer {
+  padding: 20px;
+  display: flex;
+  row-gap: 15px;
+  flex-direction: column;
+}
+
+.shipbutton {
+  @include buttondefault();
+
+  background-color: transparent;
+  border: transparent;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border: 1px solid rgba(var(--accent-rgb));
+  align-items: center;
+  display: flex;
+  column-gap: 5px;
+}
+
+.highlightaccent {
+  color: rgba(var(--accent-rgb));
+}
+
+.addnewaddressbutton {
+  @include buttondefault();
+  width: fit-content;
+  background-color: rgb(var(--foreground-rgb));
+  color: rgb(var(--background-start-rgb));
+  font-weight: bold;
+}
+
+.addresscardcontainer {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2%;
 }

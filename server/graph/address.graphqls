@@ -1,0 +1,22 @@
+type Address {
+  id: ID!
+  name: String!
+  detail: String!
+  region: String!
+  city: String!
+  zipCode: String!
+  phone: String!
+  isPrimary: Boolean!
+  user: User! @goField(forceResolver: true)
+}
+
+extend type Query {
+  address(id: ID!): Address!
+  addresses: [Address!]! @auth
+  userAddresses: [Address!]! @auth
+}
+
+extend type Mutation {
+  createAddress(name: String!, detail: String!, region: String!, city: String!, zipCode:String!, phone:String!, isPrimary: Boolean!): Address! @auth
+  togglePrimary(id: ID!): Address! @auth
+}

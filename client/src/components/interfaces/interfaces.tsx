@@ -105,3 +105,14 @@ export interface Cart {
   product: CartProduct;
   quantity: number;
 }
+
+export interface Address {
+  id: string;
+  name: string;
+  detail: string;
+  region: string;
+  city: string;
+  zipCode: string;
+  phone: string;
+  isPrimary: boolean;
+}

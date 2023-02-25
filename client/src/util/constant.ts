@@ -333,3 +333,22 @@ export const DELETE_ALL_SAVED_FOR_LATER = `mutation{
 export const DELETE_ALL_CART = `mutation{
   deleteAllCart
 }`;
+
+export const CREATE_NEW_ADDRESS_MUTATION = `mutation($name:String!, $isPrimary:Boolean!, $region:String!, $city:String!, $zipCode:String!, $phone:String!, $detail:String!){
+  createAddress(name:$name, detail:$detail, isPrimary:$isPrimary, region:$region, city:$city, zipCode:$zipCode, phone:$phone){
+    id
+  }
+}`;
+
+export const USER_ADDRESSES_QUERY = `query{
+  userAddresses{
+    id
+    name
+    detail
+    region
+    city
+    zipCode
+    phone
+    isPrimary
+  }
+}`;

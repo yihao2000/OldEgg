@@ -13,11 +13,13 @@ import {
   DELETE_ALL_CART,
   DELETE_ALL_SAVED_FOR_LATER,
   GRAPHQLAPI,
+  USER_ADDRESSES_QUERY,
   USER_CART_QUERY,
   USER_SAVED_FOR_LATERS_QUERY,
   USER_WISHLISTS_QUERY,
 } from '@/util/constant';
 import {
+  Address,
   AddToWishlistModalParameter,
   Cart,
   Wishlist,
@@ -26,7 +28,11 @@ import { useSessionStorage } from 'usehooks-ts';
 import CartCard from '@/components/cartcard';
 import { useRouter } from 'next/router';
 import { ClipLoader } from 'react-spinners';
+import { FaRegBuilding } from 'react-icons/fa';
 import Modal from '@/components/modal/modal';
+import AddUserAddress from '@/components/modal/content/addaddress';
+
+import AddressCard from '@/components/addresscard';
 
 const Cart: NextPage = () => {
   const [token, setToken] = useSessionStorage('token', '');
@@ -42,6 +48,16 @@ const Cart: NextPage = () => {
 
   const [wishlists, setWishlists] = useState<Wishlist[]>([]);
   const [checkedWishlists, setCheckedWishlists] = useState<Wishlist[]>([]);
+
+  const [addresses, setAddresses] = useState<Address[]>([]);
+
+  const [openCartComponent, setOpenCartComponent] = useState(true);
+
+  const [openAddAddressModal, setOpenAddAddressModal] = useState(false);
+
+  const closeAddAddressModal = () => {
+    setOpenAddAddressModal(false);
+  };
 
   useEffect(() => {
     axios
@@ -65,6 +81,10 @@ const Cart: NextPage = () => {
   interface Parameter {
     handleCloseModal: Function;
   }
+
+  const handleSecureCheckoutButtonClick = () => {
+    setOpenCartComponent(false);
+  };
 
   const AddToWishlistModalContent = (param: Parameter) => {
     const handleWishlistSave = () => {
@@ -249,41 +269,65 @@ const Cart: NextPage = () => {
     setReload(!reload);
   };
 
+  const loadCarts = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_CART_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setCarts(res.data.data.carts);
+      });
+  };
+
+  const loadSavedForLaters = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_SAVED_FOR_LATERS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setSavedForLaters(res.data.data.savedForLaters);
+      });
+  };
+
+  const loadUserAddresses = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_ADDRESSES_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setAddresses(res.data.data.userAddresses);
+      });
+  };
+
   useEffect(() => {
     if (token) {
-      axios
-        .post(
-          GRAPHQLAPI,
-          {
-            query: USER_CART_QUERY,
-          },
-          {
-            headers: {
-              Authorization: 'Bearer ' + token,
-            },
-          },
-        )
-        .then((res) => {
-          console.log(res);
-          setCarts(res.data.data.carts);
-        });
-
-      axios
-        .post(
-          GRAPHQLAPI,
-          {
-            query: USER_SAVED_FOR_LATERS_QUERY,
-          },
-          {
-            headers: {
-              Authorization: 'Bearer ' + token,
-            },
-          },
-        )
-        .then((res) => {
-          console.log(res);
-          setSavedForLaters(res.data.data.savedForLaters);
-        });
+      loadCarts();
+      loadSavedForLaters();
+      loadUserAddresses();
     } else {
       router.push('/login');
     }
@@ -302,6 +346,10 @@ const Cart: NextPage = () => {
   const handleMoveAllToWishlistClick = (type: string) => {
     setOpenAddToWishlistModal(true);
     setAddToWishlistMode(type);
+  };
+
+  const handleEditShoppingCartClick = () => {
+    setOpenCartComponent(true);
   };
 
   const closeAddToWishlistModal = () => {
@@ -350,74 +398,28 @@ const Cart: NextPage = () => {
     <Layout>
       <div className={styles.main}>
         <div className={styles.pagedivider}>
-          <div className={styles.leftsection}>
-            <div className={styles.headercontainer}>
-              <div className={styles.titlelabelcontainer}>
-                <h2>Shopping Cart</h2>
-              </div>
-              <div className={styles.cartactioncontainer}>
-                <button className={styles.noborderbutton}>
-                  <FaHeart fontSize={13} />
-                  <span
-                    className={styles.buttonlabel}
-                    onClick={() => {
-                      handleMoveAllToWishlistClick('cart');
-                    }}
-                  >
-                    MOVE ALL TO WISH LIST
-                  </span>
-                </button>
-                <button
-                  className={styles.noborderbutton}
-                  onClick={() => {
-                    handleRemoveAllClick('cart');
-                  }}
-                >
-                  <FaTrashAlt fontSize={13} />
-                  <span className={styles.buttonlabel}>REMOVE ALL</span>
-                </button>
-              </div>
-            </div>
-            {carts.length != 0 &&
-              carts.map((cart) => {
-                return (
-                  <CartCard
-                    mode="cart"
-                    key={cart.product.id}
-                    cart={cart}
-                    reloadComponent={reloadComponent}
-                    reload={reload}
-                  />
-                );
-              })}
-            {carts.length == 0 && <div>Uh oh no item added to cart yet !</div>}
-
-            {savedForLaters.length != 0 && (
-              <div
-                className={styles.headercontainer}
-                style={{
-                  marginTop: '100px',
-                }}
-              >
+          {openCartComponent && (
+            <div className={styles.cartsection}>
+              <div className={styles.headercontainer}>
                 <div className={styles.titlelabelcontainer}>
-                  <h2>Saved For Later</h2>
+                  <h2>Shopping Cart</h2>
                 </div>
                 <div className={styles.cartactioncontainer}>
-                  <button
-                    className={styles.noborderbutton}
-                    onClick={() => {
-                      handleMoveAllToWishlistClick('savedforlater');
-                    }}
-                  >
+                  <button className={styles.noborderbutton}>
                     <FaHeart fontSize={13} />
-                    <span className={styles.buttonlabel}>
+                    <span
+                      className={styles.buttonlabel}
+                      onClick={() => {
+                        handleMoveAllToWishlistClick('cart');
+                      }}
+                    >
                       MOVE ALL TO WISH LIST
                     </span>
                   </button>
                   <button
                     className={styles.noborderbutton}
                     onClick={() => {
-                      handleRemoveAllClick('savedforlater');
+                      handleRemoveAllClick('cart');
                     }}
                   >
                     <FaTrashAlt fontSize={13} />
@@ -425,25 +427,147 @@ const Cart: NextPage = () => {
                   </button>
                 </div>
               </div>
-            )}
-            {savedForLaters.length != 0 &&
-              savedForLaters.map((e) => {
-                return (
-                  <CartCard
-                    mode="savedforlater"
-                    key={e.product.id}
-                    cart={e}
-                    reloadComponent={reloadComponent}
-                    reload={reload}
-                  />
-                );
-              })}
-          </div>
+              {carts.length != 0 &&
+                carts.map((cart) => {
+                  return (
+                    <CartCard
+                      mode="cart"
+                      key={cart.product.id}
+                      cart={cart}
+                      reloadComponent={reloadComponent}
+                      reload={reload}
+                    />
+                  );
+                })}
+              {carts.length == 0 && (
+                <div>Uh oh no item added to cart yet !</div>
+              )}
+
+              {savedForLaters.length != 0 && (
+                <div
+                  className={styles.headercontainer}
+                  style={{
+                    marginTop: '100px',
+                  }}
+                >
+                  <div className={styles.titlelabelcontainer}>
+                    <h2>Saved For Later</h2>
+                  </div>
+                  <div className={styles.cartactioncontainer}>
+                    <button
+                      className={styles.noborderbutton}
+                      onClick={() => {
+                        handleMoveAllToWishlistClick('savedforlater');
+                      }}
+                    >
+                      <FaHeart fontSize={13} />
+                      <span className={styles.buttonlabel}>
+                        MOVE ALL TO WISH LIST
+                      </span>
+                    </button>
+                    <button
+                      className={styles.noborderbutton}
+                      onClick={() => {
+                        handleRemoveAllClick('savedforlater');
+                      }}
+                    >
+                      <FaTrashAlt fontSize={13} />
+                      <span className={styles.buttonlabel}>REMOVE ALL</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+              {savedForLaters.length != 0 &&
+                savedForLaters.map((e) => {
+                  return (
+                    <CartCard
+                      mode="savedforlater"
+                      key={e.product.id}
+                      cart={e}
+                      reloadComponent={reloadComponent}
+                      reload={reload}
+                    />
+                  );
+                })}
+            </div>
+          )}
+
+          {!openCartComponent && (
+            <div className={styles.checkoutcontainer}>
+              <div className={styles.headercontainer}>
+                <div className={styles.titlelabelcontainer}>
+                  <h2>Checkout(Item)</h2>
+                </div>
+              </div>
+              <div className={styles.shippingoutercontainer}>
+                <div className={styles.headercontainer}>
+                  <h3> Shipping</h3>
+                </div>
+                <div className={styles.locationselectioncontainer}>
+                  <div>
+                    <h3>How would you like to get your order ?</h3>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                    }}
+                  >
+                    <button className={styles.shipbutton}>
+                      Ship to
+                      <span className={styles.highlightaccent}>
+                        Your Location
+                      </span>
+                      <FaRegBuilding size={40} />
+                    </button>
+                  </div>
+                </div>
+                <div className={styles.shippinginnercontainer}>
+                  <div>
+                    <b>Ship to Your Location</b>
+                  </div>
+                  <div>
+                    Have your order delivered to your home, office or anywhere.
+                    <br />
+                    We work with a number of different carriers & will ship via
+                    the one who can best meet your delivery needs.
+                  </div>
+                  <button
+                    className={styles.addnewaddressbutton}
+                    onClick={() => {
+                      setOpenAddAddressModal(true);
+                    }}
+                  >
+                    + ADD NEW ADDRESS
+                  </button>
+                </div>
+
+                <div className={styles.addresscardcontainer}>
+                  {addresses.map((a) => {
+                    return (
+                      <AddressCard
+                        address={a}
+                        refreshComponent={reloadComponent}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className={styles.rightsection}>
             <div className={styles.headercontainer}>
               {' '}
               <div className={styles.titlelabelcontainer}>
-                <h2>Checkout</h2>
+                <h2>Order Summary</h2>
+                {!openCartComponent && (
+                  <button
+                    className={styles.editshoppingcartbutton}
+                    onClick={handleEditShoppingCartClick}
+                  >
+                    EDIT CART
+                  </button>
+                )}
               </div>
             </div>
             <div className={styles.cartsummarycontainer}>
@@ -468,7 +592,12 @@ const Cart: NextPage = () => {
                   ${totalPrice.toFixed(2)}
                 </h4>
               </div>
-              <button className={styles.checkoutbutton}>SECURE CHECKOUT</button>
+              <button
+                className={styles.checkoutbutton}
+                onClick={handleSecureCheckoutButtonClick}
+              >
+                SECURE CHECKOUT
+              </button>
             </div>
           </div>
         </div>
@@ -476,6 +605,14 @@ const Cart: NextPage = () => {
           <Modal closeModal={closeAddToWishlistModal} height={30} width={50}>
             <AddToWishlistModalContent
               handleCloseModal={closeAddToWishlistModal}
+            />
+          </Modal>
+        )}
+        {openAddAddressModal && (
+          <Modal closeModal={closeAddAddressModal} height={30} width={50}>
+            <AddUserAddress
+              refreshComponent={reloadComponent}
+              handleCloseModal={closeAddAddressModal}
             />
           </Modal>
         )}

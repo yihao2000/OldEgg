@@ -1,0 +1,29 @@
+@mixin inlinelement {
+  display: flex;
+  width: 100%;
+}
+
+.contentcontainer > * {
+  padding-top: 20px;
+}
+.defaultinput {
+  appearance: none;
+  background: rgb(var(--background-end-rgb));
+  border: 1px solid rgb(var(--background-end-rgb));
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-size: 13px;
+  height: 32px;
+  margin: 0;
+  padding: 7px 1em;
+  vertical-align: middle;
+  // width: 49%;
+}
+.halfinputcontainer {
+  @include inlinelement();
+  justify-content: space-between;
+}
+
+.regioninputcontainer {
+  width: 50%;
+}
