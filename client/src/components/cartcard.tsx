@@ -530,7 +530,9 @@ const CartCard = (props: Parameter) => {
               </div>
             )}
 
-            {props.mode == 'savedforlater' && cartQuantity}
+            {props.mode == 'savedforlater' && (
+              <span>Quantity: {cartQuantity}</span>
+            )}
           </div>
           <div className={styles.producttotalpricecontainer}>${totalPrice}</div>
         </div>
@@ -544,24 +546,16 @@ const CartCard = (props: Parameter) => {
             <button onClick={handleAddToWishlistClick}>
               {' '}
               <FaHeart fontSize={13} />
-              <span className={styles.buttonlabel}>MOVE TO WISHLIST</span>
             </button>
             {props.mode == 'cart' && (
               <button onClick={handleSaveForLaterClick}>
                 {' '}
                 <FaBookmark fontSize={13} />
-                <span className={styles.buttonlabel}>SAVE FOR LATER </span>
               </button>
             )}
-          </div>
-          <div className={styles.cartactioncontainer}>
-            <button
-              onClick={handleRemoveClick}
-              className={styles.cartactioncontainer}
-            >
+            <button onClick={handleRemoveClick}>
               {' '}
               <FaTrashAlt fontSize={13} />
-              <span className={styles.buttonlabel}>REMOVE</span>
             </button>
           </div>
         </div>

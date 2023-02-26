@@ -352,3 +352,29 @@ export const USER_ADDRESSES_QUERY = `query{
     isPrimary
   }
 }`;
+
+export const SHIPPINGS_QUERY = `query{
+  shippings{
+    id
+    name
+    description
+    price
+  }
+}`;
+
+export const PAYMENT_TYPES_QUERY = `query{
+  paymentTypes{
+    id
+    name
+  }
+}`;
+
+export const CHECKOUT_USER_CART_MUTATION = `mutation($shippingID:ID!, $paymentTypeID:ID!, $addressID:ID!){
+  checkout(shippingID:$shippingID, paymentTypeID:$paymentTypeID, addressID:$addressID){
+    id
+  }
+}`;
+
+export const DELETE_USER_ADDRESS = `mutation($addressID:ID!){
+  deleteAddress(id:$addressID)
+}`;

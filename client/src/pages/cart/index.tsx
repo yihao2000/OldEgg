@@ -9,10 +9,13 @@ import { FaHeart, FaTrashAlt } from 'react-icons/fa';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import axios from 'axios';
 import {
+  CHECKOUT_USER_CART_MUTATION,
   CREATE_WISHLIST_DETAIL_MUTATION,
   DELETE_ALL_CART,
   DELETE_ALL_SAVED_FOR_LATER,
   GRAPHQLAPI,
+  PAYMENT_TYPES_QUERY,
+  SHIPPINGS_QUERY,
   USER_ADDRESSES_QUERY,
   USER_CART_QUERY,
   USER_SAVED_FOR_LATERS_QUERY,
@@ -22,6 +25,8 @@ import {
   Address,
   AddToWishlistModalParameter,
   Cart,
+  PaymentType,
+  Shipping,
   Wishlist,
 } from '@/components/interfaces/interfaces';
 import { useSessionStorage } from 'usehooks-ts';
@@ -55,6 +60,15 @@ const Cart: NextPage = () => {
 
   const [openAddAddressModal, setOpenAddAddressModal] = useState(false);
 
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+
+  const [shippings, setShippings] = useState<Shipping[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<Shipping>();
+
+  const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([]);
+  const [selectedPaymentType, setSelectedPaymentType] = useState<PaymentType>();
+
+  const [checkoutError, setCheckoutError] = useState('');
   const closeAddAddressModal = () => {
     setOpenAddAddressModal(false);
   };
@@ -83,7 +97,40 @@ const Cart: NextPage = () => {
   }
 
   const handleSecureCheckoutButtonClick = () => {
-    setOpenCartComponent(false);
+    if (carts.length != 0) {
+      setOpenCartComponent(false);
+    }
+  };
+
+  const handleConfirmCheckoutButtonClick = () => {
+    if (!selectedAddress || !selectedPaymentType || !selectedShipping) {
+      console.log('Fail');
+    }
+
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CHECKOUT_USER_CART_MUTATION,
+          variables: {
+            shippingID: selectedShipping?.id,
+            paymentTypeID: selectedPaymentType?.id,
+            addressID: selectedAddress?.id,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        res.data.data.checkout.id;
+        setCheckoutError('');
+      })
+      .catch((error) => {
+        setCheckoutError('Unable to checkout product ! ');
+      });
   };
 
   const AddToWishlistModalContent = (param: Parameter) => {
@@ -305,6 +352,30 @@ const Cart: NextPage = () => {
       });
   };
 
+  const handleAddressChange = (param: Address) => {
+    setSelectedAddress(param);
+  };
+
+  useEffect(() => {
+    reloadComponent();
+  }, [selectedAddress]);
+
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_ADDRESSES_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {});
+  }, []);
+
   const loadUserAddresses = () => {
     axios
       .post(
@@ -323,11 +394,48 @@ const Cart: NextPage = () => {
       });
   };
 
+  const loadShippings = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: SHIPPINGS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setShippings(res.data.data.shippings);
+      });
+  };
+
+  const loadPaymentTypes = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: PAYMENT_TYPES_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setPaymentTypes(res.data.data.paymentTypes);
+      });
+  };
   useEffect(() => {
     if (token) {
       loadCarts();
       loadSavedForLaters();
       loadUserAddresses();
+      loadShippings();
+      loadPaymentTypes();
     } else {
       router.push('/login');
     }
@@ -339,9 +447,13 @@ const Cart: NextPage = () => {
       carts.map((x) => {
         total += x.product.price * x.quantity;
       });
-      setTotalPrice(total);
+      if (selectedShipping) {
+        setTotalPrice(total + selectedShipping.price);
+      } else {
+        setTotalPrice(total);
+      }
     }
-  }, [carts]);
+  }, [carts, selectedShipping]);
 
   const handleMoveAllToWishlistClick = (type: string) => {
     setOpenAddToWishlistModal(true);
@@ -453,7 +565,9 @@ const Cart: NextPage = () => {
                   <div className={styles.titlelabelcontainer}>
                     <h2>Saved For Later</h2>
                   </div>
-                  <div className={styles.cartactioncontainer}>
+                  <div
+                    className={`${styles.cartactioncontainer} ${styles.halfwidth}`}
+                  >
                     <button
                       className={styles.noborderbutton}
                       onClick={() => {
@@ -501,7 +615,7 @@ const Cart: NextPage = () => {
               </div>
               <div className={styles.shippingoutercontainer}>
                 <div className={styles.headercontainer}>
-                  <h3> Shipping</h3>
+                  <h3 className={styles.containertitle}> Shipping</h3>
                 </div>
                 <div className={styles.locationselectioncontainer}>
                   <div>
@@ -540,11 +654,12 @@ const Cart: NextPage = () => {
                     + ADD NEW ADDRESS
                   </button>
                 </div>
-
                 <div className={styles.addresscardcontainer}>
                   {addresses.map((a) => {
                     return (
                       <AddressCard
+                        selectedAddress={selectedAddress}
+                        setSelectedAddress={handleAddressChange}
                         address={a}
                         refreshComponent={reloadComponent}
                       />
@@ -552,10 +667,120 @@ const Cart: NextPage = () => {
                   })}
                 </div>
               </div>
+              <div
+                className={styles.shippingoutercontainer}
+                style={{
+                  marginTop: '50px',
+                }}
+              >
+                <div className={styles.headercontainer}>
+                  <h3 className={styles.containertitle}>DELIVERY</h3>
+                </div>
+                <div className={styles.locationselectioncontainer}>
+                  <div>
+                    <h3>Newegg Standard Shipping Service</h3>
+                  </div>
+                  <hr style={{ marginTop: '30px' }} />
+                  <h4>How soon you would like to receive the products?</h4>
+                  <div
+                    className={styles.deliveryselectioncontainer}
+                    style={{
+                      display: 'flex',
+                      columnGap: '2%',
+                    }}
+                  >
+                    {shippings.map((e) => {
+                      return (
+                        <button
+                          className={`${styles.deliveryselection} ${
+                            selectedShipping?.id == e.id
+                              ? styles.deliveryselected
+                              : ''
+                          }`}
+                          onClick={() => {
+                            setSelectedShipping(e);
+                          }}
+                        >
+                          <div>
+                            <span
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'start',
+                              }}
+                            >
+                              {e.name}
+                            </span>
+                            <span
+                              className={styles.highlightaccent}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'start',
+                              }}
+                            >
+                              {e.description}
+                            </span>
+                          </div>
+                          <h2>${e.price}</h2>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              <div
+                className={styles.shippingoutercontainer}
+                style={{
+                  marginTop: '50px',
+                }}
+              >
+                <div className={styles.headercontainer}>
+                  <h3 className={styles.containertitle}>PAYMENT</h3>
+                </div>
+                <div className={styles.locationselectioncontainer}>
+                  <div>
+                    <h3>How do you want to pay ? </h3>
+                  </div>
+                  <hr style={{ marginTop: '30px', marginBottom: '30px' }} />
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      columnGap: '2%',
+                    }}
+                  >
+                    {paymentTypes.map((e) => {
+                      return (
+                        <button
+                          className={`${styles.deliveryselection} ${
+                            selectedPaymentType?.id == e.id
+                              ? styles.deliveryselected
+                              : ''
+                          }`}
+                          onClick={() => {
+                            setSelectedPaymentType(e);
+                          }}
+                        >
+                          <div>
+                            <span
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'start',
+                              }}
+                            >
+                              {e.name}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           <div className={styles.rightsection}>
+            <hr className={styles.partitioningline} />
             <div className={styles.headercontainer}>
               {' '}
               <div className={styles.titlelabelcontainer}>
@@ -582,7 +807,9 @@ const Cart: NextPage = () => {
               </div>
               <div className={styles.estimateddeliverycontainer}>
                 <h5 className={styles.labelnopadding}>Est. Delivery: </h5>
-                <h5 className={styles.labelnopadding}>$0.00</h5>
+                <h5 className={styles.labelnopadding}>
+                  ${selectedShipping?.price}
+                </h5>
               </div>
               <hr className={styles.horizontalline} />
               <div className={styles.estimatedtotalcontainer}>
@@ -592,12 +819,31 @@ const Cart: NextPage = () => {
                   ${totalPrice.toFixed(2)}
                 </h4>
               </div>
-              <button
-                className={styles.checkoutbutton}
-                onClick={handleSecureCheckoutButtonClick}
+              {openCartComponent && (
+                <button
+                  className={styles.checkoutbutton}
+                  onClick={handleSecureCheckoutButtonClick}
+                >
+                  SECURE CHECKOUT
+                </button>
+              )}
+              {!openCartComponent && (
+                <button
+                  className={styles.checkoutbutton}
+                  onClick={handleConfirmCheckoutButtonClick}
+                >
+                  SECURE CHECKOUT
+                </button>
+              )}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  color: 'red',
+                }}
               >
-                SECURE CHECKOUT
-              </button>
+                {checkoutError}
+              </div>
             </div>
           </div>
         </div>

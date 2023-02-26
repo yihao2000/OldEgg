@@ -1,0 +1,27 @@
+.footer {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: 100%;
+  background-color: rgb(var(--secondary-secondary-rgb));
+  color: white;
+  display: flex;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.section {
+  width: 15%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectioncontent {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+}

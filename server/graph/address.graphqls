@@ -19,4 +19,5 @@ extend type Query {
 extend type Mutation {
   createAddress(name: String!, detail: String!, region: String!, city: String!, zipCode:String!, phone:String!, isPrimary: Boolean!): Address! @auth
   togglePrimary(id: ID!): Address! @auth
+  deleteAddress(id: ID!): Boolean! @auth
 }

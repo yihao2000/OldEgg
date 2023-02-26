@@ -133,13 +133,14 @@ const ProductDetail: NextPage = () => {
               },
             },
           )
-          .then((res) => {})
-          .catch(() => {
-            router.push('/login');
-          });
+          .then((res) => {
+            if (res.data.data.createCart != null) {
+              setSuccess(true);
+            }
+          })
+          .catch(() => {});
         setLoading(false);
 
-        setSuccess(true);
         setTimeout(() => {
           setSuccess(false);
         }, 7000);
@@ -160,9 +161,7 @@ const ProductDetail: NextPage = () => {
             },
           )
           .then(() => {})
-          .catch(() => {
-            router.push('/login');
-          });
+          .catch(() => {});
       }, 2000);
     }
   };

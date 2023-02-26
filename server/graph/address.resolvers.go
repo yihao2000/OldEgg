@@ -62,6 +62,23 @@ func (r *mutationResolver) TogglePrimary(ctx context.Context, id string) (*model
 	return model, db.Save(model).Error
 }
 
+// DeleteAddress is the resolver for the deleteAddress field.
+func (r *mutationResolver) DeleteAddress(ctx context.Context, id string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	model := new(model.Address)
+	if err := db.First(model, "id = ? ", id).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
+}
+
 // Address is the resolver for the address field.
 func (r *queryResolver) Address(ctx context.Context, id string) (*model.Address, error) {
 	db := config.GetDB()

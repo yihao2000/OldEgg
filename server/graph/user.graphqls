@@ -15,6 +15,7 @@ type User{
   verificationcode: String
   verificationcodevalidtime: Time
   newslettersubscribe: Boolean!
+  currency: Float!
 }
 
 
@@ -47,6 +48,8 @@ type Mutation {
 
    userInputVerificationCode(email:String!, verificationcode:String!): User! @goField(forceResolver:true)
    validateUserVerificationCode(email: String!, verificationcode:String!): Any! @goField(forceResolver:true)
+
+   
 }
 
 

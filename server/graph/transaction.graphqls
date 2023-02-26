@@ -1,0 +1,45 @@
+type Shipping {
+  id: ID!
+  name: String!
+  description: String!
+  price: Int!
+}
+
+type PaymentType {
+  id: ID!
+  name: String!
+}
+
+
+type TransactionHeader {
+  id: ID!
+  transactionDate: Time!
+  user: User! @goField(forceResolver: true)
+  shipping: Shipping! @goField(forceResolver: true)
+  paymentType: PaymentType! @goField(forceResolver: true)
+  status: String!
+  address: Address! @goField(forceResolver: true)
+
+  transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
+}
+
+type TransactionDetail {
+  transactionHeader: TransactionHeader! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
+  quantity: Int!
+}
+
+extend type Query {
+  shipping(id: ID!): Shipping!
+  shippings: [Shipping!]!
+
+  paymentType(id: ID!): PaymentType!
+  paymentTypes: [PaymentType!]!
+
+  transactionHeaders: [TransactionHeader!]!
+
+}
+
+extend type Mutation {
+  checkout(shippingID: ID!, paymentTypeID: ID!, addressID: ID!): TransactionHeader! @auth
+}

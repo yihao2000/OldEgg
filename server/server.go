@@ -43,6 +43,10 @@ func main() {
 	db.AutoMigrate(&model.SavedForLater{})
 	db.AutoMigrate(&model.Review{})
 	db.AutoMigrate(&model.Address{})
+	db.AutoMigrate(&model.Shipping{})
+	db.AutoMigrate(&model.TransactionHeader{})
+	db.AutoMigrate(&model.TransactionDetail{})
+	db.AutoMigrate(&model.PaymentType{})
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{

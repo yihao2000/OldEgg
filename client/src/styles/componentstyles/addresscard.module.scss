@@ -1,7 +1,7 @@
 .addresscardouter {
   padding: 15px;
   display: flex;
-  width: 28.8%;
+  width: 28%;
   border: 1px solid gray;
   margin-top: 2%;
   padding-top: 35px;
@@ -33,4 +33,29 @@
 
 .addressphone {
   font-size: 0.9rem;
+}
+
+.removebutton {
+  background: white;
+  color: black;
+  border: 0px;
+  padding: 5px;
+}
+
+.removebutton:hover {
+  cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .addresscardouter {
+    width: 40%;
+  }
+  .addresscardcontainer {
+  }
+}
+
+@media (max-width: 500px) {
+  .addresscardouter {
+    width: 100%;
+  }
 }

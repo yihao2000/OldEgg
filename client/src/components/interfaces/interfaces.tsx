@@ -116,3 +116,15 @@ export interface Address {
   phone: string;
   isPrimary: boolean;
 }
+
+export interface Shipping {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+}
+
+export interface PaymentType {
+  id: string;
+  name: string;
+}

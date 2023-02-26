@@ -45,7 +45,22 @@ func (r *mutationResolver) CreateCart(ctx context.Context, productID string, qua
 
 	cart, _ := service.CartGetByUserProduct(ctx, userID, productID)
 
+	var product *model.Product
+	if err := db.Where("id = ?", productID).Order("valid_to ASC").Limit(1).Find(&product).Error; err != nil {
+		return nil, err
+	}
+
+	if quantity > product.Quantity {
+		return nil, &gqlerror.Error{
+			Message: "Invalid Purchased Product Stock!",
+		}
+	}
 	if cart != nil {
+		if cart.Quantity+quantity > product.Quantity {
+			return nil, &gqlerror.Error{
+				Message: "Invalid Purchased Product Stock!",
+			}
+		}
 		cart.Quantity += quantity
 
 		return cart, db.Save(cart).Error

@@ -3,6 +3,7 @@ import Navbar from './navbar';
 import styles from '@/styles/home.module.scss';
 import Head from 'next/head';
 import Script from 'next/script';
+import Footer from './footer';
 
 type Props = {
   children: ReactNode;
@@ -21,6 +22,7 @@ const Layout = (props: Props) => {
       </Head>
       <Navbar />
       {props.children}
+      <Footer />
     </>
   );
 };

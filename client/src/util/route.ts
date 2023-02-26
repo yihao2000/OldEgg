@@ -12,5 +12,9 @@ export const links = {
     return '/search' + query;
   },
 
+  wishlistDetail: (wishlistID: string) => {
+    return 'wishlist/' + wishlistID;
+  },
+
   cart: '/cart',
 };

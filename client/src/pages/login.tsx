@@ -35,9 +35,13 @@ export default function Login() {
   const [inputtedVerificationCode, setInputtedVerificationCode] = useState('');
   const [verificationCodeInvalid, setVerificationCodeInvalid] = useState(false);
 
+  const [oneTimeCodeEnabled, setOneTimeCodeEnabled] = useState(true);
+  const [verificationCodeError, setVerificationCodeError] = useState(false);
+
   const form = useRef<HTMLFormElement>(null);
   const sendVerificationCode = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     axios
       .post(GRAPHQLAPI, {
         query: USER_QUERY,
@@ -49,21 +53,6 @@ export default function Login() {
         console.log(res);
         if (res.data.data.user != null) {
           setEmailRegistered(true);
-          setVerificationCodePrompt(true);
-
-          emailjs
-            .sendForm(
-              'service_dsn89wa',
-              'template_upusifi',
-              form.current!,
-              'gM8J9ZjItBS3Hw4je',
-            )
-            .then(
-              (result) => {},
-              (error) => {
-                console.log(error.text);
-              },
-            );
 
           axios
             .post(GRAPHQLAPI, {
@@ -73,9 +62,28 @@ export default function Login() {
                 verificationcode: verificationCode,
               },
             })
-            .then((res) => {})
-            .catch(() => {
-              console.log('Error');
+            .then((res) => {
+              res.data.data.userInputVerificationCode.id;
+              setVerificationCodePrompt(true);
+              setVerificationCodeError(false);
+              emailjs
+                .sendForm(
+                  'service_dsn89wa',
+                  'template_upusifi',
+                  form.current!,
+                  'gM8J9ZjItBS3Hw4je',
+                )
+                .then(
+                  (result) => {
+                    console.log(result);
+                  },
+                  (error) => {
+                    console.log(error.text);
+                  },
+                );
+            })
+            .catch((err) => {
+              setVerificationCodeError(true);
             });
         }
       })
@@ -341,9 +349,16 @@ export default function Login() {
                 }}
                 name="code"
               />
-              <button className={styles.formbutton}>
-                GET ONE-TIME SIGN IN CODE
-              </button>
+              {oneTimeCodeEnabled && (
+                <button className={styles.formbutton}>
+                  GET ONE-TIME SIGN IN CODE
+                </button>
+              )}
+              {verificationCodeError && (
+                <div style={{ marginTop: '20px', color: 'red' }}>
+                  Unable to request another code yet ! Please wait 2 minutes
+                </div>
+              )}
             </form>
             <h4 className={`${styles.nopadding} ${styles.nomargin}`}>
               <u>What's the One-Time Code?</u>
