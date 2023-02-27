@@ -13,6 +13,11 @@
   justify-content: center;
 }
 
+.title {
+  padding-left: 0px;
+  margin-left: 0px;
+}
+
 .section {
   width: 15%;
   padding: 20px;
@@ -24,4 +29,37 @@
   display: flex;
   flex-direction: column;
   row-gap: 25px;
+}
+
+.linkcontainer {
+  font-size: 14px;
+}
+
+@media (max-width: 500px) {
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 20px;
+  }
+  .section {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+  }
+  .sectioncontent {
+    display: flex;
+    justify-content: center;
+  }
+  .linkcontainer {
+    display: flex;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  .title {
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+  }
 }

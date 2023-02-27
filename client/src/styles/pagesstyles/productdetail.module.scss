@@ -298,3 +298,13 @@
     max-width: 100%;
   }
 }
+
+@media (max-width: 500px) {
+  .quantityfield {
+    width: 50px;
+  }
+  .quantityarrow {
+    width: 20px;
+    font-size: 12px;
+  }
+}

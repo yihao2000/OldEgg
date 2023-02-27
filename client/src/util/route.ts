@@ -13,8 +13,9 @@ export const links = {
   },
 
   wishlistDetail: (wishlistID: string) => {
-    return 'wishlist/' + wishlistID;
+    return '/account/wishlist/' + wishlistID;
   },
 
   cart: '/cart',
+  order: '/account/order/order',
 };

@@ -11,6 +11,7 @@ import axios from 'axios';
 import {
   CHECKOUT_USER_CART_MUTATION,
   CREATE_WISHLIST_DETAIL_MUTATION,
+  CURRENT_USER_QUERY,
   DELETE_ALL_CART,
   DELETE_ALL_SAVED_FOR_LATER,
   GRAPHQLAPI,
@@ -19,6 +20,8 @@ import {
   USER_ADDRESSES_QUERY,
   USER_CART_QUERY,
   USER_SAVED_FOR_LATERS_QUERY,
+  USER_UPDATE_BALANCE_MUTATION,
+  USER_UPDATE_PHONE_MUTATION,
   USER_WISHLISTS_QUERY,
 } from '@/util/constant';
 import {
@@ -105,18 +108,14 @@ const Cart: NextPage = () => {
   const handleConfirmCheckoutButtonClick = () => {
     if (!selectedAddress || !selectedPaymentType || !selectedShipping) {
       console.log('Fail');
+      return;
     }
 
     axios
       .post(
         GRAPHQLAPI,
         {
-          query: CHECKOUT_USER_CART_MUTATION,
-          variables: {
-            shippingID: selectedShipping?.id,
-            paymentTypeID: selectedPaymentType?.id,
-            addressID: selectedAddress?.id,
-          },
+          query: CURRENT_USER_QUERY,
         },
         {
           headers: {
@@ -125,8 +124,82 @@ const Cart: NextPage = () => {
         },
       )
       .then((res) => {
-        res.data.data.checkout.id;
-        setCheckoutError('');
+        if (selectedPaymentType.id == '92e71291-fee7-4700-a202-c1f823587f2f') {
+          if (res.data.data.getCurrentUser.currency < totalPrice) {
+            setCheckoutError('Insufficient Account Balance !');
+          } else {
+            axios
+              .post(
+                GRAPHQLAPI,
+                {
+                  query: CHECKOUT_USER_CART_MUTATION,
+                  variables: {
+                    shippingID: selectedShipping?.id,
+                    paymentTypeID: selectedPaymentType?.id,
+                    addressID: selectedAddress?.id,
+                  },
+                },
+                {
+                  headers: {
+                    Authorization: 'Bearer ' + token,
+                  },
+                },
+              )
+              .then((e) => {
+                axios
+                  .post(
+                    GRAPHQLAPI,
+                    {
+                      query: USER_UPDATE_BALANCE_MUTATION,
+                      variables: {
+                        balance:
+                          res.data.data.getCurrentUser.currency - totalPrice,
+                      },
+                    },
+                    {
+                      headers: {
+                        Authorization: 'Bearer ' + token,
+                      },
+                    },
+                  )
+                  .then((x) => {
+                    reloadComponent();
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+              })
+              .catch((error) => {
+                console.log(error);
+                setCheckoutError('Unable to checkout product ! ');
+              });
+          }
+        } else {
+          axios
+            .post(
+              GRAPHQLAPI,
+              {
+                query: CHECKOUT_USER_CART_MUTATION,
+                variables: {
+                  shippingID: selectedShipping?.id,
+                  paymentTypeID: selectedPaymentType?.id,
+                  addressID: selectedAddress?.id,
+                },
+              },
+              {
+                headers: {
+                  Authorization: 'Bearer ' + token,
+                },
+              },
+            )
+            .then((res) => {
+              reloadComponent();
+              setCheckoutError('');
+            })
+            .catch((error) => {
+              setCheckoutError('Unable to checkout product ! ');
+            });
+        }
       })
       .catch((error) => {
         setCheckoutError('Unable to checkout product ! ');
@@ -315,6 +388,16 @@ const Cart: NextPage = () => {
   const reloadComponent = () => {
     setReload(!reload);
   };
+
+  useEffect(() => {
+    carts.map((c) => {
+      if (c.product.discount != 0) {
+        console.log(c.product.discount);
+        c.product.price =
+          c.product.price - (c.product.price * c.product.discount) / 100;
+      }
+    });
+  }, [carts]);
 
   const loadCarts = () => {
     axios

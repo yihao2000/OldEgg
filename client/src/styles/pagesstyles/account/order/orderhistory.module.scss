@@ -1,0 +1,18 @@
+.maincontainer {
+}
+
+.divider {
+  display: flex;
+  justify-content: center;
+  padding: 40px 80px;
+  flex-wrap: wrap;
+  column-gap: 35px;
+}
+
+.rightside {
+  width: 60%;
+}
+
+.verticalline {
+  border-left: thin solid grey;
+}

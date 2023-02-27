@@ -10,7 +10,7 @@ type Wishlist{
   user: User! @goField(forceResolver:true)
   privacy: String! 
   dateCreated: Time!
-
+  notes: String!
   wishlistDetails: [WishlistDetail!]! @goField(forceResolver:true)
 }
 
@@ -44,9 +44,11 @@ extend type Mutation{
   createWishlist(input: NewWishlist!): Wishlist! @auth
   updateWishlist(wishlistID: ID!, input: NewWishlist!): Wishlist! @auth
   deleteWishlist(wishlistId: ID!): Boolean! @auth
+  editWishlistNote(wishlistID: ID!, notes: String!): Wishlist! @auth
 
   createWishlistDetail(wishlistId: ID!, productId: ID!, quantity: Int!): WishlistDetail! @auth
-  deleteWishlistDetail(wishlistId: ID!, productId: ID!, quantity: Int!): Boolean! @auth
+  updateWishlistDetail(productID: ID!, wishlistID: ID!, quantity: Int!): WishlistDetail! @auth
+  deleteWishlistDetail(wishlistId: ID!, productId: ID!): Boolean! @auth
   deleteAllWishlistWishlistDetail(wishlistId: ID!): Boolean! @auth
   deleteProductFromWishlistDetails(productId: ID!): Boolean!
 

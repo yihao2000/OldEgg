@@ -36,6 +36,7 @@ export const CURRENT_USER_QUERY = `query{
     phone
     banned
     role
+    currency
   }
 }`;
 
@@ -210,6 +211,7 @@ export const WISHLIST_QUERY = `query($wishlistId: ID!){
     name
     privacy
     dateCreated
+    notes
   }
 }`;
 
@@ -263,6 +265,7 @@ export const USER_CART_QUERY = `query{
    product{
     id
     name
+    discount
     shop{
       id
       name
@@ -377,4 +380,57 @@ export const CHECKOUT_USER_CART_MUTATION = `mutation($shippingID:ID!, $paymentTy
 
 export const DELETE_USER_ADDRESS = `mutation($addressID:ID!){
   deleteAddress(id:$addressID)
+}`;
+
+export const WISHLIST_DETAILS_QUERY = `query($wishlistID:ID!){
+  wishlistDetails(wishlistId:$wishlistID){
+    wishlist{
+      id
+
+    }
+    product{
+      id
+      name
+      discount
+      quantity
+      image
+      price
+      description
+      brand{
+        id
+        name
+        image
+      }
+      category{
+        id
+        name
+        description
+      }
+    }
+    dateAdded
+    quantity
+
+  }
+}`;
+
+export const EDIT_WISHLIST_NOTES = `mutation($wishlistID:ID!, $notes:String!){
+  editWishlistNote(wishlistID:$wishlistID, notes:$notes){
+    id
+  }
+}`;
+
+export const UPDATE_WISHLIST_DETAIL = `mutation($wishlistID:ID!, $productID:ID!, $quantity:Int!){
+  updateWishlistDetail(wishlistID:$wishlistID, productID:$productID quantity:$quantity){
+    quantity
+  }
+}`;
+
+export const DELETE_WISHLIST_DETAIL = `mutation($wishlistId:ID!, $productID:ID!){
+  deleteWishlistDetail(wishlistId:$wishlistId, productId:$productID)
+}`;
+
+export const USER_UPDATE_BALANCE_MUTATION = `mutation($balance:Float!){
+  userUpdateInformation(balance:$balance){
+	  id
+  }
 }`;

@@ -63,7 +63,7 @@ func (r *mutationResolver) Checkout(ctx context.Context, shippingID string, paym
 		UserID:          userID,
 		ShippingID:      shippingID,
 		PaymentTypeID:   paymentTypeID,
-		Status:          "Success",
+		Status:          "Open",
 		AddressID:       addressID,
 	}
 

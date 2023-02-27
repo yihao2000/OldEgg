@@ -2,7 +2,7 @@ export interface Product {
   id: string;
   productgroup: ProductGroup;
   brand: Brand;
-  category: string;
+  category: Category;
   shop: Shop;
   name: string;
   description: string[];
@@ -78,6 +78,7 @@ export interface Wishlist {
   name: string;
   privacy: string;
   dateCreated: string;
+  notes: string;
 }
 
 export interface AddToWishlistModalParameter {
@@ -127,4 +128,11 @@ export interface Shipping {
 export interface PaymentType {
   id: string;
   name: string;
+}
+
+export interface WishlistDetail {
+  wishlist: Wishlist;
+  product: Product;
+  quantity: number;
+  dateAdded: string;
 }

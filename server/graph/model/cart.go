@@ -17,6 +17,7 @@ type Wishlist struct {
 	User        *User     `json:"user" gorm:"foreignKey:UserID"`
 	Privacy     string    `json:"privacy"`
 	DateCreated time.Time `json:"dateCreated"`
+	Notes       string
 }
 
 type WishlistDetail struct {

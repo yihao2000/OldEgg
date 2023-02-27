@@ -44,7 +44,7 @@ type AuthOps{
 
 type Mutation {
    auth: AuthOps! @goField(forceResolver: true)
-   userUpdateInformation(currentPassword: String, newPassword: String, phone: String): User! @goField(forceResolver: true)
+   userUpdateInformation(currentPassword: String, newPassword: String, phone: String, balance: Float): User! @goField(forceResolver: true)
 
    userInputVerificationCode(email:String!, verificationcode:String!): User! @goField(forceResolver:true)
    validateUserVerificationCode(email: String!, verificationcode:String!): Any! @goField(forceResolver:true)

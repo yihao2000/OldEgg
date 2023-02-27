@@ -584,19 +584,21 @@ const WishlistCard = (props: Parameter) => {
             </span>
           </div>
         </div>
-        <div className={styles.productcontainer}>
-          {wishlistDetails &&
-            wishlistDetails.slice(0, 3).map((e) => {
-              return (
-                <WishlistProductCard
-                  id={e.product.id}
-                  image={e.product.image}
-                  name={e.product.name}
-                  // key={e.productId}
-                />
-              );
-            })}
-        </div>
+        <Link href={links.wishlistDetail(props.wishlistId)} passHref>
+          <div className={styles.productcontainer}>
+            {wishlistDetails &&
+              wishlistDetails.slice(0, 3).map((e) => {
+                return (
+                  <WishlistProductCard
+                    id={e.product.id}
+                    image={e.product.image}
+                    name={e.product.name}
+                    // key={e.productId}
+                  />
+                );
+              })}
+          </div>
+        </Link>
       </div>
       {openDeleteModal && (
         <Modal closeModal={closeDeleteModal} height={15} width={30}>

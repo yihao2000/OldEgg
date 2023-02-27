@@ -155,6 +155,7 @@ func (r *mutationResolver) CreateWishlist(ctx context.Context, input model.NewWi
 		UserID:      userID,
 		Privacy:     input.Privacy,
 		DateCreated: time.Now(),
+		Notes:       "",
 	}
 
 	if err := db.Model(wishlist).Create(&wishlist).Error; err != nil {
@@ -202,6 +203,26 @@ func (r *mutationResolver) DeleteWishlist(ctx context.Context, wishlistID string
 	return true, db.Delete(model).Error
 }
 
+// EditWishlistNote is the resolver for the editWishlistNote field.
+func (r *mutationResolver) EditWishlistNote(ctx context.Context, wishlistID string, notes string) (*model.Wishlist, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	model := new(model.Wishlist)
+	if err := db.First(model, "id = ?", wishlistID).Error; err != nil {
+		return nil, err
+	}
+
+	model.Notes = notes
+
+	return model, db.Save(&model).Error
+}
+
 // CreateWishlistDetail is the resolver for the createWishlistDetail field.
 func (r *mutationResolver) CreateWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (*model.WishlistDetail, error) {
 	db := config.GetDB()
@@ -229,9 +250,58 @@ func (r *mutationResolver) CreateWishlistDetail(ctx context.Context, wishlistID 
 	return wishlist, db.Model(wishlist).Create(&wishlist).Error
 }
 
+// UpdateWishlistDetail is the resolver for the updateWishlistDetail field.
+func (r *mutationResolver) UpdateWishlistDetail(ctx context.Context, productID string, wishlistID string, quantity int) (*model.WishlistDetail, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	// userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var wishlistdetail model.WishlistDetail
+	if err := db.Model(wishlistdetail).Where("wishlist_id LIKE ? AND product_id LIKE ?", wishlistID, productID).Take(&wishlistdetail).Error; err != nil {
+		return nil, err
+	}
+
+	var product model.Product
+	if err := db.Model(product).Where("id LIKE ?", productID).Take(&product).Error; err != nil {
+		return nil, err
+	}
+
+	if quantity <= product.Quantity && quantity > -1 {
+		wishlistdetail.Quantity = quantity
+
+		if quantity == 0 {
+			return &wishlistdetail, db.Delete(wishlistdetail).Error
+		}
+
+		return &wishlistdetail, db.Save(wishlistdetail).Error
+	}
+
+	return nil, &gqlerror.Error{
+		Message: "Error, Jumlah Product Ga nyampe !",
+	}
+}
+
 // DeleteWishlistDetail is the resolver for the deleteWishlistDetail field.
-func (r *mutationResolver) DeleteWishlistDetail(ctx context.Context, wishlistID string, productID string, quantity int) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteWishlistDetail - deleteWishlistDetail"))
+func (r *mutationResolver) DeleteWishlistDetail(ctx context.Context, wishlistID string, productID string) (bool, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	model := new(model.WishlistDetail)
+	if err := db.First(model, "wishlist_id = ? AND product_id = ?", wishlistID, productID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // DeleteAllWishlistWishlistDetail is the resolver for the deleteAllWishlistWishlistDetail field.
@@ -384,7 +454,7 @@ func (r *queryResolver) WishlistDetails(ctx context.Context, wishlistID string) 
 	db := config.GetDB()
 
 	var models []*model.WishlistDetail
-	return models, db.Where("wishlist_id = ?  ", wishlistID).Find(&models).Error
+	return models, db.Where("wishlist_id = ?  ", wishlistID).Order("date_added ASC").Find(&models).Error
 }
 
 // ProductUserWishlists is the resolver for the productUserWishlists field.
@@ -492,3 +562,13 @@ type cartResolver struct{ *Resolver }
 type savedForLaterResolver struct{ *Resolver }
 type wishlistResolver struct{ *Resolver }
 type wishlistDetailResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *wishlistResolver) Notes(ctx context.Context, obj *model.Wishlist) (string, error) {
+	panic(fmt.Errorf("not implemented: Notes - notes"))
+}

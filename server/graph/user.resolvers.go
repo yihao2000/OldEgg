@@ -31,8 +31,8 @@ func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
 }
 
 // UserUpdateInformation is the resolver for the userUpdateInformation field.
-func (r *mutationResolver) UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string) (*model.User, error) {
-	return service.UserUpdateInformation(ctx, currentPassword, newPassword, phone)
+func (r *mutationResolver) UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string, balance *float64) (*model.User, error) {
+	return service.UserUpdateInformation(ctx, currentPassword, newPassword, phone, balance)
 }
 
 // UserInputVerificationCode is the resolver for the userInputVerificationCode field.
