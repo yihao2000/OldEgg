@@ -1,0 +1,112 @@
+.cardcontainer {
+  width: 100%;
+  padding: 20px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: rgb(var(--background-end-rgb));
+  display: flex;
+}
+
+.leftcardside {
+  width: 100%;
+}
+
+.rightcardside {
+  width: 25%;
+}
+
+.titlecontainer {
+  width: 100%;
+  font-size: 13px;
+}
+
+.titlelabel {
+  padding-left: 5px;
+  padding-right: 5px;
+  display: inline;
+}
+
+.ordercontainer {
+  display: block;
+}
+
+.productcontainer {
+  display: flex;
+  column-gap: 15px;
+}
+
+@mixin paddingVertical($value) {
+  padding-top: $value;
+  padding-bottom: $value;
+}
+
+.imagecontainer {
+  width: 100px;
+  max-width: 100px;
+  height: 85px;
+  max-height: 85px;
+  @include paddingVertical(15px);
+}
+
+.image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.verticalline {
+  min-height: 100%;
+  border-left: 1px solid white;
+}
+
+.rightcardsidecontainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.reorderbutton {
+  background: rgb(var(--accent-rgb));
+  border-color: rgb(var(--accent-rgb));
+  color: #222;
+  cursor: pointer;
+  letter-spacing: 1px;
+  padding: 7px;
+  position: relative;
+  text-align: center;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .rightcardside {
+    width: 40%;
+  }
+}
+
+@media (max-width: 500px) {
+  .cardcontainer {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .verticalline {
+    display: none;
+  }
+  .rightcardside {
+    display: flex;
+
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .rightcardsidecontainer {
+    justify-content: flex-end;
+    display: flex;
+    width: fit-content;
+  }
+}

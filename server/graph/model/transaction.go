@@ -26,6 +26,7 @@ type TransactionHeader struct {
 	Status          string       `json:"status"`
 	AddressID       string
 	Address         *Address `json:"address" gorm:"foreignKey:AddressID"`
+	Invoice         string
 }
 
 type TransactionDetail struct {

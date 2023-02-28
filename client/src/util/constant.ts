@@ -434,3 +434,38 @@ export const USER_UPDATE_BALANCE_MUTATION = `mutation($balance:Float!){
 	  id
   }
 }`;
+
+export const USER_TRANSACTIONS = `query($ordersWithin:Int, $ordersType:String, $search:String){
+  userTransactionHeaders(ordersWithin:$ordersWithin, ordersType:$ordersType, search:$search){
+    id
+    transactionDate
+    shipping{
+      name
+      price
+    }
+    paymentType{
+      name
+    }
+    status
+    address{
+      detail
+      name
+      region
+      city
+      zipCode
+      phone
+    }
+    invoice
+    transactionDetails{
+      product{
+        id
+        name
+        description
+        price
+        image
+        discount
+      }
+      quantity
+    }
+  }
+}`;

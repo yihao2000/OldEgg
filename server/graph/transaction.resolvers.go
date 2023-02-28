@@ -57,6 +57,7 @@ func (r *mutationResolver) Checkout(ctx context.Context, shippingID string, paym
 
 	}
 
+	generatedInvoice := uuid.NewString()
 	header := &model.TransactionHeader{
 		ID:              uuid.NewString(),
 		TransactionDate: time.Now(),
@@ -65,6 +66,7 @@ func (r *mutationResolver) Checkout(ctx context.Context, shippingID string, paym
 		PaymentTypeID:   paymentTypeID,
 		Status:          "Open",
 		AddressID:       addressID,
+		Invoice:         string(generatedInvoice[0:7]),
 	}
 
 	err = db.Create(header).Error
@@ -139,6 +141,42 @@ func (r *queryResolver) TransactionHeaders(ctx context.Context) ([]*model.Transa
 	panic(fmt.Errorf("not implemented: TransactionHeaders - transactionHeaders"))
 }
 
+// UserTransactionHeaders is the resolver for the userTransactionHeaders field.
+func (r *queryResolver) UserTransactionHeaders(ctx context.Context, ordersWithin *int, ordersType *string, search *string) ([]*model.TransactionHeader, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var transactionHeaders []*model.TransactionHeader
+
+	temp := db.Where("user_id = ?", userID)
+
+	if ordersWithin != nil && *ordersWithin != 0 {
+
+		startDate := time.Now().AddDate(0, 0, -*ordersWithin).Format("2006-01-02")
+		temp = temp.Where("transaction_date >= ?", startDate)
+	}
+
+	if ordersType != nil && *ordersType != "All" {
+		temp = temp.Where("status LIKE ?", ordersType)
+	}
+
+	if search != nil {
+		// temp = temp.Joins("JOIN transaction_details ON transaction_headers.id = transaction_details.transaction_header_id JOIN products ON transaction_details.product_id = products.id").
+		// 	Where("transaction_headers.id LIKE ? OR transaction_headers.invoice LIKE ? OR products.name LIKE ?", "%"+*search+"%", "%"+*search+"%", "%"+*search+"%")
+
+		temp = temp.Where("invoice LIKE ? OR id LIKE ?", "%"+*search+"%", "%"+*search+"%")
+	}
+
+	return transactionHeaders, temp.Find(&transactionHeaders).Error
+}
+
 // TransactionHeader is the resolver for the transactionHeader field.
 func (r *transactionDetailResolver) TransactionHeader(ctx context.Context, obj *model.TransactionDetail) (*model.TransactionHeader, error) {
 	panic(fmt.Errorf("not implemented: TransactionHeader - transactionHeader"))
@@ -146,7 +184,10 @@ func (r *transactionDetailResolver) TransactionHeader(ctx context.Context, obj *
 
 // Product is the resolver for the product field.
 func (r *transactionDetailResolver) Product(ctx context.Context, obj *model.TransactionDetail) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+	db := config.GetDB()
+	model := new(model.Product)
+
+	return model, db.First(model, "id = ?", obj.ProductID).Error
 }
 
 // User is the resolver for the user field.
@@ -156,22 +197,33 @@ func (r *transactionHeaderResolver) User(ctx context.Context, obj *model.Transac
 
 // Shipping is the resolver for the shipping field.
 func (r *transactionHeaderResolver) Shipping(ctx context.Context, obj *model.TransactionHeader) (*model.Shipping, error) {
-	panic(fmt.Errorf("not implemented: Shipping - shipping"))
+	db := config.GetDB()
+	model := new(model.Shipping)
+
+	return model, db.First(model, "id = ?", obj.ShippingID).Error
 }
 
 // PaymentType is the resolver for the paymentType field.
 func (r *transactionHeaderResolver) PaymentType(ctx context.Context, obj *model.TransactionHeader) (*model.PaymentType, error) {
-	panic(fmt.Errorf("not implemented: PaymentType - paymentType"))
+	db := config.GetDB()
+	model := new(model.PaymentType)
+
+	return model, db.First(model, "id = ?", obj.PaymentTypeID).Error
 }
 
 // Address is the resolver for the address field.
 func (r *transactionHeaderResolver) Address(ctx context.Context, obj *model.TransactionHeader) (*model.Address, error) {
-	panic(fmt.Errorf("not implemented: Address - address"))
+	db := config.GetDB()
+	model := new(model.Address)
+
+	return model, db.First(model, "id = ?", obj.AddressID).Error
 }
 
 // TransactionDetails is the resolver for the transactionDetails field.
 func (r *transactionHeaderResolver) TransactionDetails(ctx context.Context, obj *model.TransactionHeader) ([]*model.TransactionDetail, error) {
-	panic(fmt.Errorf("not implemented: TransactionDetails - transactionDetails"))
+	db := config.GetDB()
+	var models []*model.TransactionDetail
+	return models, db.Where("transaction_header_id = ?", obj.ID).Find(&models).Error
 }
 
 // TransactionDetail returns TransactionDetailResolver implementation.
@@ -186,3 +238,13 @@ func (r *Resolver) TransactionHeader() TransactionHeaderResolver {
 
 type transactionDetailResolver struct{ *Resolver }
 type transactionHeaderResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *transactionHeaderResolver) Invoice(ctx context.Context, obj *model.TransactionHeader) (string, error) {
+	panic(fmt.Errorf("not implemented: Invoice - invoice"))
+}

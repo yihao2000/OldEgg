@@ -167,38 +167,39 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Address              func(childComplexity int, id string) int
-		Addresses            func(childComplexity int) int
-		Brand                func(childComplexity int, id *string, name *string) int
-		Brands               func(childComplexity int) int
-		Cart                 func(childComplexity int, productID string) int
-		Carts                func(childComplexity int) int
-		Categories           func(childComplexity int) int
-		Category             func(childComplexity int, id *string, name *string) int
-		GetCurrentUser       func(childComplexity int) int
-		PaymentType          func(childComplexity int, id string) int
-		PaymentTypes         func(childComplexity int) int
-		Product              func(childComplexity int, id *string, name *string) int
-		ProductGroup         func(childComplexity int, id *string) int
-		ProductUserWishlists func(childComplexity int, productID string) int
-		Products             func(childComplexity int, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string, search *model.SearchProduct) int
-		ProductsGroup        func(childComplexity int, category *string, brand *string, productgroup *string, shop *string) int
-		Promos               func(childComplexity int) int
-		Protected            func(childComplexity int) int
-		Reviews              func(childComplexity int, productID string) int
-		SavedForLaters       func(childComplexity int) int
-		Shipping             func(childComplexity int, id string) int
-		Shippings            func(childComplexity int) int
-		Shop                 func(childComplexity int, id *string, name *string) int
-		Shops                func(childComplexity int) int
-		TransactionHeaders   func(childComplexity int) int
-		UpdateCart           func(childComplexity int, userID string, productID string, quantity int) int
-		User                 func(childComplexity int, id *string, email *string) int
-		UserAddresses        func(childComplexity int) int
-		Userwishlists        func(childComplexity int) int
-		Wishlist             func(childComplexity int, wishlistID string) int
-		WishlistDetails      func(childComplexity int, wishlistID string) int
-		Wishlists            func(childComplexity int) int
+		Address                func(childComplexity int, id string) int
+		Addresses              func(childComplexity int) int
+		Brand                  func(childComplexity int, id *string, name *string) int
+		Brands                 func(childComplexity int) int
+		Cart                   func(childComplexity int, productID string) int
+		Carts                  func(childComplexity int) int
+		Categories             func(childComplexity int) int
+		Category               func(childComplexity int, id *string, name *string) int
+		GetCurrentUser         func(childComplexity int) int
+		PaymentType            func(childComplexity int, id string) int
+		PaymentTypes           func(childComplexity int) int
+		Product                func(childComplexity int, id *string, name *string) int
+		ProductGroup           func(childComplexity int, id *string) int
+		ProductUserWishlists   func(childComplexity int, productID string) int
+		Products               func(childComplexity int, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string, search *model.SearchProduct) int
+		ProductsGroup          func(childComplexity int, category *string, brand *string, productgroup *string, shop *string) int
+		Promos                 func(childComplexity int) int
+		Protected              func(childComplexity int) int
+		Reviews                func(childComplexity int, productID string) int
+		SavedForLaters         func(childComplexity int) int
+		Shipping               func(childComplexity int, id string) int
+		Shippings              func(childComplexity int) int
+		Shop                   func(childComplexity int, id *string, name *string) int
+		Shops                  func(childComplexity int) int
+		TransactionHeaders     func(childComplexity int) int
+		UpdateCart             func(childComplexity int, userID string, productID string, quantity int) int
+		User                   func(childComplexity int, id *string, email *string) int
+		UserAddresses          func(childComplexity int) int
+		UserTransactionHeaders func(childComplexity int, ordersWithin *int, ordersType *string, search *string) int
+		Userwishlists          func(childComplexity int) int
+		Wishlist               func(childComplexity int, wishlistID string) int
+		WishlistDetails        func(childComplexity int, wishlistID string) int
+		Wishlists              func(childComplexity int) int
 	}
 
 	Review struct {
@@ -240,6 +241,7 @@ type ComplexityRoot struct {
 	TransactionHeader struct {
 		Address            func(childComplexity int) int
 		ID                 func(childComplexity int) int
+		Invoice            func(childComplexity int) int
 		PaymentType        func(childComplexity int) int
 		Shipping           func(childComplexity int) int
 		Status             func(childComplexity int) int
@@ -372,6 +374,7 @@ type QueryResolver interface {
 	PaymentType(ctx context.Context, id string) (*model.PaymentType, error)
 	PaymentTypes(ctx context.Context) ([]*model.PaymentType, error)
 	TransactionHeaders(ctx context.Context) ([]*model.TransactionHeader, error)
+	UserTransactionHeaders(ctx context.Context, ordersWithin *int, ordersType *string, search *string) ([]*model.TransactionHeader, error)
 }
 type ReviewResolver interface {
 	User(ctx context.Context, obj *model.Review) (*model.User, error)
@@ -391,6 +394,7 @@ type TransactionHeaderResolver interface {
 	PaymentType(ctx context.Context, obj *model.TransactionHeader) (*model.PaymentType, error)
 
 	Address(ctx context.Context, obj *model.TransactionHeader) (*model.Address, error)
+
 	TransactionDetails(ctx context.Context, obj *model.TransactionHeader) ([]*model.TransactionDetail, error)
 }
 type WishlistResolver interface {
@@ -1422,6 +1426,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.UserAddresses(childComplexity), true
 
+	case "Query.userTransactionHeaders":
+		if e.complexity.Query.UserTransactionHeaders == nil {
+			break
+		}
+
+		args, err := ec.field_Query_userTransactionHeaders_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.UserTransactionHeaders(childComplexity, args["ordersWithin"].(*int), args["ordersType"].(*string), args["search"].(*string)), true
+
 	case "Query.userwishlists":
 		if e.complexity.Query.Userwishlists == nil {
 			break
@@ -1620,6 +1636,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TransactionHeader.ID(childComplexity), true
+
+	case "TransactionHeader.invoice":
+		if e.complexity.TransactionHeader.Invoice == nil {
+			break
+		}
+
+		return e.complexity.TransactionHeader.Invoice(childComplexity), true
 
 	case "TransactionHeader.paymentType":
 		if e.complexity.TransactionHeader.PaymentType == nil {
@@ -3087,6 +3110,39 @@ func (ec *executionContext) field_Query_updateCart_args(ctx context.Context, raw
 		}
 	}
 	args["quantity"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_userTransactionHeaders_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *int
+	if tmp, ok := rawArgs["ordersWithin"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ordersWithin"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["ordersWithin"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["ordersType"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ordersType"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["ordersType"] = arg1
+	var arg2 *string
+	if tmp, ok := rawArgs["search"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("search"))
+		arg2, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["search"] = arg2
 	return args, nil
 }
 
@@ -7026,6 +7082,8 @@ func (ec *executionContext) fieldContext_Mutation_checkout(ctx context.Context, 
 				return ec.fieldContext_TransactionHeader_status(ctx, field)
 			case "address":
 				return ec.fieldContext_TransactionHeader_address(ctx, field)
+			case "invoice":
+				return ec.fieldContext_TransactionHeader_invoice(ctx, field)
 			case "transactionDetails":
 				return ec.fieldContext_TransactionHeader_transactionDetails(ctx, field)
 			}
@@ -10101,11 +10159,87 @@ func (ec *executionContext) fieldContext_Query_transactionHeaders(ctx context.Co
 				return ec.fieldContext_TransactionHeader_status(ctx, field)
 			case "address":
 				return ec.fieldContext_TransactionHeader_address(ctx, field)
+			case "invoice":
+				return ec.fieldContext_TransactionHeader_invoice(ctx, field)
 			case "transactionDetails":
 				return ec.fieldContext_TransactionHeader_transactionDetails(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TransactionHeader", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_userTransactionHeaders(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userTransactionHeaders(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserTransactionHeaders(rctx, fc.Args["ordersWithin"].(*int), fc.Args["ordersType"].(*string), fc.Args["search"].(*string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TransactionHeader)
+	fc.Result = res
+	return ec.marshalNTransactionHeader2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐTransactionHeaderᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userTransactionHeaders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_TransactionHeader_id(ctx, field)
+			case "transactionDate":
+				return ec.fieldContext_TransactionHeader_transactionDate(ctx, field)
+			case "user":
+				return ec.fieldContext_TransactionHeader_user(ctx, field)
+			case "shipping":
+				return ec.fieldContext_TransactionHeader_shipping(ctx, field)
+			case "paymentType":
+				return ec.fieldContext_TransactionHeader_paymentType(ctx, field)
+			case "status":
+				return ec.fieldContext_TransactionHeader_status(ctx, field)
+			case "address":
+				return ec.fieldContext_TransactionHeader_address(ctx, field)
+			case "invoice":
+				return ec.fieldContext_TransactionHeader_invoice(ctx, field)
+			case "transactionDetails":
+				return ec.fieldContext_TransactionHeader_transactionDetails(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type TransactionHeader", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_userTransactionHeaders_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -11186,6 +11320,8 @@ func (ec *executionContext) fieldContext_TransactionDetail_transactionHeader(ctx
 				return ec.fieldContext_TransactionHeader_status(ctx, field)
 			case "address":
 				return ec.fieldContext_TransactionHeader_address(ctx, field)
+			case "invoice":
+				return ec.fieldContext_TransactionHeader_invoice(ctx, field)
 			case "transactionDetails":
 				return ec.fieldContext_TransactionHeader_transactionDetails(ctx, field)
 			}
@@ -11674,6 +11810,50 @@ func (ec *executionContext) fieldContext_TransactionHeader_address(ctx context.C
 				return ec.fieldContext_Address_user(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Address", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TransactionHeader_invoice(ctx context.Context, field graphql.CollectedField, obj *model.TransactionHeader) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TransactionHeader_invoice(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Invoice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TransactionHeader_invoice(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TransactionHeader",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -16644,6 +16824,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "userTransactionHeaders":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userTransactionHeaders(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "__type":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -17105,6 +17305,13 @@ func (ec *executionContext) _TransactionHeader(ctx context.Context, sel ast.Sele
 				return innerFunc(ctx)
 
 			})
+		case "invoice":
+
+			out.Values[i] = ec._TransactionHeader_invoice(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "transactionDetails":
 			field := field
 

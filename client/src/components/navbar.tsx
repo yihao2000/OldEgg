@@ -1,10 +1,13 @@
 import styles from '@/styles/componentstyles/navbar.module.css';
+import { CURRENT_USER_QUERY, GRAPHQLAPI } from '@/util/constant';
 import { links } from '@/util/route';
+import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
+import { NAME_SPLITTER } from './converter/converter';
 
 export default function Navbar() {
   const [token, setToken] = useSessionStorage('token', '');
@@ -16,7 +19,29 @@ export default function Navbar() {
     if (token == '') {
       setUserInformation('Sign In / Register');
     } else {
-      setUserInformation('');
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CURRENT_USER_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          if (res.data.data.getCurrentUser.name != null) {
+            // if(NAME_SPLITTER(res.data.data.getCurrentUser.name) != null){
+            //   var name = NAME_SPLITTER(res.data.data.getCurrentUser.name)
+            //   setUserInformation(name[0])
+            // }
+            setUserInformation(res.data.data.getCurrentUser.name);
+          }
+        })
+
+        .catch((err) => console.log(err));
     }
   }, [token]);
 
@@ -56,13 +81,15 @@ export default function Navbar() {
           <div className={styles.hamburgercomponent}></div>
           <div className={styles.hamburgercomponent}></div>
         </div>
-        <Image
-          alt="Logo"
-          src="/asset/logo.svg"
-          width={120}
-          height={40}
-          onClick={showToken}
-        />
+        <Link href={links.home}>
+          <Image
+            alt="Logo"
+            src="/asset/logo.svg"
+            width={120}
+            height={40}
+            onClick={showToken}
+          />
+        </Link>
         <i
           className={`${styles.locationcontainer} "fas fa-map-marker-alt" `}
           style={{

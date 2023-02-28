@@ -1,6 +1,6 @@
 export const links = {
-  login: '/',
-  home: '/home',
+  login: '/login',
+  home: '/',
   signup: '/register',
   productDetail: (productID: string) => {
     return '/product/' + productID;
@@ -18,4 +18,7 @@ export const links = {
 
   cart: '/cart',
   order: '/account/order/order',
+  shopDetail: (shopID: string) => {
+    return '/shop/' + shopID;
+  },
 };

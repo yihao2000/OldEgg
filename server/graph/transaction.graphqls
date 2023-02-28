@@ -19,6 +19,7 @@ type TransactionHeader {
   paymentType: PaymentType! @goField(forceResolver: true)
   status: String!
   address: Address! @goField(forceResolver: true)
+  invoice: ID!
 
   transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
 }
@@ -37,6 +38,7 @@ extend type Query {
   paymentTypes: [PaymentType!]!
 
   transactionHeaders: [TransactionHeader!]!
+  userTransactionHeaders(ordersWithin: Int, ordersType:String, search:String): [TransactionHeader!]!
 
 }
 

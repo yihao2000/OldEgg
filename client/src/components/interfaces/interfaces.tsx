@@ -136,3 +136,32 @@ export interface WishlistDetail {
   quantity: number;
   dateAdded: string;
 }
+
+export interface Address {
+  id: string;
+  name: string;
+  detail: string;
+  region: string;
+  zip_code: string;
+  phone: string;
+  city: string;
+  is_primary: boolean;
+  user_id: string;
+}
+
+export interface TransactionDetail {
+  product: Product;
+  user: User;
+  quantity: number;
+}
+
+export interface TransactionHeader {
+  id: string;
+  invoice: string;
+  status: string;
+  transactionDate: string;
+  address: Address;
+  paymentType: PaymentType;
+  shipping: Shipping;
+  transactionDetails: TransactionDetail[];
+}
