@@ -21,4 +21,7 @@ export const links = {
   shopDetail: (shopID: string) => {
     return '/shop/' + shopID;
   },
+  mylist: '/account/wishlist/mylist',
+  followedlist: '/account/wishlist/followedlist',
+  publiclist: '/account/wishlist/publiclist',
 };

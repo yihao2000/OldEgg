@@ -245,6 +245,7 @@ const Mylist: NextPage = () => {
           console.log('Mapping');
           return (
             <WishlistCard
+              style="half"
               wishlistName={res.name}
               wishlistPrivacy={res.privacy}
               refreshComponent={refreshComponent}

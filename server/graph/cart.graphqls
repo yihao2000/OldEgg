@@ -63,7 +63,7 @@ extend type Query{
   updateCart(userID: ID!, productID: ID!, quantity: Int!): Cart! @auth
   
 
-  wishlists: [Wishlist!]!  @goField(forceResolver:true)
+  wishlists(filter: String, sortBy: String, offset: Int, limit: Int, ): [Wishlist!]!  @goField(forceResolver:true)
   userwishlists: [Wishlist!]! @goField(forceResolver:true)
   wishlistDetails(wishlistId: ID!): [WishlistDetail!]!
 

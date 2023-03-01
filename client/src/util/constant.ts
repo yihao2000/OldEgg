@@ -190,6 +190,8 @@ export const WISHLISTDETAILS_QUERY = `query($wishlistId: ID!){
       id
       name
       image
+      price
+      discount
     }
     quantity
     dateAdded
@@ -468,4 +470,10 @@ export const USER_TRANSACTIONS = `query($ordersWithin:Int, $ordersType:String, $
       quantity
     }
   }
+}`;
+
+export const PUBLIC_WISHLISTS_QUERY = `query($filter:String, $sortBy:String, $limit:Int, $offset: Int){
+  wishlists(filter:$filter, sortBy:$sortBy, limit:$limit, offset:$offset){
+    id
+}
 }`;

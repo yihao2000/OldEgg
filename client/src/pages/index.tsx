@@ -13,6 +13,7 @@ import axios from 'axios';
 import { GRAPHQLAPI, PROMOS_QUERY } from '@/util/constant';
 import PromoCarousel from '@/components/promocarousel';
 import ProductRecommendations from '@/components/productrecommendations';
+import { useSessionStorage } from 'usehooks-ts';
 
 // const myImage = new CloudinaryImage('sample', {
 //   cloudName: 'dmpbgjnrc',

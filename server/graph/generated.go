@@ -199,7 +199,7 @@ type ComplexityRoot struct {
 		Userwishlists          func(childComplexity int) int
 		Wishlist               func(childComplexity int, wishlistID string) int
 		WishlistDetails        func(childComplexity int, wishlistID string) int
-		Wishlists              func(childComplexity int) int
+		Wishlists              func(childComplexity int, filter *string, sortBy *string, offset *int, limit *int) int
 	}
 
 	Review struct {
@@ -351,7 +351,7 @@ type QueryResolver interface {
 	Cart(ctx context.Context, productID string) (*model.Cart, error)
 	Carts(ctx context.Context) ([]*model.Cart, error)
 	UpdateCart(ctx context.Context, userID string, productID string, quantity int) (*model.Cart, error)
-	Wishlists(ctx context.Context) ([]*model.Wishlist, error)
+	Wishlists(ctx context.Context, filter *string, sortBy *string, offset *int, limit *int) ([]*model.Wishlist, error)
 	Userwishlists(ctx context.Context) ([]*model.Wishlist, error)
 	WishlistDetails(ctx context.Context, wishlistID string) ([]*model.WishlistDetail, error)
 	ProductUserWishlists(ctx context.Context, productID string) ([]*model.Wishlist, error)
@@ -1474,7 +1474,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Wishlists(childComplexity), true
+		args, err := ec.field_Query_wishlists_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Wishlists(childComplexity, args["filter"].(*string), args["sortBy"].(*string), args["offset"].(*int), args["limit"].(*int)), true
 
 	case "Review.createdAt":
 		if e.complexity.Review.CreatedAt == nil {
@@ -3197,6 +3202,48 @@ func (ec *executionContext) field_Query_wishlist_args(ctx context.Context, rawAr
 		}
 	}
 	args["wishlistId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_wishlists_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["filter"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["sortBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["sortBy"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg3
 	return args, nil
 }
 
@@ -8746,7 +8793,7 @@ func (ec *executionContext) _Query_wishlists(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Wishlists(rctx)
+		return ec.resolvers.Query().Wishlists(rctx, fc.Args["filter"].(*string), fc.Args["sortBy"].(*string), fc.Args["offset"].(*int), fc.Args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8787,6 +8834,17 @@ func (ec *executionContext) fieldContext_Query_wishlists(ctx context.Context, fi
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_wishlists_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }

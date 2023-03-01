@@ -28,6 +28,7 @@ interface Parameter {
   wishlistName: string;
   wishlistPrivacy: string;
   refreshComponent: Function;
+  style: string;
 }
 
 interface ModalParameter {
@@ -40,6 +41,8 @@ interface Product {
   id: string;
   image: string;
   name: string;
+  price: number;
+  discount: number;
 }
 interface WishlistDetail {
   product: Product;
@@ -54,6 +57,10 @@ const WishlistCard = (props: Parameter) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDuplicateModal, setOpenDuplicateModal] = useState(false);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const [followed, setFollowed] = useState(false);
+
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalPromotion, setTotalPromotion] = useState(0);
 
   const closeDeleteModal = () => {
     setOpenDeleteModal(false);
@@ -68,6 +75,8 @@ const WishlistCard = (props: Parameter) => {
   };
 
   useEffect(() => {
+    setTotalPrice(0);
+
     axios
       .post(
         GRAPHQLAPI,
@@ -84,12 +93,30 @@ const WishlistCard = (props: Parameter) => {
         },
       )
       .then((res) => {
-        console.log(res.data.data.wishlistDetails);
         setWishlistDetails(res.data.data.wishlistDetails);
       })
 
       .catch((err) => console.log(err));
   }, [props.refreshComponent]);
+
+  useEffect(() => {
+    console.log(wishlistDetails);
+    if (wishlistDetails) {
+      var tempTotal = 0;
+      var tempTotalDisc = 0;
+      wishlistDetails.map((w) => {
+        tempTotal +=
+          w.quantity *
+          (w.product.price - (w.product.price * w.product.discount) / 100);
+
+        if (w.product.discount != 0) {
+          tempTotalDisc = tempTotalDisc + 1;
+        }
+      });
+      setTotalPrice(tempTotal);
+      setTotalPromotion(tempTotalDisc);
+    }
+  }, [wishlistDetails]);
 
   const handleDeleteClick = () => {
     // document.body.style.overflow = 'hidden';
@@ -103,6 +130,10 @@ const WishlistCard = (props: Parameter) => {
   const handleSettingsClick = () => {
     setOpenSettingsModal(true);
   };
+
+  const handleFollowClick = () => {};
+
+  const handlePublicDuplicateClick = () => {};
 
   const SettingsModalContent = (props: ModalParameter) => {
     const [wishlist, setWishlist] = useState<Wishlist | null>(null);
@@ -566,37 +597,74 @@ const WishlistCard = (props: Parameter) => {
   };
 
   return (
-    <div className={styles.wishlistcontainer}>
+    <div
+      className={`${
+        props.style == 'half'
+          ? styles.wishlisthalfcontainer
+          : styles.wishlistfullcontainer
+      }`}
+    >
       <div className={styles.wishlistcontent}>
         <div className={styles.wishlisttitle}>
           <h3 className={styles.titlelabel}>{props.wishlistName}</h3>
-          <div className={styles.wishlistactioncontainer}>
-            <span className={styles.managelink} onClick={handleDeleteClick}>
-              Delete
-            </span>
-            <div className={styles.verticalseparator}></div>
-            <span className={styles.managelink} onClick={handleDuplicateClick}>
-              Duplicate
-            </span>
-            <div className={styles.verticalseparator}></div>
-            <span className={styles.managelink} onClick={handleSettingsClick}>
-              Settings
-            </span>
-          </div>
+          {props.style == 'half' && (
+            <div className={styles.wishlistactioncontainer}>
+              <span className={styles.managelink} onClick={handleDeleteClick}>
+                Delete
+              </span>
+              <div className={styles.verticalseparator}></div>
+              <span
+                className={styles.managelink}
+                onClick={handleDuplicateClick}
+              >
+                Duplicate
+              </span>
+              <div className={styles.verticalseparator}></div>
+              <span className={styles.managelink} onClick={handleSettingsClick}>
+                Settings
+              </span>
+            </div>
+          )}
+          {props.style == 'full' && (
+            <div className={styles.wishlistactioncontainer}>
+              <span className={styles.managelink} onClick={handleFollowClick}>
+                Follow
+              </span>
+              <div className={styles.verticalseparator}></div>
+              <span
+                className={styles.managelink}
+                onClick={handlePublicDuplicateClick}
+              >
+                Duplicate
+              </span>
+            </div>
+          )}
         </div>
         <Link href={links.wishlistDetail(props.wishlistId)} passHref>
-          <div className={styles.productcontainer}>
-            {wishlistDetails &&
-              wishlistDetails.slice(0, 3).map((e) => {
-                return (
-                  <WishlistProductCard
-                    id={e.product.id}
-                    image={e.product.image}
-                    name={e.product.name}
-                    // key={e.productId}
-                  />
-                );
-              })}
+          <div className={styles.contentcontainer}>
+            <div className={styles.productcontainer}>
+              {wishlistDetails &&
+                wishlistDetails.slice(0, 3).map((e) => {
+                  return (
+                    <WishlistProductCard
+                      id={e.product.id}
+                      image={e.product.image}
+                      name={e.product.name}
+                      // key={e.productId}
+                    />
+                  );
+                })}
+            </div>
+            <div className={styles.informationcontainer}>
+              {totalPrice != 0 && (
+                <span className={styles.totalprice}>${totalPrice}</span>
+              )}
+              {totalPromotion != 0 && (
+                <span className={styles.totaldiscount}>
+                  {totalPromotion} Items on Discount
+                </span>
+              )}
+            </div>
           </div>
         </Link>
       </div>

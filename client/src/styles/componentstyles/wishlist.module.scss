@@ -1,9 +1,22 @@
-.wishlistcontainer {
+@mixin paddingNoOverflow() {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.wishlisthalfcontainer {
   width: 45%;
   border: 0.5px solid rgb(var(--background-end-rgb));
   height: 40vh;
   padding: 2%;
   margin-bottom: 1em;
+}
+.wishlistfullcontainer {
+  width: 100%;
+  border: 0.5px solid rgb(var(--background-end-rgb));
+  height: 40vh;
+  padding: 2%;
+  margin-bottom: 1em;
+  @include paddingNoOverflow();
 }
 
 .wishlistcontent {
@@ -45,7 +58,15 @@
   display: none;
 }
 
-.wishlistcontainer:hover {
+.informationcontainer {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+}
+
+.wishlistfullcontainer:hover {
   .managelink {
     display: block;
   }
@@ -53,6 +74,12 @@
   border: 0.5px solid rgb(var(--foreground-rgb));
 
   .verticalseparator {
+    display: block;
+  }
+}
+
+.wishlisthalfcontainer:hover {
+  .managelink {
     display: block;
   }
 }
@@ -69,17 +96,44 @@
   display: none;
 }
 
+.contentcontainer {
+  display: flex;
+  max-width: 100%;
+  width: 100%;
+  // column-gap: 3%;
+  // max-height: fit-content;
+  height: 100%;
+  // align-items: center;
+}
 .productcontainer {
   display: flex;
   column-gap: 3%;
-  max-height: fit-content;
+  min-height: 100%;
   height: 100%;
+  min-width: 85%;
   align-items: center;
+  max-width: 85%;
 }
 
 .wishlistproductcardcontainer {
   @include nogap();
   width: 25%;
+  height: fit-content;
+}
+
+.totalprice {
+  font-weight: bold;
+  font-size: 20px;
+  display: block;
+  width: 100%;
+}
+
+.totaldiscount {
+  color: red;
+  font-size: 12px;
+  display: block;
+  width: 100%;
+  margin-top: 10px;
 }
 
 .wishlistproductcardimagecontainer {
@@ -144,7 +198,8 @@
 }
 
 @media (max-width: 1000px) {
-  .wishlistcontainer {
+  .wishlisthalfcontainer,
+  .wishlistfullcontainer {
     width: 95%;
     height: 25vh;
   }
@@ -167,6 +222,19 @@
   }
   .wishlistproductcardcontainer {
     height: 80%;
+  }
+  .productcontainer {
+    max-width: 80%;
+    width: 80%;
+    min-width: 80%;
+  }
+  .totalprice {
+    font-size: 15px;
+    margin-left: 5px;
+  }
+  .totaldiscount {
+    font-size: 12px;
+    margin-left: 5px;
   }
 
   .wishlistactioncontainer > * {

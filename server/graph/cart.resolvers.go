@@ -426,11 +426,32 @@ func (r *queryResolver) UpdateCart(ctx context.Context, userID string, productID
 }
 
 // Wishlists is the resolver for the wishlists field.
-func (r *queryResolver) Wishlists(ctx context.Context) ([]*model.Wishlist, error) {
+func (r *queryResolver) Wishlists(ctx context.Context, filter *string, sortBy *string, offset *int, limit *int) ([]*model.Wishlist, error) {
 	db := config.GetDB()
 
 	var models []*model.Wishlist
-	return models, db.Find(&models).Error
+	temp := db.Model(models)
+
+	if filter != nil {
+		temp = temp.Where("privacy LIKE ?", filter)
+	}
+
+	if sortBy != nil {
+		if *sortBy == "date_created" {
+			temp = temp.Order("date_created ASC")
+		}
+
+	}
+
+	if offset != nil {
+		temp = temp.Offset(*offset)
+	}
+
+	if limit != nil {
+		temp = temp.Limit(*limit)
+	}
+
+	return models, temp.Find(&models).Error
 }
 
 // Userwishlists is the resolver for the userwishlists field.

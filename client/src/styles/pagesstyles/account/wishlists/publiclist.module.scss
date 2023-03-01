@@ -1,0 +1,94 @@
+.pagedivider {
+  display: flex;
+  padding: 20px 100px;
+}
+@mixin buttonDefaultStyling($bgcolor) {
+  display: inline-block;
+  margin: 0;
+  padding: 4px 10px;
+  outline: none;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: 1px solid #d9d9d9;
+  background: $bgcolor;
+  color: #222;
+  font-weight: bold;
+  font-stretch: condensed;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+@mixin padding($paddingvertical, $paddinghorizontal) {
+  padding: $paddingvertical $paddinghorizontal;
+}
+
+@mixin paddingNoOverflow {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@mixin paddingHorizontal($left, $right) {
+  padding-left: $left;
+  padding-right: $right;
+}
+
+.leftside {
+  @include padding(0px, 20px);
+  width: 30%;
+}
+
+.rightside {
+  @include padding(0px, 20px);
+  width: 70%;
+}
+
+.contentcontainer {
+  width: 100%;
+}
+
+.filtercontainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(var(--foreground-lighter-rgb));
+  padding: 1%;
+  width: 100%;
+  @include paddingHorizontal(3%, 3%);
+  @include paddingNoOverflow();
+}
+
+.orderBycontainer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.paginationcontainer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filtersubcontainer {
+  display: flex;
+}
+
+.changepagecontainer {
+  display: flex;
+  column-gap: 20px;
+}
+
+.changepagebutton {
+  @include buttonDefaultStyling(#ffffff);
+  border: none !important;
+  border-radius: 2px 2px 2px 2px !important;
+}
+
+.wishlistcontainer {
+  width: 100%;
+}

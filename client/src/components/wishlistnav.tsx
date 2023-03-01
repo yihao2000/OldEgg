@@ -42,7 +42,7 @@ export default function WishlistNav() {
               Followed Lists
             </a>
             <a
-              href=""
+              href={links.publiclist}
               className={`${styles.navtabcell} ${
                 thirdActive ? styles.activecell : ''
               }`}
