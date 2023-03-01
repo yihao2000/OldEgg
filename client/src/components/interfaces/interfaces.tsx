@@ -79,6 +79,7 @@ export interface Wishlist {
   privacy: string;
   dateCreated: string;
   notes: string;
+  user: User;
 }
 
 export interface AddToWishlistModalParameter {

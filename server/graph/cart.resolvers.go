@@ -341,6 +341,48 @@ func (r *mutationResolver) DeleteProductFromWishlistDetails(ctx context.Context,
 	return true, nil
 }
 
+// CreateWishlistFollower is the resolver for the createWishlistFollower field.
+func (r *mutationResolver) CreateWishlistFollower(ctx context.Context, wishlistID string) (*model.WishlistFollower, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	wishlistFollower := model.WishlistFollower{
+		WishlistID: wishlistID,
+		UserID:     userID,
+		DateAdded:  time.Now(),
+	}
+	if err := db.Model(wishlistFollower).Create(&wishlistFollower).Error; err != nil {
+		return nil, err
+	}
+
+	return &wishlistFollower, nil
+}
+
+// DeleteWishlistFollower is the resolver for the deleteWishlistFollower field.
+func (r *mutationResolver) DeleteWishlistFollower(ctx context.Context, wishlistID string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.WishlistFollower)
+	if err := db.First(model, "user_id = ? AND wishlist_id = ?", userID, wishlistID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
+}
+
 // CreateSavedForLater is the resolver for the createSavedForLater field.
 func (r *mutationResolver) CreateSavedForLater(ctx context.Context, productID string, quantity int) (*model.SavedForLater, error) {
 	db := config.GetDB()
@@ -478,6 +520,33 @@ func (r *queryResolver) WishlistDetails(ctx context.Context, wishlistID string) 
 	return models, db.Where("wishlist_id = ?  ", wishlistID).Order("date_added ASC").Find(&models).Error
 }
 
+// WishlistFollowers is the resolver for the wishlistFollowers field.
+func (r *queryResolver) WishlistFollowers(ctx context.Context, wishlistID string) ([]*model.WishlistFollower, error) {
+	panic(fmt.Errorf("not implemented: WishlistFollowers - wishlistFollowers"))
+}
+
+// WishlistFollower is the resolver for the wishlistFollower field.
+func (r *queryResolver) WishlistFollower(ctx context.Context, wishlistID string) (*model.WishlistFollower, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.WishlistFollower)
+	if err := db.First(model, "user_id = ? AND wishlist_id = ?", userID, wishlistID).Error; err != nil {
+		return nil, &gqlerror.Error{
+			Message: "Data ga ketemu",
+		}
+	}
+
+	return model, nil
+}
+
 // ProductUserWishlists is the resolver for the productUserWishlists field.
 func (r *queryResolver) ProductUserWishlists(ctx context.Context, productID string) ([]*model.Wishlist, error) {
 	db := config.GetDB()
@@ -551,6 +620,13 @@ func (r *wishlistResolver) WishlistDetails(ctx context.Context, obj *model.Wishl
 	panic(fmt.Errorf("not implemented: WishlistDetails - wishlistDetails"))
 }
 
+// WishlistFollowers is the resolver for the wishlistFollowers field.
+func (r *wishlistResolver) WishlistFollowers(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistFollower, error) {
+	db := config.GetDB()
+	var models []*model.WishlistFollower
+	return models, db.Where("wishlist_id= ?", obj.ID).Find(&models).Error
+}
+
 // Wishlist is the resolver for the wishlist field.
 func (r *wishlistDetailResolver) Wishlist(ctx context.Context, obj *model.WishlistDetail) (*model.Wishlist, error) {
 	db := config.GetDB()
@@ -567,6 +643,16 @@ func (r *wishlistDetailResolver) Product(ctx context.Context, obj *model.Wishlis
 	return product, db.Where("id = ?", obj.ProductID).Order("valid_to ASC").Limit(1).Find(&product).Error
 }
 
+// Wishlist is the resolver for the wishlist field.
+func (r *wishlistFollowerResolver) Wishlist(ctx context.Context, obj *model.WishlistFollower) (*model.Wishlist, error) {
+	panic(fmt.Errorf("not implemented: Wishlist - wishlist"))
+}
+
+// User is the resolver for the user field.
+func (r *wishlistFollowerResolver) User(ctx context.Context, obj *model.WishlistFollower) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: User - user"))
+}
+
 // Cart returns CartResolver implementation.
 func (r *Resolver) Cart() CartResolver { return &cartResolver{r} }
 
@@ -579,10 +665,14 @@ func (r *Resolver) Wishlist() WishlistResolver { return &wishlistResolver{r} }
 // WishlistDetail returns WishlistDetailResolver implementation.
 func (r *Resolver) WishlistDetail() WishlistDetailResolver { return &wishlistDetailResolver{r} }
 
+// WishlistFollower returns WishlistFollowerResolver implementation.
+func (r *Resolver) WishlistFollower() WishlistFollowerResolver { return &wishlistFollowerResolver{r} }
+
 type cartResolver struct{ *Resolver }
 type savedForLaterResolver struct{ *Resolver }
 type wishlistResolver struct{ *Resolver }
 type wishlistDetailResolver struct{ *Resolver }
+type wishlistFollowerResolver struct{ *Resolver }
 
 // !!! WARNING !!!
 // The code below was going to be deleted when updating resolvers. It has been copied here so you have

@@ -12,6 +12,7 @@ type Wishlist{
   dateCreated: Time!
   notes: String!
   wishlistDetails: [WishlistDetail!]! @goField(forceResolver:true)
+  wishlistFollowers: [WishlistFollower!]! @goField(forceResolver:true)
 }
 
 input NewWishlist{
@@ -26,12 +27,22 @@ type WishlistDetail{
   dateAdded: Time!
 }
 
+type WishlistFollower{
+  wishlist: Wishlist! @goField(forceResolver:true)
+  user: User! @goField(forceResolver:true)
+  dateAdded: Time!
+}
+
 type SavedForLater{
   user: User! @goField(forceResolver:true)
   product: Product! @goField(forceResolver:true)
   quantity: Int!
 }
 
+type WishlistReview{
+  wishlist: Wishlist! @goField(forceResolver:true)
+  
+}
 
 
 
@@ -52,6 +63,9 @@ extend type Mutation{
   deleteAllWishlistWishlistDetail(wishlistId: ID!): Boolean! @auth
   deleteProductFromWishlistDetails(productId: ID!): Boolean!
 
+  createWishlistFollower(wishlistID: ID!): WishlistFollower! @auth
+  deleteWishlistFollower(wishlistID: ID!): Boolean! @auth
+
   createSavedForLater(productId: ID!, quantity: Int!): SavedForLater! @auth
   deleteSavedForLater(productId: ID!): Boolean! @auth
   deleteAllSavedForLater: Boolean! @auth
@@ -66,6 +80,8 @@ extend type Query{
   wishlists(filter: String, sortBy: String, offset: Int, limit: Int, ): [Wishlist!]!  @goField(forceResolver:true)
   userwishlists: [Wishlist!]! @goField(forceResolver:true)
   wishlistDetails(wishlistId: ID!): [WishlistDetail!]!
+  wishlistFollowers(wishlistID: ID!): [WishlistFollower!]!
+  wishlistFollower(wishlistID: ID!): WishlistFollower!
 
   productUserWishlists(productId: ID!): [Wishlist!]!
 

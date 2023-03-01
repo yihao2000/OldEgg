@@ -59,8 +59,10 @@ const CartCard = (props: Parameter) => {
   useEffect(() => {
     if (cartQuantity != 0) {
       var currPrice =
-        props.cart.product.price -
-        (props.cart.product.price * props.cart.product.discount) / 100;
+        (props.cart.product.price -
+          (props.cart.product.price * props.cart.product.discount) / 100) *
+        props.cart.quantity;
+
       setTotalPrice(cartQuantity * props.cart.product.price);
       props.reloadComponent();
     }

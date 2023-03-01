@@ -1,4 +1,8 @@
-import { Wishlist, WishlistDetail } from '@/components/interfaces/interfaces';
+import {
+  User,
+  Wishlist,
+  WishlistDetail,
+} from '@/components/interfaces/interfaces';
 import Layout from '@/components/layout';
 import {
   GRAPHQLAPI,
@@ -7,6 +11,7 @@ import {
   WISHLIST_QUERY,
   USER_ADD_CART_MUTATION,
   DELETE_WISHLIST_DETAIL,
+  CURRENT_USER_QUERY,
 } from '@/util/constant';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -27,6 +32,34 @@ export default function WishlistDetailPage() {
   const [wishlist, setWishlist] = useState<Wishlist>();
   const [token, setToken] = useSessionStorage('token', '');
   const [totalPrice, setTotalPrice] = useState(0);
+  const [currUser, setCurrUser] = useState<User | null>(null);
+
+  //Wishlist Reviews
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewCustomUsername, setReviewCustomUsername] = useState('');
+  const [reviewCommentType, setReviewCommentType] = useState('Custom');
+
+  //Get Current User
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CURRENT_USER_QUERY,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then((res) => {
+        setCurrUser(res.data.data.getCurrentUser);
+      })
+      .catch(() => {});
+  }, []);
 
   //Refresh
   const [refresh, setRefresh] = useState(false);
@@ -52,6 +85,12 @@ export default function WishlistDetailPage() {
     setRefresh(!refresh);
   };
 
+  const handleSubmitReviewClick = () => {};
+
+  const handleChangeSelectedReviewCommentType = (event: any) => {
+    setReviewCommentType(event.target.value);
+  };
+
   useEffect(() => {
     refreshComponent();
   }, [id]);
@@ -59,7 +98,9 @@ export default function WishlistDetailPage() {
   useEffect(() => {
     var totalPrice = 0;
     wishlistDetails.map((w) => {
-      totalPrice += w.quantity * w.product.price;
+      totalPrice +=
+        (w.product.price - (w.product.price * w.product.discount) / 100) *
+        w.quantity;
     });
     setTotalPrice(totalPrice);
   }, [wishlistDetails]);
@@ -140,28 +181,7 @@ export default function WishlistDetailPage() {
           },
         )
         .then((res) => {
-          axios
-            .post(
-              GRAPHQLAPI,
-              {
-                query: DELETE_WISHLIST_DETAIL,
-                variables: {
-                  productID: e.product.id,
-                  wishlistId: e.wishlist.id,
-                },
-              },
-              {
-                headers: {
-                  Authorization: 'Bearer ' + token,
-                },
-              },
-            )
-            .then((res) => {
-              refreshComponent();
-            })
-            .catch((err) => {
-              // setError('Invalid Product Amount !');
-            });
+          console.log(res);
         })
         .catch(() => {});
     });
@@ -174,22 +194,25 @@ export default function WishlistDetailPage() {
             <div className={styles.wishlistcontainertitle}>
               {wishlist?.name}
             </div>
-            <div className={styles.wishlistsettingcontainer}>
-              <button
-                className={styles.secondarybutton}
-                style={{
-                  backgroundColor: 'grey',
-                }}
-              >
-                {wishlist?.privacy}
-              </button>
-              <button
-                className={styles.secondarybutton}
-                onClick={handleSettingButtonClick}
-              >
-                SETTINGS
-              </button>
-            </div>
+            {currUser && currUser?.id == wishlist?.user.id && (
+              <div className={styles.wishlistsettingcontainer}>
+                <button
+                  className={styles.secondarybutton}
+                  style={{
+                    backgroundColor: 'grey',
+                  }}
+                >
+                  {wishlist?.privacy}
+                </button>
+                <button
+                  className={styles.secondarybutton}
+                  onClick={handleSettingButtonClick}
+                >
+                  SETTINGS
+                </button>
+              </div>
+            )}
+
             <hr className={styles.horizontalline} />
 
             <div className={styles.subtotalcontainer}>
@@ -218,12 +241,14 @@ export default function WishlistDetailPage() {
             )}
 
             <div className={styles.flexendcontainer}>
-              <button
-                className={styles.secondarybutton}
-                onClick={handleAddNotesClick}
-              >
-                {wishlist?.notes == '' ? 'ADD NOTES' : 'EDIT NOTES'}
-              </button>
+              {currUser && currUser.id == wishlist?.user.id && (
+                <button
+                  className={styles.secondarybutton}
+                  onClick={handleAddNotesClick}
+                >
+                  {wishlist?.notes == '' ? 'ADD NOTES' : 'EDIT NOTES'}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -239,6 +264,85 @@ export default function WishlistDetailPage() {
                 />
               );
             })}
+          </div>
+          <div className={styles.commentdivider}>
+            <div className={styles.commentsection}>ss</div>
+            <div className={styles.commentsection}>
+              <div className={styles.ratecontainer}>
+                <span className={styles.ratelabel}>Rate this wishlist</span>
+              </div>
+              <input type="number" className={styles.halfinput} />
+              <div className={styles.inputcontainer}>
+                <input
+                  type="text"
+                  className={styles.textinput}
+                  placeholder="Add title about this wishlist."
+                  value={reviewTitle}
+                  onChange={(e) => {
+                    setReviewTitle(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={styles.inputcontainer}>
+                <input
+                  type="text"
+                  className={`${styles.textinput}`}
+                  value={reviewComment}
+                  onChange={(e) => {
+                    setReviewComment(e.target.value);
+                  }}
+                  placeholder="Add your comment about this wishlist."
+                />
+              </div>
+              <div className={styles.inputcontainer}>
+                <input
+                  type="checkbox"
+                  checked={reviewCommentType == 'Custom'}
+                  value="Custom"
+                  onChange={handleChangeSelectedReviewCommentType}
+                />{' '}
+                <span
+                  style={{
+                    marginRight: '10px',
+                  }}
+                >
+                  Display as:{' '}
+                </span>
+                <input
+                  type="text"
+                  className={styles.halfinput}
+                  value={reviewCustomUsername}
+                  onChange={(e) => {
+                    setReviewCustomUsername(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={styles.inputcontainer}>
+                <input
+                  type="checkbox"
+                  value="Anonymous"
+                  checked={reviewCommentType == 'Anonymous'}
+                  onChange={handleChangeSelectedReviewCommentType}
+                />
+                <span
+                  style={{
+                    marginLeft: '5px',
+                  }}
+                >
+                  Anonymous
+                </span>
+              </div>
+              <div
+                className={`${styles.inputcontainer} ${styles.containerend}`}
+              >
+                <button
+                  className={styles.submitreviewbutton}
+                  onClick={handleSubmitReviewClick}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

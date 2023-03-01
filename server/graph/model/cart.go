@@ -29,6 +29,14 @@ type WishlistDetail struct {
 	DateAdded  time.Time `json:"dateAdded"`
 }
 
+type WishlistFollower struct {
+	WishlistID string    `json:"wishlistID" gorm:"primaryKey"`
+	Wishlist   *Wishlist `json:"wishlist" gorm:"foreignKey:WishlistID"`
+	UserID     string    `json:"userID" gorm:"primaryKey"`
+	User       *User     `json:"user" gorm:"foreignKey:UserID"`
+	DateAdded  time.Time `json:"dateAdded"`
+}
+
 type SavedForLater struct {
 	UserID    string   `json:"userID" gorm:"primaryKey"`
 	User      *User    `json:"user"`

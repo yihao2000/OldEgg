@@ -104,8 +104,6 @@ const Mylist: NextPage = () => {
         })
         .then((res) => {
           setWishlists(res.data.data.wishlists);
-          // console.log(res);
-          // setCurrentPage();
         })
         .catch((err) => {
           console.log(err);
@@ -217,6 +215,7 @@ const Mylist: NextPage = () => {
               {wishlists.map((w) => {
                 return (
                   <WishlistCard
+                    key={w.id}
                     style="full"
                     refreshComponent={refreshComponent}
                     wishlistId={w.id}

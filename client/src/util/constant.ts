@@ -214,6 +214,14 @@ export const WISHLIST_QUERY = `query($wishlistId: ID!){
     privacy
     dateCreated
     notes
+    user{
+      id
+      name
+      phone
+      role
+      banned
+      email
+    }
   }
 }`;
 
@@ -476,4 +484,20 @@ export const PUBLIC_WISHLISTS_QUERY = `query($filter:String, $sortBy:String, $li
   wishlists(filter:$filter, sortBy:$sortBy, limit:$limit, offset:$offset){
     id
 }
+}`;
+
+export const CHECK_USER_FOLLOWED = `query($wishlistID:ID!){
+  wishlistFollower(wishlistID:$wishlistID){
+   	dateAdded
+  }
+}`;
+
+export const DELETE_WISHLIST_FOLLOWER_MUTATION = `mutation($wishlistID:ID!){
+  deleteWishlistFollower(wishlistID:$wishlistID)
+}`;
+
+export const CREATE_WISHLIST_FOLLOWER_MUTATION = `mutation($wishlistID:ID!){
+  createWishlistFollower(wishlistID:$wishlistID){
+    dateAdded
+  }
 }`;

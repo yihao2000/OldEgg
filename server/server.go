@@ -47,6 +47,7 @@ func main() {
 	db.AutoMigrate(&model.TransactionHeader{})
 	db.AutoMigrate(&model.TransactionDetail{})
 	db.AutoMigrate(&model.PaymentType{})
+	db.AutoMigrate(&model.WishlistFollower{})
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{

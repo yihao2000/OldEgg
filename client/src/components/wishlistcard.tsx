@@ -7,8 +7,11 @@ import styles from '@/styles/componentstyles/wishlist.module.scss';
 import styles2 from '@/styles/pagesstyles/account/wishlists/mylist.module.scss';
 import axios from 'axios';
 import {
+  CHECK_USER_FOLLOWED,
   CREATE_WISHLIST_DETAIL_MUTATION,
+  CREATE_WISHLIST_FOLLOWER_MUTATION,
   CREATE_WISHLIST_MUTATION,
+  DELETE_WISHLIST_FOLLOWER_MUTATION,
   DELETE_WISHLIST_MUTATION,
   DELETE_WISHLIST_WISHLISTDETAIL_MUTATION,
   GRAPHQLAPI,
@@ -62,6 +65,35 @@ const WishlistCard = (props: Parameter) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalPromotion, setTotalPromotion] = useState(0);
 
+  useEffect(() => {
+    checkUserFollowed();
+  }, []);
+
+  const checkUserFollowed = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CHECK_USER_FOLLOWED,
+          variables: {
+            wishlistID: props.wishlistId,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        if (res.data.data.wishlistFollower.dateAdded) {
+          setFollowed(true);
+        }
+      })
+
+      .catch((err) => setFollowed(false));
+  };
+
   const closeDeleteModal = () => {
     setOpenDeleteModal(false);
   };
@@ -100,7 +132,6 @@ const WishlistCard = (props: Parameter) => {
   }, [props.refreshComponent]);
 
   useEffect(() => {
-    console.log(wishlistDetails);
     if (wishlistDetails) {
       var tempTotal = 0;
       var tempTotalDisc = 0;
@@ -131,9 +162,53 @@ const WishlistCard = (props: Parameter) => {
     setOpenSettingsModal(true);
   };
 
-  const handleFollowClick = () => {};
+  const handleFollowClick = () => {
+    if (followed) {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: DELETE_WISHLIST_FOLLOWER_MUTATION,
+            variables: {
+              wishlistID: props.wishlistId,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          props.refreshComponent();
+          setFollowed(false);
+        })
 
-  const handlePublicDuplicateClick = () => {};
+        .catch((err) => console.log(err));
+    } else {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CREATE_WISHLIST_FOLLOWER_MUTATION,
+            variables: {
+              wishlistID: props.wishlistId,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          props.refreshComponent();
+          setFollowed(true);
+        })
+
+        .catch((err) => console.log(err));
+    }
+  };
 
   const SettingsModalContent = (props: ModalParameter) => {
     const [wishlist, setWishlist] = useState<Wishlist | null>(null);
@@ -628,12 +703,12 @@ const WishlistCard = (props: Parameter) => {
           {props.style == 'full' && (
             <div className={styles.wishlistactioncontainer}>
               <span className={styles.managelink} onClick={handleFollowClick}>
-                Follow
+                {followed ? 'Unfollow' : 'Follow'}
               </span>
               <div className={styles.verticalseparator}></div>
               <span
                 className={styles.managelink}
-                onClick={handlePublicDuplicateClick}
+                onClick={handleDuplicateClick}
               >
                 Duplicate
               </span>

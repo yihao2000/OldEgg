@@ -171,28 +171,7 @@ export default function WishlistDetailCard(props: Parameter) {
         },
       )
       .then((res) => {
-        axios
-          .post(
-            GRAPHQLAPI,
-            {
-              query: DELETE_WISHLIST_DETAIL,
-              variables: {
-                productID: props.wishlistdetail.product.id,
-                wishlistId: props.wishlistdetail.wishlist.id,
-              },
-            },
-            {
-              headers: {
-                Authorization: 'Bearer ' + token,
-              },
-            },
-          )
-          .then((res) => {
-            props.refreshComponent();
-          })
-          .catch((err) => {
-            // setError('Invalid Product Amount !');
-          });
+        console.log(res);
       })
       .catch((err) => {
         // setError('Invalid Product Amount !');
@@ -244,7 +223,12 @@ export default function WishlistDetailCard(props: Parameter) {
       </div>
       <div className={styles.actioncontainer}>
         <div className={styles.pricecontainer}>
-          ${props.wishlistdetail.product.price * props.wishlistdetail.quantity}
+          $
+          {(props.wishlistdetail.product.price -
+            (props.wishlistdetail.product.price *
+              props.wishlistdetail.product.discount) /
+              100) *
+            props.wishlistdetail.quantity}
         </div>
         <div className={styles.qtyaddcontainer}>
           <div className={styles2.quantitycontainer}>
