@@ -31,6 +31,7 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 			Description: input.Description,
 			Image:       input.Image,
 			Aboutus:     input.Aboutus,
+			Banner:      input.Banner,
 		}
 		if err := db.Model(shop).Create(&shop).Error; err != nil {
 			return nil, err
@@ -52,5 +53,19 @@ func (r *queryResolver) Shops(ctx context.Context) ([]*model.Shop, error) {
 
 // Shop is the resolver for the shop field.
 func (r *queryResolver) Shop(ctx context.Context, id *string, name *string) (*model.Shop, error) {
-	panic(fmt.Errorf("not implemented: Shop - shop"))
+	db := config.GetDB()
+
+	shop := new(model.Shop)
+
+	return shop, db.Where("id = ?", id).Limit(1).Find(&shop).Error
 }
+
+// Banner is the resolver for the banner field.
+func (r *shopResolver) Banner(ctx context.Context, obj *model.Shop) (string, error) {
+	panic(fmt.Errorf("not implemented: Banner - banner"))
+}
+
+// Shop returns ShopResolver implementation.
+func (r *Resolver) Shop() ShopResolver { return &shopResolver{r} }
+
+type shopResolver struct{ *Resolver }

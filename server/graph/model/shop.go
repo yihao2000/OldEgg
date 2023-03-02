@@ -6,4 +6,5 @@ type Shop struct {
 	Description string `json:"description"`
 	Image       string `json:"image"`
 	Aboutus     string `json:"aboutus"`
+	Banner      string `json:"banner"`
 }

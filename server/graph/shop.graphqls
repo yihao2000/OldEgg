@@ -4,6 +4,7 @@ type Shop{
   description: String!  
   image: String!
   aboutus: String!
+  banner: String!
 }
 
 input NewShop{
@@ -11,6 +12,7 @@ input NewShop{
   description: String!  
   image: String!
   aboutus: String!
+  banner: String!
 }
 
 extend type Mutation{

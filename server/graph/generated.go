@@ -46,6 +46,7 @@ type ResolverRoot interface {
 	Query() QueryResolver
 	Review() ReviewResolver
 	SavedForLater() SavedForLaterResolver
+	Shop() ShopResolver
 	TransactionDetail() TransactionDetailResolver
 	TransactionHeader() TransactionHeaderResolver
 	Wishlist() WishlistResolver
@@ -235,6 +236,7 @@ type ComplexityRoot struct {
 
 	Shop struct {
 		Aboutus     func(childComplexity int) int
+		Banner      func(childComplexity int) int
 		Description func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Image       func(childComplexity int) int
@@ -417,6 +419,9 @@ type ReviewResolver interface {
 type SavedForLaterResolver interface {
 	User(ctx context.Context, obj *model.SavedForLater) (*model.User, error)
 	Product(ctx context.Context, obj *model.SavedForLater) (*model.Product, error)
+}
+type ShopResolver interface {
+	Banner(ctx context.Context, obj *model.Shop) (string, error)
 }
 type TransactionDetailResolver interface {
 	TransactionHeader(ctx context.Context, obj *model.TransactionDetail) (*model.TransactionHeader, error)
@@ -1701,6 +1706,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Shop.Aboutus(childComplexity), true
+
+	case "Shop.banner":
+		if e.complexity.Shop.Banner == nil {
+			break
+		}
+
+		return e.complexity.Shop.Banner(childComplexity), true
 
 	case "Shop.description":
 		if e.complexity.Shop.Description == nil {
@@ -7544,6 +7556,8 @@ func (ec *executionContext) fieldContext_Mutation_createShop(ctx context.Context
 				return ec.fieldContext_Shop_image(ctx, field)
 			case "aboutus":
 				return ec.fieldContext_Shop_aboutus(ctx, field)
+			case "banner":
+				return ec.fieldContext_Shop_banner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
 		},
@@ -7610,6 +7624,8 @@ func (ec *executionContext) fieldContext_Mutation_updateShop(ctx context.Context
 				return ec.fieldContext_Shop_image(ctx, field)
 			case "aboutus":
 				return ec.fieldContext_Shop_aboutus(ctx, field)
+			case "banner":
+				return ec.fieldContext_Shop_banner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
 		},
@@ -8057,6 +8073,8 @@ func (ec *executionContext) fieldContext_Product_shop(ctx context.Context, field
 				return ec.fieldContext_Shop_image(ctx, field)
 			case "aboutus":
 				return ec.fieldContext_Shop_aboutus(ctx, field)
+			case "banner":
+				return ec.fieldContext_Shop_banner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
 		},
@@ -10698,6 +10716,8 @@ func (ec *executionContext) fieldContext_Query_shops(ctx context.Context, field 
 				return ec.fieldContext_Shop_image(ctx, field)
 			case "aboutus":
 				return ec.fieldContext_Shop_aboutus(ctx, field)
+			case "banner":
+				return ec.fieldContext_Shop_banner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
 		},
@@ -10753,6 +10773,8 @@ func (ec *executionContext) fieldContext_Query_shop(ctx context.Context, field g
 				return ec.fieldContext_Shop_image(ctx, field)
 			case "aboutus":
 				return ec.fieldContext_Shop_aboutus(ctx, field)
+			case "banner":
+				return ec.fieldContext_Shop_banner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
 		},
@@ -12150,6 +12172,50 @@ func (ec *executionContext) fieldContext_Shop_aboutus(ctx context.Context, field
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Shop_banner(ctx context.Context, field graphql.CollectedField, obj *model.Shop) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Shop_banner(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Shop().Banner(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Shop_banner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Shop",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -16594,7 +16660,7 @@ func (ec *executionContext) unmarshalInputNewShop(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "description", "image", "aboutus"}
+	fieldsInOrder := [...]string{"name", "description", "image", "aboutus", "banner"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -16630,6 +16696,14 @@ func (ec *executionContext) unmarshalInputNewShop(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("aboutus"))
 			it.Aboutus, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "banner":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("banner"))
+			it.Banner, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -18717,36 +18791,56 @@ func (ec *executionContext) _Shop(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._Shop_id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 
 			out.Values[i] = ec._Shop_name(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "description":
 
 			out.Values[i] = ec._Shop_description(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "image":
 
 			out.Values[i] = ec._Shop_image(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "aboutus":
 
 			out.Values[i] = ec._Shop_aboutus(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
+		case "banner":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Shop_banner(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
