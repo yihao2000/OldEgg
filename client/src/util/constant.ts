@@ -483,6 +483,8 @@ export const USER_TRANSACTIONS = `query($ordersWithin:Int, $ordersType:String, $
 export const PUBLIC_WISHLISTS_QUERY = `query($filter:String, $sortBy:String, $limit:Int, $offset: Int){
   wishlists(filter:$filter, sortBy:$sortBy, limit:$limit, offset:$offset){
     id
+    name
+    privacy
 }
 }`;
 
@@ -499,5 +501,54 @@ export const DELETE_WISHLIST_FOLLOWER_MUTATION = `mutation($wishlistID:ID!){
 export const CREATE_WISHLIST_FOLLOWER_MUTATION = `mutation($wishlistID:ID!){
   createWishlistFollower(wishlistID:$wishlistID){
     dateAdded
+  }
+}`;
+
+export const CREATE_WISHLIST_REVIEW_MUTATION = `mutation($wishlistID:ID!, $customName:String!, $rating:Float!, $title:String!, $comment:String!){
+  createWishlistReview(wishlistID:$wishlistID, customName:$customName, rating:$rating, title:$title, comment:$comment){
+    comment
+    title
+    rating
+    customName
+
+  }
+}`;
+
+export const WISHLIST_REVIEW_QUERY = `query($wishlistID:ID!){
+  wishlistReviews(wishlistID:$wishlistID){
+    id
+    title
+		comment
+    rating
+    customName
+    user{
+      id
+    }
+    wishlist{
+      id
+    }
+  }
+}`;
+
+export const USER_FOLLOWED_WISHLISTS_QUERY = `query{
+  userFollowedWishlists{
+    wishlist{
+      id
+      name
+      privacy
+      user{
+        id
+        name
+      }
+      wishlistDetails{
+        product{
+          id
+          image
+          name
+          price
+          discount
+        }
+      }
+    }
   }
 }`;

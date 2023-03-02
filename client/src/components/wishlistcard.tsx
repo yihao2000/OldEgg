@@ -11,6 +11,7 @@ import {
   CREATE_WISHLIST_DETAIL_MUTATION,
   CREATE_WISHLIST_FOLLOWER_MUTATION,
   CREATE_WISHLIST_MUTATION,
+  CURRENT_USER_QUERY,
   DELETE_WISHLIST_FOLLOWER_MUTATION,
   DELETE_WISHLIST_MUTATION,
   DELETE_WISHLIST_WISHLISTDETAIL_MUTATION,
@@ -23,7 +24,7 @@ import { useSessionStorage } from 'usehooks-ts';
 import ProductCard from './productcard';
 import WishlistProductCard from './wishlistproductcard';
 import Modal from './modal/modal';
-import { Wishlist } from './interfaces/interfaces';
+import { User, Wishlist } from './interfaces/interfaces';
 import { ClipLoader } from 'react-spinners';
 
 interface Parameter {
@@ -61,13 +62,59 @@ const WishlistCard = (props: Parameter) => {
   const [openDuplicateModal, setOpenDuplicateModal] = useState(false);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [followed, setFollowed] = useState(false);
+  const [wishlist, setWishlist] = useState<Wishlist>();
+  const [currentUser, setCurrentUser] = useState<User>();
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalPromotion, setTotalPromotion] = useState(0);
 
   useEffect(() => {
     checkUserFollowed();
+    getCurrentUser();
+    getWishlist();
   }, []);
+
+  const getCurrentUser = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CURRENT_USER_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setCurrentUser(res.data.data.getCurrentUser);
+      })
+
+      .catch((err) => setFollowed(false));
+  };
+  const getWishlist = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: WISHLIST_QUERY,
+          variables: {
+            wishlistId: props.wishlistId,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setWishlist(res.data.data.wishlist);
+      })
+
+      .catch((err) => setFollowed(false));
+  };
 
   const checkUserFollowed = () => {
     axios
@@ -104,6 +151,29 @@ const WishlistCard = (props: Parameter) => {
 
   const closeSettingsModal = () => {
     setOpenSettingsModal(false);
+  };
+
+  const handleUnfollowClick = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: DELETE_WISHLIST_FOLLOWER_MUTATION,
+          variables: {
+            wishlistID: props.wishlistId,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        props.refreshComponent();
+      })
+
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -682,7 +752,7 @@ const WishlistCard = (props: Parameter) => {
       <div className={styles.wishlistcontent}>
         <div className={styles.wishlisttitle}>
           <h3 className={styles.titlelabel}>{props.wishlistName}</h3>
-          {props.style == 'half' && (
+          {props.style == 'half' && wishlist?.user.id == currentUser?.id && (
             <div className={styles.wishlistactioncontainer}>
               <span className={styles.managelink} onClick={handleDeleteClick}>
                 Delete
@@ -697,6 +767,20 @@ const WishlistCard = (props: Parameter) => {
               <div className={styles.verticalseparator}></div>
               <span className={styles.managelink} onClick={handleSettingsClick}>
                 Settings
+              </span>
+            </div>
+          )}
+          {props.style == 'half' && wishlist?.user.id != currentUser?.id && (
+            <div className={styles.wishlistactioncontainer}>
+              <span className={styles.managelink} onClick={handleUnfollowClick}>
+                Unfollow
+              </span>
+              <div className={styles.verticalseparator}></div>
+              <span
+                className={styles.managelink}
+                onClick={handleDuplicateClick}
+              >
+                Duplicate
               </span>
             </div>
           )}

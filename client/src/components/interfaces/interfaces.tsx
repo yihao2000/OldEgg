@@ -166,3 +166,13 @@ export interface TransactionHeader {
   shipping: Shipping;
   transactionDetails: TransactionDetail[];
 }
+
+export interface WishlistReview {
+  id: string;
+  title: string;
+  comment: string;
+  rating: number;
+  customName: string;
+  user: User;
+  wishlist: Wishlist;
+}

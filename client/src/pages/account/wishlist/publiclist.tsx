@@ -143,7 +143,12 @@ const Mylist: NextPage = () => {
                 >
                   {wishlists.length} Lists
                 </div>
-                <div className={styles.orderBycontainer}>
+                <div
+                  className={styles.orderBycontainer}
+                  style={{
+                    marginLeft: '10px',
+                  }}
+                >
                   <b>Sort By:</b>
                   <select
                     // value={orderBy}

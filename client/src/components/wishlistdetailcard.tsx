@@ -232,28 +232,33 @@ export default function WishlistDetailCard(props: Parameter) {
         </div>
         <div className={styles.qtyaddcontainer}>
           <div className={styles2.quantitycontainer}>
-            <input
-              style={{
-                userSelect: 'none',
-              }}
-              type="number"
-              className={styles2.quantityfield}
-              value={wishlistDetailQuantity}
-              onChange={handleQuantityChange}
-            />
+            <div
+              className={`${styles2.quantitycontainer}`}
+              style={{ marginRight: '5px' }}
+            >
+              <input
+                style={{
+                  userSelect: 'none',
+                }}
+                type="number"
+                className={styles2.quantityfield}
+                value={wishlistDetailQuantity}
+                onChange={handleQuantityChange}
+              />
 
-            <button
-              className={`${styles2.quantityarrow} ${styles2.uparrow}`}
-              onClick={handleIncreaseQuantity}
-            >
-              +
-            </button>
-            <button
-              className={`${styles2.quantityarrow} ${styles2.downarrow}`}
-              onClick={handleDecreaseQuantity}
-            >
-              -
-            </button>
+              <button
+                className={`${styles2.quantityarrow} ${styles2.uparrow}`}
+                onClick={handleIncreaseQuantity}
+              >
+                +
+              </button>
+              <button
+                className={`${styles2.quantityarrow} ${styles2.downarrow}`}
+                onClick={handleDecreaseQuantity}
+              >
+                -
+              </button>
+            </div>
           </div>
           <button
             className={styles.addtocartbutton}

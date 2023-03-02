@@ -51,6 +51,7 @@ type ResolverRoot interface {
 	Wishlist() WishlistResolver
 	WishlistDetail() WishlistDetailResolver
 	WishlistFollower() WishlistFollowerResolver
+	WishlistReview() WishlistReviewResolver
 }
 
 type DirectiveRoot struct {
@@ -111,6 +112,7 @@ type ComplexityRoot struct {
 		CreateWishlist                   func(childComplexity int, input model.NewWishlist) int
 		CreateWishlistDetail             func(childComplexity int, wishlistID string, productID string, quantity int) int
 		CreateWishlistFollower           func(childComplexity int, wishlistID string) int
+		CreateWishlistReview             func(childComplexity int, wishlistID string, customName string, rating float64, title string, comment string) int
 		DeleteAddress                    func(childComplexity int, id string) int
 		DeleteAllCart                    func(childComplexity int) int
 		DeleteAllSavedForLater           func(childComplexity int) int
@@ -198,12 +200,14 @@ type ComplexityRoot struct {
 		UpdateCart             func(childComplexity int, userID string, productID string, quantity int) int
 		User                   func(childComplexity int, id *string, email *string) int
 		UserAddresses          func(childComplexity int) int
+		UserFollowedWishlists  func(childComplexity int) int
 		UserTransactionHeaders func(childComplexity int, ordersWithin *int, ordersType *string, search *string) int
 		Userwishlists          func(childComplexity int) int
 		Wishlist               func(childComplexity int, wishlistID string) int
 		WishlistDetails        func(childComplexity int, wishlistID string) int
 		WishlistFollower       func(childComplexity int, wishlistID string) int
 		WishlistFollowers      func(childComplexity int, wishlistID string) int
+		WishlistReviews        func(childComplexity int, wishlistID string) int
 		Wishlists              func(childComplexity int, filter *string, sortBy *string, offset *int, limit *int) int
 	}
 
@@ -278,6 +282,7 @@ type ComplexityRoot struct {
 		User              func(childComplexity int) int
 		WishlistDetails   func(childComplexity int) int
 		WishlistFollowers func(childComplexity int) int
+		WishlistReviews   func(childComplexity int) int
 	}
 
 	WishlistDetail struct {
@@ -291,6 +296,16 @@ type ComplexityRoot struct {
 		DateAdded func(childComplexity int) int
 		User      func(childComplexity int) int
 		Wishlist  func(childComplexity int) int
+	}
+
+	WishlistReview struct {
+		Comment    func(childComplexity int) int
+		CustomName func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Rating     func(childComplexity int) int
+		Title      func(childComplexity int) int
+		User       func(childComplexity int) int
+		Wishlist   func(childComplexity int) int
 	}
 }
 
@@ -326,6 +341,7 @@ type MutationResolver interface {
 	DeleteWishlistDetail(ctx context.Context, wishlistID string, productID string) (bool, error)
 	DeleteAllWishlistWishlistDetail(ctx context.Context, wishlistID string) (bool, error)
 	DeleteProductFromWishlistDetails(ctx context.Context, productID string) (bool, error)
+	CreateWishlistReview(ctx context.Context, wishlistID string, customName string, rating float64, title string, comment string) (*model.WishlistReview, error)
 	CreateWishlistFollower(ctx context.Context, wishlistID string) (*model.WishlistFollower, error)
 	DeleteWishlistFollower(ctx context.Context, wishlistID string) (bool, error)
 	CreateSavedForLater(ctx context.Context, productID string, quantity int) (*model.SavedForLater, error)
@@ -370,6 +386,8 @@ type QueryResolver interface {
 	WishlistDetails(ctx context.Context, wishlistID string) ([]*model.WishlistDetail, error)
 	WishlistFollowers(ctx context.Context, wishlistID string) ([]*model.WishlistFollower, error)
 	WishlistFollower(ctx context.Context, wishlistID string) (*model.WishlistFollower, error)
+	UserFollowedWishlists(ctx context.Context) ([]*model.WishlistFollower, error)
+	WishlistReviews(ctx context.Context, wishlistID string) ([]*model.WishlistReview, error)
 	ProductUserWishlists(ctx context.Context, productID string) ([]*model.Wishlist, error)
 	Wishlist(ctx context.Context, wishlistID string) (*model.Wishlist, error)
 	SavedForLaters(ctx context.Context) ([]*model.SavedForLater, error)
@@ -418,6 +436,7 @@ type WishlistResolver interface {
 
 	WishlistDetails(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistDetail, error)
 	WishlistFollowers(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistFollower, error)
+	WishlistReviews(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistReview, error)
 }
 type WishlistDetailResolver interface {
 	Wishlist(ctx context.Context, obj *model.WishlistDetail) (*model.Wishlist, error)
@@ -426,6 +445,10 @@ type WishlistDetailResolver interface {
 type WishlistFollowerResolver interface {
 	Wishlist(ctx context.Context, obj *model.WishlistFollower) (*model.Wishlist, error)
 	User(ctx context.Context, obj *model.WishlistFollower) (*model.User, error)
+}
+type WishlistReviewResolver interface {
+	Wishlist(ctx context.Context, obj *model.WishlistReview) (*model.Wishlist, error)
+	User(ctx context.Context, obj *model.WishlistReview) (*model.User, error)
 }
 
 type executableSchema struct {
@@ -781,6 +804,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateWishlistFollower(childComplexity, args["wishlistID"].(string)), true
+
+	case "Mutation.createWishlistReview":
+		if e.complexity.Mutation.CreateWishlistReview == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createWishlistReview_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateWishlistReview(childComplexity, args["wishlistID"].(string), args["customName"].(string), args["rating"].(float64), args["title"].(string), args["comment"].(string)), true
 
 	case "Mutation.deleteAddress":
 		if e.complexity.Mutation.DeleteAddress == nil {
@@ -1471,6 +1506,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.UserAddresses(childComplexity), true
 
+	case "Query.userFollowedWishlists":
+		if e.complexity.Query.UserFollowedWishlists == nil {
+			break
+		}
+
+		return e.complexity.Query.UserFollowedWishlists(childComplexity), true
+
 	case "Query.userTransactionHeaders":
 		if e.complexity.Query.UserTransactionHeaders == nil {
 			break
@@ -1537,6 +1579,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.WishlistFollowers(childComplexity, args["wishlistID"].(string)), true
+
+	case "Query.wishlistReviews":
+		if e.complexity.Query.WishlistReviews == nil {
+			break
+		}
+
+		args, err := ec.field_Query_wishlistReviews_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.WishlistReviews(childComplexity, args["wishlistID"].(string)), true
 
 	case "Query.wishlists":
 		if e.complexity.Query.Wishlists == nil {
@@ -1893,6 +1947,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Wishlist.WishlistFollowers(childComplexity), true
 
+	case "Wishlist.wishlistReviews":
+		if e.complexity.Wishlist.WishlistReviews == nil {
+			break
+		}
+
+		return e.complexity.Wishlist.WishlistReviews(childComplexity), true
+
 	case "WishlistDetail.dateAdded":
 		if e.complexity.WishlistDetail.DateAdded == nil {
 			break
@@ -1941,6 +2002,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.WishlistFollower.Wishlist(childComplexity), true
+
+	case "WishlistReview.comment":
+		if e.complexity.WishlistReview.Comment == nil {
+			break
+		}
+
+		return e.complexity.WishlistReview.Comment(childComplexity), true
+
+	case "WishlistReview.customName":
+		if e.complexity.WishlistReview.CustomName == nil {
+			break
+		}
+
+		return e.complexity.WishlistReview.CustomName(childComplexity), true
+
+	case "WishlistReview.id":
+		if e.complexity.WishlistReview.ID == nil {
+			break
+		}
+
+		return e.complexity.WishlistReview.ID(childComplexity), true
+
+	case "WishlistReview.rating":
+		if e.complexity.WishlistReview.Rating == nil {
+			break
+		}
+
+		return e.complexity.WishlistReview.Rating(childComplexity), true
+
+	case "WishlistReview.title":
+		if e.complexity.WishlistReview.Title == nil {
+			break
+		}
+
+		return e.complexity.WishlistReview.Title(childComplexity), true
+
+	case "WishlistReview.user":
+		if e.complexity.WishlistReview.User == nil {
+			break
+		}
+
+		return e.complexity.WishlistReview.User(childComplexity), true
+
+	case "WishlistReview.wishlist":
+		if e.complexity.WishlistReview.Wishlist == nil {
+			break
+		}
+
+		return e.complexity.WishlistReview.Wishlist(childComplexity), true
 
 	}
 	return 0, false
@@ -2402,6 +2512,57 @@ func (ec *executionContext) field_Mutation_createWishlistFollower_args(ctx conte
 		}
 	}
 	args["wishlistID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createWishlistReview_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["wishlistID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("wishlistID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["wishlistID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["customName"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customName"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["customName"] = arg1
+	var arg2 float64
+	if tmp, ok := rawArgs["rating"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rating"))
+		arg2, err = ec.unmarshalNFloat2float64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["rating"] = arg2
+	var arg3 string
+	if tmp, ok := rawArgs["title"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["title"] = arg3
+	var arg4 string
+	if tmp, ok := rawArgs["comment"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("comment"))
+		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["comment"] = arg4
 	return args, nil
 }
 
@@ -3333,6 +3494,21 @@ func (ec *executionContext) field_Query_wishlistFollower_args(ctx context.Contex
 }
 
 func (ec *executionContext) field_Query_wishlistFollowers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["wishlistID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("wishlistID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["wishlistID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_wishlistReviews_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -5360,6 +5536,8 @@ func (ec *executionContext) fieldContext_Mutation_createWishlist(ctx context.Con
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -5452,6 +5630,8 @@ func (ec *executionContext) fieldContext_Mutation_updateWishlist(ctx context.Con
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -5618,6 +5798,8 @@ func (ec *executionContext) fieldContext_Mutation_editWishlistNote(ctx context.C
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -6000,6 +6182,76 @@ func (ec *executionContext) fieldContext_Mutation_deleteProductFromWishlistDetai
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteProductFromWishlistDetails_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createWishlistReview(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createWishlistReview(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateWishlistReview(rctx, fc.Args["wishlistID"].(string), fc.Args["customName"].(string), fc.Args["rating"].(float64), fc.Args["title"].(string), fc.Args["comment"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.WishlistReview)
+	fc.Result = res
+	return ec.marshalNWishlistReview2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistReview(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createWishlistReview(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_WishlistReview_id(ctx, field)
+			case "wishlist":
+				return ec.fieldContext_WishlistReview_wishlist(ctx, field)
+			case "user":
+				return ec.fieldContext_WishlistReview_user(ctx, field)
+			case "customName":
+				return ec.fieldContext_WishlistReview_customName(ctx, field)
+			case "rating":
+				return ec.fieldContext_WishlistReview_rating(ctx, field)
+			case "title":
+				return ec.fieldContext_WishlistReview_title(ctx, field)
+			case "comment":
+				return ec.fieldContext_WishlistReview_comment(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WishlistReview", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createWishlistReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -9152,6 +9404,8 @@ func (ec *executionContext) fieldContext_Query_wishlists(ctx context.Context, fi
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -9224,6 +9478,8 @@ func (ec *executionContext) fieldContext_Query_userwishlists(ctx context.Context
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -9419,6 +9675,127 @@ func (ec *executionContext) fieldContext_Query_wishlistFollower(ctx context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_userFollowedWishlists(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userFollowedWishlists(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserFollowedWishlists(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.WishlistFollower)
+	fc.Result = res
+	return ec.marshalNWishlistFollower2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistFollowerᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userFollowedWishlists(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "wishlist":
+				return ec.fieldContext_WishlistFollower_wishlist(ctx, field)
+			case "user":
+				return ec.fieldContext_WishlistFollower_user(ctx, field)
+			case "dateAdded":
+				return ec.fieldContext_WishlistFollower_dateAdded(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WishlistFollower", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_wishlistReviews(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_wishlistReviews(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().WishlistReviews(rctx, fc.Args["wishlistID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.WishlistReview)
+	fc.Result = res
+	return ec.marshalNWishlistReview2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistReviewᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_wishlistReviews(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_WishlistReview_id(ctx, field)
+			case "wishlist":
+				return ec.fieldContext_WishlistReview_wishlist(ctx, field)
+			case "user":
+				return ec.fieldContext_WishlistReview_user(ctx, field)
+			case "customName":
+				return ec.fieldContext_WishlistReview_customName(ctx, field)
+			case "rating":
+				return ec.fieldContext_WishlistReview_rating(ctx, field)
+			case "title":
+				return ec.fieldContext_WishlistReview_title(ctx, field)
+			case "comment":
+				return ec.fieldContext_WishlistReview_comment(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WishlistReview", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_wishlistReviews_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_productUserWishlists(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_productUserWishlists(ctx, field)
 	if err != nil {
@@ -9473,6 +9850,8 @@ func (ec *executionContext) fieldContext_Query_productUserWishlists(ctx context.
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -9545,6 +9924,8 @@ func (ec *executionContext) fieldContext_Query_wishlist(ctx context.Context, fie
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -13289,6 +13670,66 @@ func (ec *executionContext) fieldContext_Wishlist_wishlistFollowers(ctx context.
 	return fc, nil
 }
 
+func (ec *executionContext) _Wishlist_wishlistReviews(ctx context.Context, field graphql.CollectedField, obj *model.Wishlist) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Wishlist().WishlistReviews(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.WishlistReview)
+	fc.Result = res
+	return ec.marshalNWishlistReview2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistReviewᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Wishlist_wishlistReviews(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Wishlist",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_WishlistReview_id(ctx, field)
+			case "wishlist":
+				return ec.fieldContext_WishlistReview_wishlist(ctx, field)
+			case "user":
+				return ec.fieldContext_WishlistReview_user(ctx, field)
+			case "customName":
+				return ec.fieldContext_WishlistReview_customName(ctx, field)
+			case "rating":
+				return ec.fieldContext_WishlistReview_rating(ctx, field)
+			case "title":
+				return ec.fieldContext_WishlistReview_title(ctx, field)
+			case "comment":
+				return ec.fieldContext_WishlistReview_comment(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type WishlistReview", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _WishlistDetail_wishlist(ctx context.Context, field graphql.CollectedField, obj *model.WishlistDetail) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_WishlistDetail_wishlist(ctx, field)
 	if err != nil {
@@ -13344,6 +13785,8 @@ func (ec *executionContext) fieldContext_WishlistDetail_wishlist(ctx context.Con
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -13566,6 +14009,8 @@ func (ec *executionContext) fieldContext_WishlistFollower_wishlist(ctx context.C
 				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
 			case "wishlistFollowers":
 				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
 		},
@@ -13680,6 +14125,358 @@ func (ec *executionContext) fieldContext_WishlistFollower_dateAdded(ctx context.
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WishlistReview_id(ctx context.Context, field graphql.CollectedField, obj *model.WishlistReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WishlistReview_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WishlistReview_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WishlistReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WishlistReview_wishlist(ctx context.Context, field graphql.CollectedField, obj *model.WishlistReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WishlistReview_wishlist(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WishlistReview().Wishlist(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Wishlist)
+	fc.Result = res
+	return ec.marshalNWishlist2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlist(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WishlistReview_wishlist(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WishlistReview",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Wishlist_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Wishlist_name(ctx, field)
+			case "user":
+				return ec.fieldContext_Wishlist_user(ctx, field)
+			case "privacy":
+				return ec.fieldContext_Wishlist_privacy(ctx, field)
+			case "dateCreated":
+				return ec.fieldContext_Wishlist_dateCreated(ctx, field)
+			case "notes":
+				return ec.fieldContext_Wishlist_notes(ctx, field)
+			case "wishlistDetails":
+				return ec.fieldContext_Wishlist_wishlistDetails(ctx, field)
+			case "wishlistFollowers":
+				return ec.fieldContext_Wishlist_wishlistFollowers(ctx, field)
+			case "wishlistReviews":
+				return ec.fieldContext_Wishlist_wishlistReviews(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Wishlist", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WishlistReview_user(ctx context.Context, field graphql.CollectedField, obj *model.WishlistReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WishlistReview_user(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.WishlistReview().User(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WishlistReview_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WishlistReview",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "verificationcode":
+				return ec.fieldContext_User_verificationcode(ctx, field)
+			case "verificationcodevalidtime":
+				return ec.fieldContext_User_verificationcodevalidtime(ctx, field)
+			case "newslettersubscribe":
+				return ec.fieldContext_User_newslettersubscribe(ctx, field)
+			case "currency":
+				return ec.fieldContext_User_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WishlistReview_customName(ctx context.Context, field graphql.CollectedField, obj *model.WishlistReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WishlistReview_customName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WishlistReview_customName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WishlistReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WishlistReview_rating(ctx context.Context, field graphql.CollectedField, obj *model.WishlistReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WishlistReview_rating(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Rating, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WishlistReview_rating(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WishlistReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WishlistReview_title(ctx context.Context, field graphql.CollectedField, obj *model.WishlistReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WishlistReview_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WishlistReview_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WishlistReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _WishlistReview_comment(ctx context.Context, field graphql.CollectedField, obj *model.WishlistReview) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_WishlistReview_comment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Comment, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_WishlistReview_comment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "WishlistReview",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -16501,6 +17298,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_deleteProductFromWishlistDetails(ctx, field)
 			})
 
+		case "createWishlistReview":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createWishlistReview(ctx, field)
+			})
+
 		case "createWishlistFollower":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -17203,6 +18006,46 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_wishlistFollower(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "userFollowedWishlists":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userFollowedWishlists(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "wishlistReviews":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_wishlistReviews(ctx, field)
 				return res
 			}
 
@@ -18326,6 +19169,26 @@ func (ec *executionContext) _Wishlist(ctx context.Context, sel ast.SelectionSet,
 				return innerFunc(ctx)
 
 			})
+		case "wishlistReviews":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Wishlist_wishlistReviews(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -18465,6 +19328,102 @@ func (ec *executionContext) _WishlistFollower(ctx context.Context, sel ast.Selec
 		case "dateAdded":
 
 			out.Values[i] = ec._WishlistFollower_dateAdded(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var wishlistReviewImplementors = []string{"WishlistReview"}
+
+func (ec *executionContext) _WishlistReview(ctx context.Context, sel ast.SelectionSet, obj *model.WishlistReview) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, wishlistReviewImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WishlistReview")
+		case "id":
+
+			out.Values[i] = ec._WishlistReview_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "wishlist":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WishlistReview_wishlist(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		case "user":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._WishlistReview_user(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		case "customName":
+
+			out.Values[i] = ec._WishlistReview_customName(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "rating":
+
+			out.Values[i] = ec._WishlistReview_rating(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "title":
+
+			out.Values[i] = ec._WishlistReview_title(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "comment":
+
+			out.Values[i] = ec._WishlistReview_comment(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
@@ -19913,6 +20872,64 @@ func (ec *executionContext) marshalNWishlistFollower2ᚖgithubᚗcomᚋyihao2000
 		return graphql.Null
 	}
 	return ec._WishlistFollower(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNWishlistReview2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistReview(ctx context.Context, sel ast.SelectionSet, v model.WishlistReview) graphql.Marshaler {
+	return ec._WishlistReview(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNWishlistReview2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistReviewᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.WishlistReview) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNWishlistReview2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistReview(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNWishlistReview2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlistReview(ctx context.Context, sel ast.SelectionSet, v *model.WishlistReview) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._WishlistReview(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

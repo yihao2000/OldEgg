@@ -341,6 +341,39 @@ func (r *mutationResolver) DeleteProductFromWishlistDetails(ctx context.Context,
 	return true, nil
 }
 
+// CreateWishlistReview is the resolver for the createWishlistReview field.
+func (r *mutationResolver) CreateWishlistReview(ctx context.Context, wishlistID string, customName string, rating float64, title string, comment string) (*model.WishlistReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	if title == "" || comment == "" {
+		return nil, &gqlerror.Error{
+			Message: "Error, Ada field ga diisi",
+		}
+	}
+
+	wishlistReview := model.WishlistReview{
+		ID:         uuid.NewString(),
+		WishlistID: wishlistID,
+		UserID:     userID,
+		CustomName: customName,
+		Rating:     rating,
+		Title:      title,
+		Comment:    comment,
+	}
+	if err := db.Model(wishlistReview).Create(&wishlistReview).Error; err != nil {
+		return nil, err
+	}
+
+	return &wishlistReview, nil
+}
+
 // CreateWishlistFollower is the resolver for the createWishlistFollower field.
 func (r *mutationResolver) CreateWishlistFollower(ctx context.Context, wishlistID string) (*model.WishlistFollower, error) {
 	db := config.GetDB()
@@ -547,6 +580,36 @@ func (r *queryResolver) WishlistFollower(ctx context.Context, wishlistID string)
 	return model, nil
 }
 
+// UserFollowedWishlists is the resolver for the userFollowedWishlists field.
+func (r *queryResolver) UserFollowedWishlists(ctx context.Context) ([]*model.WishlistFollower, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.WishlistFollower
+	return models, db.Where("user_id = ?", id).Find(&models).Error
+}
+
+// WishlistReviews is the resolver for the wishlistReviews field.
+func (r *queryResolver) WishlistReviews(ctx context.Context, wishlistID string) ([]*model.WishlistReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	var models []*model.WishlistReview
+	return models, db.Where("wishlist_id = ?", wishlistID).Find(&models).Error
+}
+
 // ProductUserWishlists is the resolver for the productUserWishlists field.
 func (r *queryResolver) ProductUserWishlists(ctx context.Context, productID string) ([]*model.Wishlist, error) {
 	db := config.GetDB()
@@ -617,13 +680,23 @@ func (r *wishlistResolver) User(ctx context.Context, obj *model.Wishlist) (*mode
 
 // WishlistDetails is the resolver for the wishlistDetails field.
 func (r *wishlistResolver) WishlistDetails(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistDetail, error) {
-	panic(fmt.Errorf("not implemented: WishlistDetails - wishlistDetails"))
+	db := config.GetDB()
+
+	var models []*model.WishlistDetail
+	return models, db.Where("wishlist_id = ?  ", obj.ID).Order("date_added ASC").Find(&models).Error
 }
 
 // WishlistFollowers is the resolver for the wishlistFollowers field.
 func (r *wishlistResolver) WishlistFollowers(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistFollower, error) {
 	db := config.GetDB()
 	var models []*model.WishlistFollower
+	return models, db.Where("wishlist_id= ?", obj.ID).Find(&models).Error
+}
+
+// WishlistReviews is the resolver for the wishlistReviews field.
+func (r *wishlistResolver) WishlistReviews(ctx context.Context, obj *model.Wishlist) ([]*model.WishlistReview, error) {
+	db := config.GetDB()
+	var models []*model.WishlistReview
 	return models, db.Where("wishlist_id= ?", obj.ID).Find(&models).Error
 }
 
@@ -645,12 +718,31 @@ func (r *wishlistDetailResolver) Product(ctx context.Context, obj *model.Wishlis
 
 // Wishlist is the resolver for the wishlist field.
 func (r *wishlistFollowerResolver) Wishlist(ctx context.Context, obj *model.WishlistFollower) (*model.Wishlist, error) {
-	panic(fmt.Errorf("not implemented: Wishlist - wishlist"))
+	db := config.GetDB()
+	wishlist := new(model.Wishlist)
+
+	return wishlist, db.First(wishlist, "id = ?", obj.WishlistID).Error
 }
 
 // User is the resolver for the user field.
 func (r *wishlistFollowerResolver) User(ctx context.Context, obj *model.WishlistFollower) (*model.User, error) {
 	panic(fmt.Errorf("not implemented: User - user"))
+}
+
+// Wishlist is the resolver for the wishlist field.
+func (r *wishlistReviewResolver) Wishlist(ctx context.Context, obj *model.WishlistReview) (*model.Wishlist, error) {
+	db := config.GetDB()
+	wishlist := new(model.Wishlist)
+
+	return wishlist, db.First(wishlist, "id = ?", obj.WishlistID).Error
+}
+
+// User is the resolver for the user field.
+func (r *wishlistReviewResolver) User(ctx context.Context, obj *model.WishlistReview) (*model.User, error) {
+	db := config.GetDB()
+	user := new(model.User)
+
+	return user, db.First(user, "id = ?", obj.UserID).Error
 }
 
 // Cart returns CartResolver implementation.
@@ -668,11 +760,15 @@ func (r *Resolver) WishlistDetail() WishlistDetailResolver { return &wishlistDet
 // WishlistFollower returns WishlistFollowerResolver implementation.
 func (r *Resolver) WishlistFollower() WishlistFollowerResolver { return &wishlistFollowerResolver{r} }
 
+// WishlistReview returns WishlistReviewResolver implementation.
+func (r *Resolver) WishlistReview() WishlistReviewResolver { return &wishlistReviewResolver{r} }
+
 type cartResolver struct{ *Resolver }
 type savedForLaterResolver struct{ *Resolver }
 type wishlistResolver struct{ *Resolver }
 type wishlistDetailResolver struct{ *Resolver }
 type wishlistFollowerResolver struct{ *Resolver }
+type wishlistReviewResolver struct{ *Resolver }
 
 // !!! WARNING !!!
 // The code below was going to be deleted when updating resolvers. It has been copied here so you have
@@ -680,6 +776,12 @@ type wishlistFollowerResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *wishlistReviewResolver) ID(ctx context.Context, obj *model.WishlistReview) (string, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+func (r *wishlistReviewResolver) CustomName(ctx context.Context, obj *model.WishlistReview) (string, error) {
+	panic(fmt.Errorf("not implemented: CustomName - customName"))
+}
 func (r *wishlistResolver) Notes(ctx context.Context, obj *model.Wishlist) (string, error) {
 	panic(fmt.Errorf("not implemented: Notes - notes"))
 }

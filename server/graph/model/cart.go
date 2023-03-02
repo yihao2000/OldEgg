@@ -44,3 +44,15 @@ type SavedForLater struct {
 	Product   *Product `json:"product"`
 	Quantity  int      `json:"quantity"`
 }
+
+type WishlistReview struct {
+	ID         string    `json:"id" gorm:"primaryKey"`
+	WishlistID string    `json:"wishlistID" gorm:"primaryKey"`
+	Wishlist   *Wishlist `json:"wishlist"`
+	UserID     string    `json:"userID"`
+	User       *User     `json:"user" gorm:"foreignKey:UserID"`
+	CustomName string    `json:"customName"`
+	Rating     float64   `json:"rating"`
+	Title      string    `json:"title"`
+	Comment    string    `json:"comment"`
+}

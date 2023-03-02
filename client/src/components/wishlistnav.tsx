@@ -14,6 +14,10 @@ export default function WishlistNav() {
   useEffect(() => {
     if (router.pathname.endsWith('mylist')) {
       setFirstActive(true);
+    } else if (router.pathname.endsWith('publiclist')) {
+      setThirdActive(true);
+    } else if (router.pathname.endsWith('followedlist')) {
+      setSecondActive(true);
     }
   }, []);
 
@@ -26,7 +30,7 @@ export default function WishlistNav() {
           </div>
           <div className={styles.listnavcontainer}>
             <a
-              href=""
+              href={links.mylist}
               className={`${styles.navtabcell} ${
                 firstActive ? styles.activetabcell : ''
               }`}
@@ -34,7 +38,7 @@ export default function WishlistNav() {
               My Lists
             </a>
             <a
-              href=""
+              href={links.followedlist}
               className={`${styles.navtabcell} ${
                 secondActive ? styles.activetabcell : ''
               }`}
@@ -44,7 +48,7 @@ export default function WishlistNav() {
             <a
               href={links.publiclist}
               className={`${styles.navtabcell} ${
-                thirdActive ? styles.activecell : ''
+                thirdActive ? styles.activetabcell : ''
               }`}
             >
               Public Lists

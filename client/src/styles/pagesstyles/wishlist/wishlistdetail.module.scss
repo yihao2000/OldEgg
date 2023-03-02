@@ -197,7 +197,7 @@
 .qtyaddcontainer {
   @include enditem();
   display: flex;
-  column-gap: 10px;
+  // column-gap: 10px;
 }
 
 .addtocartbutton {
@@ -263,5 +263,74 @@
 
 .containerend {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+}
+
+.errorlabel {
+  color: red;
+  display: flex;
+  align-items: center;
+}
+
+.commentcontainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+@media (max-width: 1200px) {
+  .qtyaddcontainer {
+    display: flex;
+    flex-direction: column;
+  }
+  .qtycontainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@mixin paddingnooverflow() {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1000x) {
+  .pagedivider {
+    // background-color: red;
+  }
+  .subtotallabel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .pagedivider {
+    flex-direction: column;
+  }
+
+  .leftsection {
+    width: 100%;
+    padding: 20px;
+    @include paddingnooverflow();
+  }
+  .rightsection {
+    width: 100%;
+    padding: 20px;
+    @include paddingnooverflow();
+  }
+  .wishlistinfocontainer {
+    width: 100%;
+  }
+
+  .commentdivider {
+    display: flex;
+    flex-direction: column;
+  }
+  .commentsection {
+    width: 100%;
+    padding: 0px;
+  }
 }
