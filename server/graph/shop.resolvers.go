@@ -32,6 +32,7 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 			Image:       input.Image,
 			Aboutus:     input.Aboutus,
 			Banner:      input.Banner,
+			Banned:      false,
 		}
 		if err := db.Model(shop).Create(&shop).Error; err != nil {
 			return nil, err
@@ -60,12 +61,43 @@ func (r *queryResolver) Shop(ctx context.Context, id *string, name *string) (*mo
 	return shop, db.Where("id = ?", id).Limit(1).Find(&shop).Error
 }
 
-// Banner is the resolver for the banner field.
-func (r *shopResolver) Banner(ctx context.Context, obj *model.Shop) (string, error) {
-	panic(fmt.Errorf("not implemented: Banner - banner"))
+// ShopProducts is the resolver for the shopProducts field.
+func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy *string) ([]*model.Product, error) {
+	db := config.GetDB()
+	var models []*model.Product
+
+	if sortBy != nil {
+		if *sortBy == "topsold" {
+			return models, db.Raw("SELECT products.id, products.productgroup_id, products.brand_id, products.category_id, products.shop_id, products.name, products.description, products.price, products.image, products.quantity, products.valid_to, products.discount , SUM(transaction_details.quantity) as total_quantity FROM products JOIN transaction_details ON products.id = transaction_details.product_id WHERE products.shop_id = '" + shopID + "' GROUP BY products.id ORDER BY total_quantity DESC").Scan(&models).Error
+		} else if *sortBy == "toprating" {
+			return models, db.Where("shop_id = ?", shopID).Order("rating DESC").Find(&models).Error
+		}
+	}
+
+	return models, db.Where("shop_id = ?", shopID).Find(&models).Error
+}
+
+// Products is the resolver for the products field.
+func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
+	db := config.GetDB()
+	var models []*model.Product
+	return models, db.Where("shop_id = ?", obj.ID).Find(&models).Error
 }
 
 // Shop returns ShopResolver implementation.
 func (r *Resolver) Shop() ShopResolver { return &shopResolver{r} }
 
 type shopResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *shopResolver) Banned(ctx context.Context, obj *model.Shop) (bool, error) {
+	panic(fmt.Errorf("not implemented: Banned - banned"))
+}
+func (r *shopResolver) Banner(ctx context.Context, obj *model.Shop) (string, error) {
+	panic(fmt.Errorf("not implemented: Banner - banner"))
+}

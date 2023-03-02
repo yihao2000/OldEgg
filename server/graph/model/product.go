@@ -31,6 +31,7 @@ type Product struct {
 	Quantity    int        `json:"quantity"`
 	ValidTo     *time.Time `json:"validTo"`
 	Discount    float64    `json:"discount"`
+	Rating      float64    `json:"rating"`
 }
 
 type ProductGroup struct {

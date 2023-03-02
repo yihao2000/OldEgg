@@ -7,4 +7,5 @@ type Shop struct {
 	Image       string `json:"image"`
 	Aboutus     string `json:"aboutus"`
 	Banner      string `json:"banner"`
+	Banned      bool   `json:"banned"`
 }

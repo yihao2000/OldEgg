@@ -42,6 +42,7 @@ type Product{
   validTo: Time
   reviews: [Review!]! @goField(forceResolver: true)
   discount: Float!
+  rating: Float!
 }
 
 

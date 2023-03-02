@@ -35,6 +35,9 @@ export interface Shop {
   image: string;
   aboutus: string;
   description: string;
+  products: Product[];
+  banned: boolean;
+  banner: string;
 }
 
 export interface ProductGroup {

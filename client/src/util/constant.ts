@@ -552,3 +552,50 @@ export const USER_FOLLOWED_WISHLISTS_QUERY = `query{
     }
   }
 }`;
+
+export const SHOP_QUERY = `query($shopID:ID!){
+  shop(id:$shopID){
+    id
+    name
+    description
+    image
+    aboutus
+    banner
+    banned
+    products{
+      id
+      image
+      name
+      category{
+        id
+        name
+      }
+      discount
+      reviews{
+        id
+        rating
+      }
+    }
+  }
+}`;
+
+export const SHOP_PRODUCTS_QUERY = `query($shopID:ID!, $sortBy:String){
+  shopProducts(sortBy:$sortBy, shopID:$shopID){
+    id
+    rating
+    name
+    description
+    price
+    discount
+    quantity
+    image
+    category{
+      id
+      name
+    }
+    reviews{
+      id
+      rating
+    }
+  }
+}`;
