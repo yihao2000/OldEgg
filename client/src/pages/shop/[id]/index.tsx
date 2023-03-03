@@ -104,7 +104,23 @@ export default function ShopPage() {
               <div className={styles.detailcontainer}>Shop detail</div>
             </div>
           </div>
-          <div className={styles.pagecontainer}>a</div>
+          <div className={styles.pagecontainer}>
+            <a href="" className={styles.hpstyle}>
+              Store Home
+            </a>
+            <div className={styles.verticalseparator}></div>
+            <a href="" className={styles.hpstyle}>
+              All Products
+            </a>
+            <div className={styles.verticalseparator}></div>
+            <a href="" className={styles.hpstyle}>
+              Reviews
+            </a>
+            <div className={styles.verticalseparator}></div>
+            <a href="" className={styles.hpstyle}>
+              About Us
+            </a>
+          </div>
           <div className={styles.contentcontainer}>
             <div className={styles.bannercontainer}>
               <img src={shop.banner} alt="" className={styles.shopbanner} />
@@ -124,7 +140,13 @@ export default function ShopPage() {
             <div className={styles.titlelabel}>Recommended Products</div>
             <div>
               {' '}
-              Filter By:{' '}
+              <span
+                style={{
+                  fontWeight: 'bold',
+                }}
+              >
+                Filter By:
+              </span>{' '}
               <select
                 value={sortBy}
                 // className={styles.forminputselection}
