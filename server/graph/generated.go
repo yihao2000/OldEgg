@@ -197,7 +197,7 @@ type ComplexityRoot struct {
 		Shipping               func(childComplexity int, id string) int
 		Shippings              func(childComplexity int) int
 		Shop                   func(childComplexity int, id *string, name *string) int
-		ShopProducts           func(childComplexity int, shopID string, sortBy *string) int
+		ShopProducts           func(childComplexity int, shopID string, sortBy *string, limit *int, offset *int) int
 		Shops                  func(childComplexity int) int
 		TransactionHeaders     func(childComplexity int) int
 		UpdateCart             func(childComplexity int, userID string, productID string, quantity int) int
@@ -409,7 +409,7 @@ type QueryResolver interface {
 	Reviews(ctx context.Context, productID string) ([]*model.Review, error)
 	Shops(ctx context.Context) ([]*model.Shop, error)
 	Shop(ctx context.Context, id *string, name *string) (*model.Shop, error)
-	ShopProducts(ctx context.Context, shopID string, sortBy *string) ([]*model.Product, error)
+	ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int) ([]*model.Product, error)
 	Shipping(ctx context.Context, id string) (*model.Shipping, error)
 	Shippings(ctx context.Context) ([]*model.Shipping, error)
 	PaymentType(ctx context.Context, id string) (*model.PaymentType, error)
@@ -1488,7 +1488,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ShopProducts(childComplexity, args["shopID"].(string), args["sortBy"].(*string)), true
+		return e.complexity.Query.ShopProducts(childComplexity, args["shopID"].(string), args["sortBy"].(*string), args["limit"].(*int), args["offset"].(*int)), true
 
 	case "Query.shops":
 		if e.complexity.Query.Shops == nil {
@@ -3420,6 +3420,24 @@ func (ec *executionContext) field_Query_shopProducts_args(ctx context.Context, r
 		}
 	}
 	args["sortBy"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg3
 	return args, nil
 }
 
@@ -10949,7 +10967,7 @@ func (ec *executionContext) _Query_shopProducts(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ShopProducts(rctx, fc.Args["shopID"].(string), fc.Args["sortBy"].(*string))
+		return ec.resolvers.Query().ShopProducts(rctx, fc.Args["shopID"].(string), fc.Args["sortBy"].(*string), fc.Args["limit"].(*int), fc.Args["offset"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

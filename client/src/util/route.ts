@@ -24,4 +24,7 @@ export const links = {
   mylist: '/account/wishlist/mylist',
   followedlist: '/account/wishlist/followedlist',
   publiclist: '/account/wishlist/publiclist',
+  shopProductslist: (shopID: string) => {
+    return '/shop/products/' + shopID;
+  },
 };

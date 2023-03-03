@@ -62,19 +62,40 @@ func (r *queryResolver) Shop(ctx context.Context, id *string, name *string) (*mo
 }
 
 // ShopProducts is the resolver for the shopProducts field.
-func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy *string) ([]*model.Product, error) {
+func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int) ([]*model.Product, error) {
 	db := config.GetDB()
 	var models []*model.Product
 
+	temp := db.Model(models).Where("shop_id = ?", shopID)
+
 	if sortBy != nil {
 		if *sortBy == "topsold" {
-			return models, db.Raw("SELECT products.id, products.productgroup_id, products.brand_id, products.category_id, products.shop_id, products.name, products.description, products.price, products.image, products.quantity, products.valid_to, products.discount , SUM(transaction_details.quantity) as total_quantity FROM products JOIN transaction_details ON products.id = transaction_details.product_id WHERE products.shop_id = '" + shopID + "' GROUP BY products.id ORDER BY total_quantity DESC").Scan(&models).Error
+			temp = db.Model(models).
+				Select("products.id, products.productgroup_id, products.brand_id, products.category_id, products.shop_id, products.name, products.description, products.price, products.image, products.quantity, products.valid_to, products.discount, SUM(transaction_details.quantity) as total_quantity").
+				Joins("JOIN transaction_details ON products.id = transaction_details.product_id").
+				Where("products.valid_to IS NULL AND shop_id = ?", shopID).
+				Group("products.id").
+				Order("total_quantity DESC")
 		} else if *sortBy == "toprating" {
-			return models, db.Where("shop_id = ?", shopID).Order("rating DESC").Find(&models).Error
+			temp = temp.Order("rating DESC")
+		} else if *sortBy == "lowestprice" {
+			return models, db.Where("shop_id = ? ", shopID).Order("price ASC").Find(&models).Error
+		} else if *sortBy == "highestprice" {
+			return models, db.Where("shop_id = ? ", shopID).Order("price DESC").Find(&models).Error
+		} else if *sortBy == "mostreviews" {
+
 		}
 	}
 
-	return models, db.Where("shop_id = ?", shopID).Find(&models).Error
+	if limit != nil {
+		temp = temp.Limit(*limit)
+	}
+
+	if offset != nil {
+		temp = temp.Offset(*offset)
+	}
+
+	return models, temp.Find(&models).Error
 }
 
 // Products is the resolver for the products field.

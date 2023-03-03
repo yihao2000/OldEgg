@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import styles from '@/styles/pagesstyles/shop/shopdetail.module.scss';
 import ProductCard from '@/components/productcard';
+import { links } from '@/util/route';
+import ShopHeader from '@/components/shop/shopheader';
 
 export default function ShopPage() {
   const router = useRouter();
@@ -95,32 +97,7 @@ export default function ShopPage() {
       )}
       {shop && shop.banned == false && (
         <div className={styles.maincontainer}>
-          <div className={styles.shopinfocontainer}>
-            <div className={styles.shopprofile}>
-              <img src={shop.image} alt="" className={styles.profileimage} />
-            </div>
-            <div className={styles.shopdetail}>
-              <div className={styles.shoptitle}>{shop.name}</div>
-              <div className={styles.detailcontainer}>Shop detail</div>
-            </div>
-          </div>
-          <div className={styles.pagecontainer}>
-            <a href="" className={styles.hpstyle}>
-              Store Home
-            </a>
-            <div className={styles.verticalseparator}></div>
-            <a href="" className={styles.hpstyle}>
-              All Products
-            </a>
-            <div className={styles.verticalseparator}></div>
-            <a href="" className={styles.hpstyle}>
-              Reviews
-            </a>
-            <div className={styles.verticalseparator}></div>
-            <a href="" className={styles.hpstyle}>
-              About Us
-            </a>
-          </div>
+          <ShopHeader />
           <div className={styles.contentcontainer}>
             <div className={styles.bannercontainer}>
               <img src={shop.banner} alt="" className={styles.shopbanner} />

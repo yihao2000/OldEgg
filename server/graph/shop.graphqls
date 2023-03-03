@@ -25,6 +25,6 @@ extend type Mutation{
 extend type Query{
     shops: [Shop!]! @goField(forceResolver: true)
     shop(id: ID, name: String): Shop! @goField(forceResolver: true)
-    shopProducts(shopID: ID!, sortBy: String): [Product!]!
+    shopProducts(shopID: ID!, sortBy: String, limit: Int, offset: Int): [Product!]!
 
 }

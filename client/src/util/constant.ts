@@ -579,8 +579,8 @@ export const SHOP_QUERY = `query($shopID:ID!){
   }
 }`;
 
-export const SHOP_PRODUCTS_QUERY = `query($shopID:ID!, $sortBy:String){
-  shopProducts(sortBy:$sortBy, shopID:$shopID){
+export const SHOP_PRODUCTS_QUERY = `query($shopID:ID!, $sortBy:String, $limit:Int, $offset:Int){
+  shopProducts(sortBy:$sortBy, shopID:$shopID, limit:$limit, offset:$offset){
     id
     rating
     name
