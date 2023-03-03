@@ -110,6 +110,7 @@ type ComplexityRoot struct {
 		CreateReview                     func(childComplexity int, productID string, rating int, description string) int
 		CreateSavedForLater              func(childComplexity int, productID string, quantity int) int
 		CreateShop                       func(childComplexity int, input model.NewShop) int
+		CreateVoucher                    func(childComplexity int, balance float64) int
 		CreateWishlist                   func(childComplexity int, input model.NewWishlist) int
 		CreateWishlistDetail             func(childComplexity int, wishlistID string, productID string, quantity int) int
 		CreateWishlistFollower           func(childComplexity int, wishlistID string) int
@@ -133,6 +134,7 @@ type ComplexityRoot struct {
 		UpdateProductVariant             func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
 		UpdatePromo                      func(childComplexity int, input model.NewPromo) int
 		UpdateShop                       func(childComplexity int, input model.NewShop) int
+		UpdateVoucher                    func(childComplexity int, voucherID string) int
 		UpdateWishlist                   func(childComplexity int, wishlistID string, input model.NewWishlist) int
 		UpdateWishlistDetail             func(childComplexity int, productID string, wishlistID string, quantity int) int
 		UserInputVerificationCode        func(childComplexity int, email string, verificationcode string) int
@@ -198,6 +200,7 @@ type ComplexityRoot struct {
 		Shippings              func(childComplexity int) int
 		Shop                   func(childComplexity int, id *string, name *string) int
 		ShopProducts           func(childComplexity int, shopID string, sortBy *string, limit *int, offset *int) int
+		ShopTotalSales         func(childComplexity int, shopID string) int
 		Shops                  func(childComplexity int) int
 		TransactionHeaders     func(childComplexity int) int
 		UpdateCart             func(childComplexity int, userID string, productID string, quantity int) int
@@ -277,6 +280,13 @@ type ComplexityRoot struct {
 		Role                      func(childComplexity int) int
 		VerificationCode          func(childComplexity int) int
 		VerificationCodeValidTime func(childComplexity int) int
+	}
+
+	Voucher struct {
+		Balance     func(childComplexity int) int
+		DateCreated func(childComplexity int) int
+		DateUsed    func(childComplexity int) int
+		ID          func(childComplexity int) int
 	}
 
 	Wishlist struct {
@@ -368,6 +378,8 @@ type MutationResolver interface {
 	CreateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 	UpdateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 	Checkout(ctx context.Context, shippingID string, paymentTypeID string, addressID string) (*model.TransactionHeader, error)
+	CreateVoucher(ctx context.Context, balance float64) (*model.Voucher, error)
+	UpdateVoucher(ctx context.Context, voucherID string) (*model.Voucher, error)
 }
 type ProductResolver interface {
 	Productgroup(ctx context.Context, obj *model.Product) (*model.ProductGroup, error)
@@ -410,6 +422,7 @@ type QueryResolver interface {
 	Shops(ctx context.Context) ([]*model.Shop, error)
 	Shop(ctx context.Context, id *string, name *string) (*model.Shop, error)
 	ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int) ([]*model.Product, error)
+	ShopTotalSales(ctx context.Context, shopID string) (int, error)
 	Shipping(ctx context.Context, id string) (*model.Shipping, error)
 	Shippings(ctx context.Context) ([]*model.Shipping, error)
 	PaymentType(ctx context.Context, id string) (*model.PaymentType, error)
@@ -779,6 +792,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateShop(childComplexity, args["input"].(model.NewShop)), true
 
+	case "Mutation.createVoucher":
+		if e.complexity.Mutation.CreateVoucher == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createVoucher_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateVoucher(childComplexity, args["balance"].(float64)), true
+
 	case "Mutation.createWishlist":
 		if e.complexity.Mutation.CreateWishlist == nil {
 			break
@@ -1044,6 +1069,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateShop(childComplexity, args["input"].(model.NewShop)), true
+
+	case "Mutation.updateVoucher":
+		if e.complexity.Mutation.UpdateVoucher == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateVoucher_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateVoucher(childComplexity, args["voucherID"].(string)), true
 
 	case "Mutation.updateWishlist":
 		if e.complexity.Mutation.UpdateWishlist == nil {
@@ -1489,6 +1526,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ShopProducts(childComplexity, args["shopID"].(string), args["sortBy"].(*string), args["limit"].(*int), args["offset"].(*int)), true
+
+	case "Query.shopTotalSales":
+		if e.complexity.Query.ShopTotalSales == nil {
+			break
+		}
+
+		args, err := ec.field_Query_shopTotalSales_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ShopTotalSales(childComplexity, args["shopID"].(string)), true
 
 	case "Query.shops":
 		if e.complexity.Query.Shops == nil {
@@ -1940,6 +1989,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.VerificationCodeValidTime(childComplexity), true
+
+	case "Voucher.balance":
+		if e.complexity.Voucher.Balance == nil {
+			break
+		}
+
+		return e.complexity.Voucher.Balance(childComplexity), true
+
+	case "Voucher.dateCreated":
+		if e.complexity.Voucher.DateCreated == nil {
+			break
+		}
+
+		return e.complexity.Voucher.DateCreated(childComplexity), true
+
+	case "Voucher.dateUsed":
+		if e.complexity.Voucher.DateUsed == nil {
+			break
+		}
+
+		return e.complexity.Voucher.DateUsed(childComplexity), true
+
+	case "Voucher.id":
+		if e.complexity.Voucher.ID == nil {
+			break
+		}
+
+		return e.complexity.Voucher.ID(childComplexity), true
 
 	case "Wishlist.dateCreated":
 		if e.complexity.Wishlist.DateCreated == nil {
@@ -2517,6 +2594,21 @@ func (ec *executionContext) field_Mutation_createShop_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createVoucher_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 float64
+	if tmp, ok := rawArgs["balance"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("balance"))
+		arg0, err = ec.unmarshalNFloat2float64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["balance"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createWishlistDetail_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2946,6 +3038,21 @@ func (ec *executionContext) field_Mutation_updateShop_args(ctx context.Context, 
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateVoucher_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["voucherID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("voucherID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["voucherID"] = arg0
 	return args, nil
 }
 
@@ -3438,6 +3545,21 @@ func (ec *executionContext) field_Query_shopProducts_args(ctx context.Context, r
 		}
 	}
 	args["offset"] = arg3
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_shopTotalSales_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["shopID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("shopID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["shopID"] = arg0
 	return args, nil
 }
 
@@ -7836,6 +7958,134 @@ func (ec *executionContext) fieldContext_Mutation_checkout(ctx context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createVoucher(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createVoucher(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateVoucher(rctx, fc.Args["balance"].(float64))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Voucher)
+	fc.Result = res
+	return ec.marshalNVoucher2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐVoucher(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createVoucher(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Voucher_id(ctx, field)
+			case "balance":
+				return ec.fieldContext_Voucher_balance(ctx, field)
+			case "dateCreated":
+				return ec.fieldContext_Voucher_dateCreated(ctx, field)
+			case "dateUsed":
+				return ec.fieldContext_Voucher_dateUsed(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Voucher", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createVoucher_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateVoucher(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateVoucher(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateVoucher(rctx, fc.Args["voucherID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Voucher)
+	fc.Result = res
+	return ec.marshalNVoucher2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐVoucher(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateVoucher(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Voucher_id(ctx, field)
+			case "balance":
+				return ec.fieldContext_Voucher_balance(ctx, field)
+			case "dateCreated":
+				return ec.fieldContext_Voucher_dateCreated(ctx, field)
+			case "dateUsed":
+				return ec.fieldContext_Voucher_dateUsed(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Voucher", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateVoucher_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PaymentType_id(ctx context.Context, field graphql.CollectedField, obj *model.PaymentType) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PaymentType_id(ctx, field)
 	if err != nil {
@@ -11037,6 +11287,60 @@ func (ec *executionContext) fieldContext_Query_shopProducts(ctx context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_shopTotalSales(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_shopTotalSales(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ShopTotalSales(rctx, fc.Args["shopID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_shopTotalSales(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_shopTotalSales_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_shipping(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_shipping(ctx, field)
 	if err != nil {
@@ -13705,6 +14009,179 @@ func (ec *executionContext) fieldContext_User_currency(ctx context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Voucher_id(ctx context.Context, field graphql.CollectedField, obj *model.Voucher) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Voucher_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Voucher_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Voucher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Voucher_balance(ctx context.Context, field graphql.CollectedField, obj *model.Voucher) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Voucher_balance(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Balance, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Voucher_balance(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Voucher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Voucher_dateCreated(ctx context.Context, field graphql.CollectedField, obj *model.Voucher) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Voucher_dateCreated(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateCreated, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Voucher_dateCreated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Voucher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Voucher_dateUsed(ctx context.Context, field graphql.CollectedField, obj *model.Voucher) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Voucher_dateUsed(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateUsed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Voucher_dateUsed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Voucher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -17868,6 +18345,18 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_checkout(ctx, field)
 			})
 
+		case "createVoucher":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createVoucher(ctx, field)
+			})
+
+		case "updateVoucher":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateVoucher(ctx, field)
+			})
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -18827,6 +19316,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "shopTotalSales":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_shopTotalSales(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "shipping":
 			field := field
 
@@ -19558,6 +20067,52 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var voucherImplementors = []string{"Voucher"}
+
+func (ec *executionContext) _Voucher(ctx context.Context, sel ast.SelectionSet, obj *model.Voucher) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, voucherImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Voucher")
+		case "id":
+
+			out.Values[i] = ec._Voucher_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "balance":
+
+			out.Values[i] = ec._Voucher_balance(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "dateCreated":
+
+			out.Values[i] = ec._Voucher_dateCreated(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "dateUsed":
+
+			out.Values[i] = ec._Voucher_dateUsed(ctx, field, obj)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -21203,6 +21758,20 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑ
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNVoucher2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐVoucher(ctx context.Context, sel ast.SelectionSet, v model.Voucher) graphql.Marshaler {
+	return ec._Voucher(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNVoucher2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐVoucher(ctx context.Context, sel ast.SelectionSet, v *model.Voucher) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Voucher(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNWishlist2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐWishlist(ctx context.Context, sel ast.SelectionSet, v model.Wishlist) graphql.Marshaler {

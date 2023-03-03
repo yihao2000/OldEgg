@@ -56,6 +56,7 @@ type Mutation {
 type Query{
     user(id: ID, email: String): User! @goField(forceResolver: true)
     getCurrentUser: User! @goField(forceResolver: true) @auth
+    # getUserReviews: [Review]
 
     protected: String! @goField(forceResolver: true) @auth
 

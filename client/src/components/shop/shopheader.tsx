@@ -59,7 +59,7 @@ export default function ShopHeader() {
               Reviews
             </a>
             <div className={styles.verticalseparator}></div>
-            <a href="" className={styles.hpstyle}>
+            <a href={links.shopAboutUs(shop.id)} className={styles.hpstyle}>
               About Us
             </a>
           </div>

@@ -27,4 +27,8 @@ export const links = {
   shopProductslist: (shopID: string) => {
     return '/shop/products/' + shopID;
   },
+
+  shopAboutUs: (shopID: string) => {
+    return '/shop/aboutus/' + shopID;
+  },
 };

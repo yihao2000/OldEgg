@@ -30,6 +30,13 @@ type TransactionDetail {
   quantity: Int!
 }
 
+type Voucher{
+  id: ID!
+  balance: Float!
+  dateCreated: Time!
+  dateUsed: Time
+}
+
 extend type Query {
   shipping(id: ID!): Shipping!
   shippings: [Shipping!]!
@@ -42,6 +49,11 @@ extend type Query {
 
 }
 
+
+
 extend type Mutation {
   checkout(shippingID: ID!, paymentTypeID: ID!, addressID: ID!): TransactionHeader! @auth
+
+  createVoucher(balance: Float!): Voucher! 
+  updateVoucher(voucherID: ID!): Voucher!
 }

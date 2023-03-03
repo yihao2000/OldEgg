@@ -599,3 +599,16 @@ export const SHOP_PRODUCTS_QUERY = `query($shopID:ID!, $sortBy:String, $limit:In
     }
   }
 }`;
+
+export const SHOP_TOTAL_SALES_QUERY = `query($shopID:ID!){
+  shopTotalSales(shopID:$shopID)
+}`;
+
+export const REDEEM_VOUCHER_MUTATION = `mutation($voucherID:ID!){
+  updateVoucher(voucherID:$voucherID){
+    id
+    balance
+    dateCreated
+    dateUsed
+  }
+}`;

@@ -112,6 +112,43 @@ func (r *mutationResolver) Checkout(ctx context.Context, shippingID string, paym
 	return header, nil
 }
 
+// CreateVoucher is the resolver for the createVoucher field.
+func (r *mutationResolver) CreateVoucher(ctx context.Context, balance float64) (*model.Voucher, error) {
+	db := config.GetDB()
+
+	voucher := model.Voucher{
+		ID:          uuid.NewString(),
+		Balance:     balance,
+		DateCreated: time.Now(),
+	}
+
+	return &voucher, db.Model(voucher).Create(&voucher).Error
+}
+
+// UpdateVoucher is the resolver for the updateVoucher field.
+func (r *mutationResolver) UpdateVoucher(ctx context.Context, voucherID string) (*model.Voucher, error) {
+	db := config.GetDB()
+	voucher := new(model.Voucher)
+
+	err := db.First(voucher, "id = ?", voucherID).Error
+	if err != nil {
+		return voucher, err
+	}
+
+	if voucher.DateUsed != nil {
+		return nil, &gqlerror.Error{
+			Message: "Voucher has already been used!",
+		}
+	}
+	// voucher.DateUsed=time.Now()
+	t := time.Now()
+	voucher.DateUsed = &t
+
+	db.Save(voucher)
+
+	return voucher, nil
+}
+
 // Shipping is the resolver for the shipping field.
 func (r *queryResolver) Shipping(ctx context.Context, id string) (*model.Shipping, error) {
 	panic(fmt.Errorf("not implemented: Shipping - shipping"))
@@ -245,6 +282,9 @@ type transactionHeaderResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) CreateNewVoucher(ctx context.Context, balance float64) (*model.Voucher, error) {
+	panic(fmt.Errorf("not implemented: CreateNewVoucher - createNewVoucher"))
+}
 func (r *transactionHeaderResolver) Invoice(ctx context.Context, obj *model.TransactionHeader) (string, error) {
 	panic(fmt.Errorf("not implemented: Invoice - invoice"))
 }

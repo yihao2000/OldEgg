@@ -1,0 +1,33 @@
+.contentsection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+}
+
+.inputfield {
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  font-size: 20px;
+  height: 30px;
+  margin: 0;
+  outline: none;
+  padding: 12px;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  width: 300px;
+}
+
+.inputcontainer {
+  display: flex;
+  column-gap: 10px;
+}
+
+.errorlabel {
+  color: red;
+  font-weight: bold;
+  font-size: 20px;
+}

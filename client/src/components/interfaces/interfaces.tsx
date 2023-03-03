@@ -66,6 +66,7 @@ export interface User {
   phone: string;
   banned: boolean;
   role: string;
+  currency: number;
 }
 
 export interface ProductCardData {

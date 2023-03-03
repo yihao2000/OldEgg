@@ -98,6 +98,18 @@ func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy 
 	return models, temp.Find(&models).Error
 }
 
+// ShopTotalSales is the resolver for the shopTotalSales field.
+func (r *queryResolver) ShopTotalSales(ctx context.Context, shopID string) (int, error) {
+	db := config.GetDB()
+	var total int
+
+	if err := db.Raw("SELECT COUNT(th.id) FROM products p JOIN transaction_details td ON p.id = td.product_id JOIN transaction_headers th ON th.id = td.transaction_header_id JOIN shops s ON s.id = p.shop_id WHERE s.id = ?", shopID).Find(&total).Error; err != nil {
+		return 0, err
+	}
+
+	return total, nil
+}
+
 // Products is the resolver for the products field.
 func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
 	db := config.GetDB()

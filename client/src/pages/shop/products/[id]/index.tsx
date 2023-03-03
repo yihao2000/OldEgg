@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import Layout from '@/components/layout';
 import ShopHeader from '@/components/shop/shopheader';
-import styles from '@/styles/pagesstyles/shop/products/shopproducts.module.scss';
+import styles from '@/styles/pagesstyles/shop/products/shoppages.module.scss';
 
 import { Product } from '@/components/interfaces/interfaces';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';

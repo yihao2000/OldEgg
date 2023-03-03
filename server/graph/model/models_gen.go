@@ -88,3 +88,10 @@ type SearchProduct struct {
 	CreatedAtRange *int     `json:"createdAtRange"`
 	HighRating     *bool    `json:"highRating"`
 }
+
+type Voucher struct {
+	ID          string     `json:"id"`
+	Balance     float64    `json:"balance"`
+	DateCreated time.Time  `json:"dateCreated"`
+	DateUsed    *time.Time `json:"dateUsed"`
+}
