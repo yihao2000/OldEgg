@@ -28,7 +28,12 @@ export const links = {
     return '/shop/products/' + shopID;
   },
 
+  shopProductslistCategory: (shopID: string, query: string = '') => {
+    return '/shop/products/' + shopID + query;
+  },
+
   shopAboutUs: (shopID: string) => {
     return '/shop/aboutus/' + shopID;
   },
+  shopInformation: '/shop/myshop/settings',
 };

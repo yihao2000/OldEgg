@@ -115,6 +115,26 @@ func (r *queryResolver) Protected(ctx context.Context) (string, error) {
 	return "Success" + fmt.Sprintf("%+v\n", ctx.Value("auth")), nil
 }
 
+// GetUserShop is the resolver for the getUserShop field.
+func (r *queryResolver) GetUserShop(ctx context.Context) (*model.Shop, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, Invalid Token !",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var shop model.Shop
+	if err := db.Model(shop).Where("user_id = ?", userID).Take(&shop).Error; err != nil {
+		return nil, err
+	}
+
+	return &shop, nil
+}
+
 // AuthOps returns AuthOpsResolver implementation.
 func (r *Resolver) AuthOps() AuthOpsResolver { return &authOpsResolver{r} }
 

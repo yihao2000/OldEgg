@@ -59,6 +59,7 @@ type Query{
     # getUserReviews: [Review]
 
     protected: String! @goField(forceResolver: true) @auth
+    getUserShop: Shop! @goField(forceResolver: true) @auth
 
 
 

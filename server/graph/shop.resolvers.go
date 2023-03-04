@@ -25,6 +25,7 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 	if err := db.Model(shop).Where("name LIKE ?", input.Name).Take(&shop).Error; err == nil {
 		return nil, err
 	} else {
+
 		shop := model.Shop{
 			ID:          uuid.New().String(),
 			Name:        input.Name,
@@ -33,6 +34,7 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 			Aboutus:     input.Aboutus,
 			Banner:      input.Banner,
 			Banned:      false,
+			UserID:      input.UserID,
 		}
 		if err := db.Model(shop).Create(&shop).Error; err != nil {
 			return nil, err
@@ -43,8 +45,24 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 }
 
 // UpdateShop is the resolver for the updateShop field.
-func (r *mutationResolver) UpdateShop(ctx context.Context, input model.NewShop) (*model.Shop, error) {
-	panic(fmt.Errorf("not implemented: UpdateShop - updateShop"))
+func (r *mutationResolver) UpdateShop(ctx context.Context, name string, aboutus string, description string, image string, shopID string) (*model.Shop, error) {
+	db := config.GetDB()
+
+	shop := new(model.Shop)
+
+	err := db.First(shop, "id = ?", shopID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	shop.Name = name
+	shop.Aboutus = aboutus
+	shop.Description = description
+	shop.Image = image
+
+	db.Save(shop)
+
+	return shop, nil
 }
 
 // Shops is the resolver for the shops field.
@@ -62,7 +80,7 @@ func (r *queryResolver) Shop(ctx context.Context, id *string, name *string) (*mo
 }
 
 // ShopProducts is the resolver for the shopProducts field.
-func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int) ([]*model.Product, error) {
+func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int, categoryID *string) ([]*model.Product, error) {
 	db := config.GetDB()
 	var models []*model.Product
 
@@ -72,19 +90,23 @@ func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy 
 		if *sortBy == "topsold" {
 			temp = db.Model(models).
 				Select("products.id, products.productgroup_id, products.brand_id, products.category_id, products.shop_id, products.name, products.description, products.price, products.image, products.quantity, products.valid_to, products.discount, SUM(transaction_details.quantity) as total_quantity").
-				Joins("JOIN transaction_details ON products.id = transaction_details.product_id").
+				Joins("LEFT JOIN transaction_details ON products.id = transaction_details.product_id").
 				Where("products.valid_to IS NULL AND shop_id = ?", shopID).
 				Group("products.id").
 				Order("total_quantity DESC")
 		} else if *sortBy == "toprating" {
 			temp = temp.Order("rating DESC")
 		} else if *sortBy == "lowestprice" {
-			return models, db.Where("shop_id = ? ", shopID).Order("price ASC").Find(&models).Error
+			temp = temp.Order("price ASC")
 		} else if *sortBy == "highestprice" {
-			return models, db.Where("shop_id = ? ", shopID).Order("price DESC").Find(&models).Error
+			temp = temp.Order("price DESC")
 		} else if *sortBy == "mostreviews" {
 
 		}
+	}
+
+	if categoryID != nil {
+		temp = temp.Where("category_id = ?", categoryID)
 	}
 
 	if limit != nil {
@@ -117,20 +139,14 @@ func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.
 	return models, db.Where("shop_id = ?", obj.ID).Find(&models).Error
 }
 
+// User is the resolver for the user field.
+func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, error) {
+	db := config.GetDB()
+	var model *model.User
+	return model, db.Where("id = ?", obj.UserID).Find(&model).Error
+}
+
 // Shop returns ShopResolver implementation.
 func (r *Resolver) Shop() ShopResolver { return &shopResolver{r} }
 
 type shopResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *shopResolver) Banned(ctx context.Context, obj *model.Shop) (bool, error) {
-	panic(fmt.Errorf("not implemented: Banned - banned"))
-}
-func (r *shopResolver) Banner(ctx context.Context, obj *model.Shop) (string, error) {
-	panic(fmt.Errorf("not implemented: Banner - banner"))
-}

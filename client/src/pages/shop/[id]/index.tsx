@@ -104,12 +104,28 @@ export default function ShopPage() {
             </div>
             <div className={styles.categorysection}>
               <div className={styles.titlelabel}>Shop by Category</div>
+
               <div className={styles.listcontainer}>
                 {categoriesOwned.map((c) => {
                   return (
-                    <div className={styles.categorycard} onClick={() => {}}>
-                      {c.name}
-                    </div>
+                    <form action={links.shopProductslistCategory(shop.id)}>
+                      <div onClick={() => {}}>
+                        <button className={styles.categorycard}>
+                          {c.name}
+                        </button>
+                        <input
+                          type="text"
+                          placeholder="Search.."
+                          name="category"
+                          id="category"
+                          className={styles.navbarsearch}
+                          value={c.id}
+                          style={{
+                            display: 'none',
+                          }}
+                        />
+                      </div>
+                    </form>
                   );
                 })}
               </div>

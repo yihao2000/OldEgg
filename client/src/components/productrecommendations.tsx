@@ -54,9 +54,10 @@ const ProductRecommendations = () => {
   }, []);
 
   const scrollHandler = () => {
+    console.log('kepanggil');
     if (
       window.innerHeight + Math.floor(document.documentElement.scrollTop) >=
-      document.documentElement.offsetHeight
+      document.documentElement.offsetHeight - 50
     ) {
       if (noData == false) {
         setLoadData(true);

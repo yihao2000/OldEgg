@@ -201,7 +201,9 @@ func (r *productResolver) Reviews(ctx context.Context, obj *model.Product) ([]*m
 
 // Brands is the resolver for the brands field.
 func (r *queryResolver) Brands(ctx context.Context) ([]*model.Brand, error) {
-	panic(fmt.Errorf("not implemented: Brands - brands"))
+	db := config.GetDB()
+	var models []*model.Brand
+	return models, db.Find(&models).Error
 }
 
 // Brand is the resolver for the brand field.
@@ -211,7 +213,9 @@ func (r *queryResolver) Brand(ctx context.Context, id *string, name *string) (*m
 
 // Categories is the resolver for the categories field.
 func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
-	panic(fmt.Errorf("not implemented: Categories - categories"))
+	db := config.GetDB()
+	var models []*model.Category
+	return models, db.Find(&models).Error
 }
 
 // Category is the resolver for the category field.

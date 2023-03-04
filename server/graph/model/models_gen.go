@@ -61,6 +61,7 @@ type NewShop struct {
 	Image       string `json:"image"`
 	Aboutus     string `json:"aboutus"`
 	Banner      string `json:"banner"`
+	UserID      string `json:"userID"`
 }
 
 type NewUser struct {

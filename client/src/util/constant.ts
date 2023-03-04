@@ -579,8 +579,8 @@ export const SHOP_QUERY = `query($shopID:ID!){
   }
 }`;
 
-export const SHOP_PRODUCTS_QUERY = `query($shopID:ID!, $sortBy:String, $limit:Int, $offset:Int){
-  shopProducts(sortBy:$sortBy, shopID:$shopID, limit:$limit, offset:$offset){
+export const SHOP_PRODUCTS_QUERY = `query($shopID:ID!, $sortBy:String, $limit:Int, $offset:Int, $categoryID:ID){
+  shopProducts(sortBy:$sortBy, shopID:$shopID, limit:$limit, offset:$offset, categoryID:$categoryID){
     id
     rating
     name
@@ -610,5 +610,65 @@ export const REDEEM_VOUCHER_MUTATION = `mutation($voucherID:ID!){
     balance
     dateCreated
     dateUsed
+  }
+}`;
+
+export const GET_CURRENT_USER_SHOP = `query{
+  getUserShop{
+    id
+    name
+    description
+    image
+    aboutus
+    banner
+    banned
+    products{
+      id
+      name
+      description
+      image
+      discount
+      price
+      rating
+    }
+  }
+}`;
+
+export const UPDATE_SHOP_INFORMATION = `mutation($shopID:ID!, $aboutUs:String!, $description:String!, $image:String!, $name:String!){
+  updateShop(shopID:$shopID, aboutus:$aboutUs, description:$description, image:$image, name:$name){
+    id
+  }
+}`;
+
+export const CATEGORIES_QUERY = `query{
+  categories{
+    id
+    name
+    description
+  }
+}`;
+
+export const BRANDS_QUERY = `query{
+  brands{
+    id
+    name
+    description
+    image
+  }
+}`;
+
+export const CREATE_NEW_PRODUCT_MUTATION = `mutation($brandID:ID!, $categoryID:ID!, $shopID:ID!, $name:String!, $description:String!, $price:Float!, $image:String!, $quantity:Int!, $discount:Float!){
+  createProduct(input:{
+    brandId:$brandID,
+    categoryId:$categoryID,
+    shopId:$shopID,
+    name:$name,
+    description:$description,
+    price:$price,
+    image:$image,
+    quantity:$quantity,
+    discount:$discount
+  }){
+	id
   }
 }`;

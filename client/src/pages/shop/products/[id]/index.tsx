@@ -14,7 +14,8 @@ import { LAPTOP_NAME_CONVERTER } from '@/components/converter/converter';
 
 export default function ShopProducts() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, category } = router.query;
+
   const [token, setToken] = useSessionStorage('token', '');
 
   //Pagination
@@ -31,6 +32,10 @@ export default function ShopProducts() {
   const refreshComponent = () => {
     setRefresh(!refresh);
   };
+
+  useEffect(() => {
+    console.log(category);
+  }, [category]);
 
   useEffect(() => {
     if (id) {
@@ -75,6 +80,7 @@ export default function ShopProducts() {
             offset: offset,
             sortBy: sortBy,
             shopID: id,
+            categoryID: category,
           },
         })
         .then((res) => {

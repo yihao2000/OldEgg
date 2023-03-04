@@ -1,0 +1,262 @@
+@mixin paddingNoOverflow {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@mixin paddingHorizontal($left, $right) {
+  padding-left: $left;
+  padding-right: $right;
+}
+
+@mixin buttonDefaultStyling($bgcolor) {
+  display: inline-block;
+  margin: 0;
+  padding: 4px 10px;
+  outline: none;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: 1px solid #d9d9d9;
+  background: $bgcolor;
+  color: #222;
+  font-weight: bold;
+  font-stretch: condensed;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.bannedcontainer {
+  width: 100%;
+  height: 100vh;
+}
+
+.pagedivider {
+  display: flex;
+  padding: 40px;
+  column-gap: 100px;
+}
+
+.rightsection {
+  width: 100%;
+}
+
+.filtercontainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  // background-color: rgba(var(--foreground-lighter-rgb));
+
+  width: 100%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  @include paddingNoOverflow();
+}
+
+.orderBycontainer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  // margin-left: 10px;
+}
+
+.paginationcontainer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filtersubcontainer {
+  display: flex;
+}
+
+.changepagecontainer {
+  display: flex;
+  column-gap: 20px;
+}
+
+.changepagebutton {
+  @include buttonDefaultStyling(#ffffff);
+  border: none !important;
+  border-radius: 2px 2px 2px 2px !important;
+}
+
+.productcardcontainer {
+  margin: 0 auto;
+  display: grid;
+  gap: 2%;
+  max-width: 100%;
+  // margin-left: 2%;
+  // margin-right: 2%;
+  // padding-left: 2%;
+  // padding-right: 2%;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.userinformationtable {
+  border-collapse: collapse;
+  border-spacing: 0;
+  empty-cells: show;
+  width: 100%;
+}
+
+.userinformationtable tr:first-child td {
+  padding-top: 40px;
+}
+
+.rowcontainer {
+  display: table-row;
+  border-bottom: 1px solid #f4f5f7;
+}
+
+.flexwrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.marginvertical {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.boldtext {
+  font-weight: bold;
+}
+
+.verticaltop {
+  vertical-align: top;
+}
+
+.rowcontainer td {
+  padding: 10px;
+}
+
+.editbutton {
+  background: #e6e6e6;
+  border-color: #a9a9a9;
+  color: #222;
+  cursor: pointer;
+  font: 700 12px/1 Open Sans Condensed, Arial Narrow, Helvetica Narrow, arial,
+    helvetica, sans-serif;
+  letter-spacing: 1px;
+  padding: 10px;
+  position: relative;
+  text-align: center;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  border-radius: 3px;
+}
+
+.shopprofile {
+  max-width: 80px;
+  max-height: 80px;
+}
+
+.profileimage {
+  border-radius: 50%;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.paragraphwrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+}
+
+.verticalcontainer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.flexbetween {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.addbutton {
+  @include buttonDefaultStyling(#ffffff);
+}
+
+.addproductcontainer {
+  padding: 20px;
+  display: flex;
+
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.forminputcontainer {
+  background: transparent;
+  box-sizing: border-box;
+  background-color: rgba(var(--background-start-rgb), 0, 5);
+
+  font-size: 1em;
+  height: 35px;
+
+  // padding: 50px;
+  border-radius: var(--border-radius);
+}
+
+.dropdowncontainer {
+  width: 100%;
+  display: flex;
+  column-gap: 10px;
+}
+
+.rowcontainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+}
+
+.gapcontainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 1100px) {
+  .productcardcontainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .productcardcontainer {
+    grid-template-columns: repeat(1, 1fr);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 20px;
+    row-gap: 20px;
+  }
+
+  .leftsection {
+    width: 40%;
+  }
+  .rightsection {
+    width: 60%;
+  }
+}
+
+@media (max-width: 600px) {
+  .pagedivider {
+    flex-wrap: wrap;
+  }
+  .rightsection {
+    width: 100%;
+  }
+}

@@ -7,8 +7,7 @@ type Shop{
   banner: String!
   products: [Product!]! @goField(forceResolver: true)
   banned: Boolean!
-  email: String!
-  password: String!
+  user: User! @goField (forceResolver: true)
 }
 
 input NewShop{
@@ -17,19 +16,18 @@ input NewShop{
   image: String!
   aboutus: String!
   banner: String!
-  email: String!
-  password: String!
+  userID: ID!
 }
 
 extend type Mutation{
     createShop(input: NewShop!): Shop! 
-    updateShop(input: NewShop!): Shop!
+    updateShop(name: String!, aboutus: String!, description: String!, image: String!, shopID: ID!): Shop!
 } 
 
 extend type Query{
     shops: [Shop!]! @goField(forceResolver: true)
     shop(id: ID, name: String): Shop! @goField(forceResolver: true)
-    shopProducts(shopID: ID!, sortBy: String, limit: Int, offset: Int): [Product!]!
+    shopProducts(shopID: ID!, sortBy: String, limit: Int, offset: Int, categoryID:ID): [Product!]!
     shopTotalSales(shopID: ID!): Int!
 
 }

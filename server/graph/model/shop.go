@@ -8,4 +8,6 @@ type Shop struct {
 	Aboutus     string `json:"aboutus"`
 	Banner      string `json:"banner"`
 	Banned      bool   `json:"banned"`
+	UserID      string
+	User        *User `json:"user" gorm:"foreignKey:UserID"`
 }

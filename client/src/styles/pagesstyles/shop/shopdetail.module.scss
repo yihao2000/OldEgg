@@ -99,6 +99,7 @@
   display: flex;
   flex-wrap: wrap;
   max-width: 100%;
+  column-gap: 10px;
 }
 
 .productscontainer {
@@ -115,7 +116,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20%;
+  width: 100%;
+  padding: 50px;
   height: 100px;
   background-color: rgb(var(--background-end-rgb));
   font-weight: bold;
