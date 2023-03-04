@@ -9,8 +9,10 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import {
   CREATE_WISHLIST_DETAIL_MUTATION,
+  CURRENT_USER_QUERY,
   DELETE_PRODUCT_FROM_WISHLIST_DETAILS,
   DELETE_SAVED_FOR_LATER_MUTATION,
+  GET_CURRENT_USER_SHOP,
   GRAPHQLAPI,
   PRODUCT_CATEGORY_QUERY,
   PRODUCT_PRODUCTSGROUP_QUERY,
@@ -25,6 +27,8 @@ import {
   Product,
   ProductCardData,
   ProductDetail,
+  Shop,
+  User,
   Wishlist,
 } from '@/components/interfaces/interfaces';
 import {
@@ -36,6 +40,7 @@ import { useSessionStorage } from 'usehooks-ts';
 import { ClipLoader } from 'react-spinners';
 import ProductCard from '@/components/productcard';
 import Modal from '@/components/modal/modal';
+import UpdateProductModalContent from '@/components/modal/content/updateproduct';
 
 const ProductDetail: NextPage = () => {
   interface ProductVariant {
@@ -69,6 +74,53 @@ const ProductDetail: NextPage = () => {
   const [variantList, setVariantList] = useState([]);
 
   const [openAddToWishlistModal, setOpenAddToWishlistModal] = useState(false);
+
+  //Edit Product
+  const [shop, setShop] = useState<Shop>();
+  const [currUser, setCurrUser] = useState<User>();
+  const [openUpdateProductModal, setOpenUpdateProductModal] = useState(false);
+
+  const closeUpdateProductModal = () => {
+    setOpenUpdateProductModal(false);
+  };
+
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: GET_CURRENT_USER_SHOP,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then((res) => {
+        setShop(res.data.data.getUserShop);
+      })
+      .catch(() => {});
+
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CURRENT_USER_QUERY,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then((res) => {
+        setCurrUser(res.data.data.getCurrentUser);
+      })
+      .catch(() => {});
+  }, []);
 
   const closeAddToWishlistModal = () => {
     setOpenAddToWishlistModal(false);
@@ -195,6 +247,7 @@ const ProductDetail: NextPage = () => {
         })
         .then((res) => {
           setProduct(res.data.data.product);
+          console.log(res.data.data.product);
 
           var productCategory = res.data.data.product.category.name;
           setProductCategory(productCategory);
@@ -457,7 +510,7 @@ const ProductDetail: NextPage = () => {
               <h3 className={styles.visitshop}>Visit {product?.shop.name}</h3>
             </div>
             <div style={{ marginTop: '10px', fontSize: '28px' }}>
-              {productName}
+              {product?.name}
             </div>
             <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
             <div className={styles.productinventory}>
@@ -537,46 +590,63 @@ const ProductDetail: NextPage = () => {
               )}
             </div>
 
-            <div className={styles.quantityformcontainer}>
-              <div className={styles.quantitycontainer}>
-                <input
-                  type="number"
-                  className={styles.quantityfield}
-                  value={productQuantity}
-                  onChange={handleQuantityChange}
-                />
+            {shop && shop.id != product?.shop.id && (
+              <div className={styles.quantityformcontainer}>
+                <div className={styles.quantitycontainer}>
+                  <input
+                    type="number"
+                    className={styles.quantityfield}
+                    value={productQuantity}
+                    onChange={handleQuantityChange}
+                  />
+                  <button
+                    className={`${styles.quantityarrow} ${styles.uparrow}`}
+                    onClick={handleIncreaseQuantity}
+                  >
+                    +
+                  </button>
+                  <button
+                    className={`${styles.quantityarrow} ${styles.downarrow}`}
+                    onClick={handleDecreaseQuantity}
+                  >
+                    -
+                  </button>
+                </div>
                 <button
-                  className={`${styles.quantityarrow} ${styles.uparrow}`}
-                  onClick={handleIncreaseQuantity}
+                  className={`${styles.addtocartbutton} ${
+                    productQuantity < 0 ? styles.disablebutton : ''
+                  }`}
+                  onClick={() => {
+                    productQuantity > 0 ? handleSubmit() : null;
+                  }}
                 >
-                  +
-                </button>
-                <button
-                  className={`${styles.quantityarrow} ${styles.downarrow}`}
-                  onClick={handleDecreaseQuantity}
-                >
-                  -
+                  {!loading ? (
+                    product?.quantity && product?.quantity > 0 ? (
+                      'Add To Cart'
+                    ) : (
+                      'Out of Stock'
+                    )
+                  ) : (
+                    <ClipLoader size={20} />
+                  )}
                 </button>
               </div>
-              <button
-                className={`${styles.addtocartbutton} ${
-                  productQuantity < 0 ? styles.disablebutton : ''
-                }`}
-                onClick={() => {
-                  productQuantity > 0 ? handleSubmit() : null;
-                }}
-              >
-                {!loading ? (
-                  product?.quantity && product?.quantity > 0 ? (
-                    'Add To Cart'
-                  ) : (
-                    'Out of Stock'
-                  )
-                ) : (
-                  <ClipLoader size={20} />
-                )}
-              </button>
-            </div>
+            )}
+
+            {!shop ||
+              (shop.id == product?.shop.id && (
+                <div className={styles.quantityformcontainer}>
+                  <button
+                    className={styles.editproductbutton}
+                    onClick={() => {
+                      setOpenUpdateProductModal(true);
+                    }}
+                  >
+                    Update Item
+                  </button>
+                </div>
+              ))}
+
             {success ? (
               <span
                 style={{
@@ -589,12 +659,14 @@ const ProductDetail: NextPage = () => {
             ) : null}
 
             <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
-            <div
-              className={styles.addtowishlistcontainer}
-              onClick={handleAddToWishlistClick}
-            >
-              <FaHeart fontSize={20} /> Add to wishlist
-            </div>
+            {shop && shop.id != product?.shop.id && (
+              <div
+                className={styles.addtowishlistcontainer}
+                onClick={handleAddToWishlistClick}
+              >
+                <FaHeart fontSize={20} /> Add to wishlist
+              </div>
+            )}
           </div>
         </div>
         <div className={styles.similarproductsection}>
@@ -616,6 +688,11 @@ const ProductDetail: NextPage = () => {
         </div>
         <div>aas</div>
       </div>
+      {openUpdateProductModal && product && (
+        <Modal closeModal={closeUpdateProductModal} height={35} width={40}>
+          <UpdateProductModalContent productID={product?.id} />
+        </Modal>
+      )}
       {openAddToWishlistModal && (
         <Modal closeModal={closeAddToWishlistModal} height={35} width={40}>
           <AddToWishlistModalContent

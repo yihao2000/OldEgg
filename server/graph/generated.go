@@ -130,7 +130,7 @@ type ComplexityRoot struct {
 		UpdateBrand                      func(childComplexity int, input model.NewBrand, lastUpdateID string) int
 		UpdateCart                       func(childComplexity int, productID string, quantity int) int
 		UpdateCategory                   func(childComplexity int, input model.NewCategory, lastUpdateID string) int
-		UpdateProduct                    func(childComplexity int, input model.NewProduct, lastUpdateID string) int
+		UpdateProduct                    func(childComplexity int, productID string, input model.NewProduct) int
 		UpdateProductVariant             func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
 		UpdatePromo                      func(childComplexity int, input model.NewPromo) int
 		UpdateShop                       func(childComplexity int, name string, aboutus string, description string, image string, shopID string) int
@@ -371,7 +371,7 @@ type MutationResolver interface {
 	UpdateCategory(ctx context.Context, input model.NewCategory, lastUpdateID string) (*model.Category, error)
 	CreateProductGroup(ctx context.Context) (*model.ProductGroup, error)
 	CreateProduct(ctx context.Context, input model.NewProduct) (*model.Product, error)
-	UpdateProduct(ctx context.Context, input model.NewProduct, lastUpdateID string) (*model.Product, error)
+	UpdateProduct(ctx context.Context, productID string, input model.NewProduct) (*model.Product, error)
 	CreateProductVariant(ctx context.Context, input model.NewProductVariant) (*model.Product, error)
 	UpdateProductVariant(ctx context.Context, input model.NewProductVariant, lastUpdateID string) (*model.Product, error)
 	CreatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error)
@@ -1037,7 +1037,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProduct(childComplexity, args["input"].(model.NewProduct), args["lastUpdateId"].(string)), true
+		return e.complexity.Mutation.UpdateProduct(childComplexity, args["productID"].(string), args["input"].(model.NewProduct)), true
 
 	case "Mutation.updateProductVariant":
 		if e.complexity.Mutation.UpdateProductVariant == nil {
@@ -3009,24 +3009,24 @@ func (ec *executionContext) field_Mutation_updateProductVariant_args(ctx context
 func (ec *executionContext) field_Mutation_updateProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewProduct
+	var arg0 string
+	if tmp, ok := rawArgs["productID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["productID"] = arg0
+	var arg1 model.NewProduct
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewProduct2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewProduct(ctx, tmp)
+		arg1, err = ec.unmarshalNNewProduct2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewProduct(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["lastUpdateId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastUpdateId"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["lastUpdateId"] = arg1
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -7330,7 +7330,7 @@ func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProduct(rctx, fc.Args["input"].(model.NewProduct), fc.Args["lastUpdateId"].(string))
+		return ec.resolvers.Mutation().UpdateProduct(rctx, fc.Args["productID"].(string), fc.Args["input"].(model.NewProduct))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

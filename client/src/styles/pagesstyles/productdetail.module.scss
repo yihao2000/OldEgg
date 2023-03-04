@@ -259,6 +259,17 @@
   padding: 0.4em;
 }
 
+.editproductbutton {
+  width: 100%;
+  background-color: rgb(var(--accent-rgb));
+  color: rgb(var(--background-start-rgb));
+  font-weight: bold;
+  border: 0px;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 5px;
+}
+
 @media (max-width: 1200px) {
   .sectionone {
     width: 100%;

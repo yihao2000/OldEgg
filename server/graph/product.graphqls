@@ -96,7 +96,7 @@ extend type Mutation{
     createProductGroup: ProductGroup!
 
     createProduct(input: NewProduct!): Product!
-    updateProduct(input: NewProduct!, lastUpdateId: ID!): Product!
+    updateProduct(productID: ID!,input: NewProduct!): Product!
     
     createProductVariant(input: NewProductVariant!): Product!
     updateProductVariant(input: NewProductVariant!, lastUpdateId: ID!): Product!

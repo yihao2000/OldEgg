@@ -146,8 +146,29 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewPro
 }
 
 // UpdateProduct is the resolver for the updateProduct field.
-func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct, lastUpdateID string) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: UpdateProduct - updateProduct"))
+func (r *mutationResolver) UpdateProduct(ctx context.Context, productID string, input model.NewProduct) (*model.Product, error) {
+	db := config.GetDB()
+
+	product := new(model.Product)
+
+	err := db.First(product, "id = ?", productID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	product.Name = input.Name
+	product.BrandId = input.BrandID
+	product.CategoryId = input.CategoryID
+	product.ShopId = input.ShopID
+	product.Description = input.Description
+	product.Price = input.Price
+	product.Image = input.Image
+	product.Quantity = input.Quantity
+	product.Discount = input.Discount
+
+	db.Save(product)
+
+	return product, nil
 }
 
 // CreateProductVariant is the resolver for the createProductVariant field.

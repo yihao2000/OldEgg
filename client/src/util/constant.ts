@@ -672,3 +672,19 @@ export const CREATE_NEW_PRODUCT_MUTATION = `mutation($brandID:ID!, $categoryID:I
 	id
   }
 }`;
+
+export const UPDATE_PRODUCT_MUTATION = `mutation($productID:ID! ,$brandID:ID!, $categoryID:ID!, $shopID:ID!, $name:String!, $description:String!, $price:Float!, $image:String!, $quantity:Int!, $discount:Float!){
+  updateProduct(productID:$productID ,input:{
+    brandId:$brandID,
+    categoryId:$categoryID,
+    shopId:$shopID,
+    name:$name,
+    description:$description,
+    price:$price,
+    image:$image,
+    quantity:$quantity,
+    discount:$discount
+  }){
+	id
+  }
+}`;

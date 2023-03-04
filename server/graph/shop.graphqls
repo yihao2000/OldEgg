@@ -19,6 +19,20 @@ input NewShop{
   userID: ID!
 }
 
+type ShopReview{
+  id: ID!
+  shop: Shop!
+  user: User!
+  rating: Float!
+  tag: String
+  dateCreated: Time!
+  comment: String!
+  onTimeDelivery: Boolean!
+  productAccurate: Boolean!
+  satisfiedService: Boolean!
+
+}
+
 extend type Mutation{
     createShop(input: NewShop!): Shop! 
     updateShop(name: String!, aboutus: String!, description: String!, image: String!, shopID: ID!): Shop!
