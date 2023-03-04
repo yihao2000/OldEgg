@@ -50,6 +50,7 @@ func main() {
 	db.AutoMigrate(&model.WishlistFollower{})
 	db.AutoMigrate(&model.WishlistReview{})
 	db.AutoMigrate(&model.Voucher{})
+	db.AutoMigrate(&model.ShopReview{})
 
 	router := chi.NewRouter()
 

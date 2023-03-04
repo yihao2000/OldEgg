@@ -1,15 +1,23 @@
 import styles from '@/styles/pagesstyles/shop/shopdetail.module.scss';
-import { GRAPHQLAPI, SHOP_QUERY } from '@/util/constant';
+import {
+  GRAPHQLAPI,
+  SHOP_QUERY,
+  SHOP_REVIEWS_QUERY,
+  SHOP_TOTAL_SALES_QUERY,
+} from '@/util/constant';
 import { links } from '@/util/route';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Shop } from '../interfaces/interfaces';
+import { Shop, ShopReview } from '../interfaces/interfaces';
 
 export default function ShopHeader() {
   const [shop, setShop] = useState<Shop>();
   const router = useRouter();
   const { id } = router.query;
+  const [shopReviews, setShopReviews] = useState<ShopReview[]>();
+  const [shopAverageRating, setShopAverageRating] = useState(0);
+  const [shopTotalSales, setShopTotalSales] = useState(0);
 
   useEffect(() => {
     console.log(id);
@@ -27,8 +35,54 @@ export default function ShopHeader() {
         .catch((err) => {
           console.log(err);
         });
+
+      axios
+        .post(GRAPHQLAPI, {
+          query: SHOP_REVIEWS_QUERY,
+          variables: {
+            shopID: id,
+          },
+        })
+        .then((res) => {
+          setShopReviews(res.data.data.shopReviews);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      axios
+        .post(GRAPHQLAPI, {
+          query: SHOP_TOTAL_SALES_QUERY,
+          variables: {
+            shopID: id,
+          },
+        })
+        .then((res) => {
+          setShopTotalSales(res.data.data.shopTotalSales);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }, [id]);
+
+  useEffect(() => {
+    if (shopReviews) {
+      calculateShopAverageRating();
+    }
+  }, [shopReviews]);
+
+  const calculateShopAverageRating = () => {
+    if (shopReviews) {
+      var totalRating = 0;
+      shopReviews?.map((x) => {
+        totalRating += x.rating;
+      });
+
+      totalRating = totalRating / shopReviews?.length;
+      setShopAverageRating(totalRating);
+    }
+  };
 
   return (
     <div>
@@ -40,7 +94,15 @@ export default function ShopHeader() {
             </div>
             <div className={styles.shopdetail}>
               <div className={styles.shoptitle}>{shop?.name}</div>
-              <div className={styles.detailcontainer}>Shop detail</div>
+              <div className={styles.detailcontainer}>
+                <span>
+                  <b>{shopTotalSales}</b> Sales |{' '}
+                  <span className={styles.accentlabel}>
+                    {shopAverageRating}/5{' '}
+                  </span>
+                  ({shopReviews?.length} Total Reviews)
+                </span>
+              </div>
             </div>
           </div>
           <div className={styles.pagecontainer}>

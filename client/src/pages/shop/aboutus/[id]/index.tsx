@@ -60,7 +60,7 @@ export default function ShopAboutUs() {
           console.log(err);
         });
     }
-  }, [refresh]);
+  }, [refresh, id]);
 
   return (
     <Layout>
@@ -72,8 +72,8 @@ export default function ShopAboutUs() {
               <h1>About Us</h1>
               <h3>{shop?.name}</h3>
               <h5>{totalSales} Sales</h5>
-              <p>{shop?.description}</p>
               <p>{shop?.aboutus}</p>
+              <p>{shop?.description}</p>
             </div>
           </div>
         </div>

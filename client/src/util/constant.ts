@@ -688,3 +688,23 @@ export const UPDATE_PRODUCT_MUTATION = `mutation($productID:ID! ,$brandID:ID!, $
 	id
   }
 }`;
+
+export const SHOP_REVIEWS_QUERY = `query($shopID: ID!){
+  shopReviews(shopID:$shopID){
+    id
+    user{
+      name
+    }
+    rating
+    tag
+    dateCreated
+    comment
+		onTimeDelivery
+    productAccurate
+    satisfiedService
+    transactionHeader{
+      id
+      transactionDate
+    }
+  }
+}`;

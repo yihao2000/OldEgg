@@ -7,8 +7,10 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 )
@@ -63,6 +65,35 @@ func (r *mutationResolver) UpdateShop(ctx context.Context, name string, aboutus 
 	db.Save(shop)
 
 	return shop, nil
+}
+
+// CreateShopReview is the resolver for the createShopReview field.
+func (r *mutationResolver) CreateShopReview(ctx context.Context, shopID string, userID string, rating float64, tag *string, comment string, oneTimeDelivery bool, productAccurate bool, satisfiedService bool, transactionHeaderID string) (*model.ShopReview, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, Invalid Token !",
+		}
+	}
+
+	shopReview := model.ShopReview{
+		ID:                  uuid.NewString(),
+		ShopID:              shopID,
+		UserID:              userID,
+		Rating:              rating,
+		Tag:                 tag,
+		TransactionHeaderID: transactionHeaderID,
+		DateCreated:         time.Now(),
+		Comment:             comment,
+		OnTimeDelivery:      oneTimeDelivery,
+		ProductAccurate:     productAccurate,
+		SatisfiedService:    satisfiedService,
+	}
+	if err := db.Model(shopReview).Create(&shopReview).Error; err != nil {
+		return nil, err
+	}
+
+	return &shopReview, nil
 }
 
 // Shops is the resolver for the shops field.
@@ -132,6 +163,33 @@ func (r *queryResolver) ShopTotalSales(ctx context.Context, shopID string) (int,
 	return total, nil
 }
 
+// ShopReviews is the resolver for the shopReviews field.
+func (r *queryResolver) ShopReviews(ctx context.Context, shopID string, filter *string, search *string) ([]*model.ShopReview, error) {
+	db := config.GetDB()
+	var models []*model.ShopReview
+
+	temp := db.Model(models).Where("shop_id = ?", shopID)
+
+	if search != nil {
+		temp = temp.Where("comment LIKE ?", "%"+*search+"%")
+	}
+
+	if filter != nil {
+		if *filter == "30days" {
+			startDate := time.Now().AddDate(0, 0, -30).Format("2006-01-02")
+			temp = temp.Where("date_created >= ?", startDate)
+		} else if *filter == "60days" {
+			startDate := time.Now().AddDate(0, 0, -60).Format("2006-01-02")
+			temp = temp.Where("date_created >= ?", startDate)
+		} else if *filter == "12months" {
+			startDate := time.Now().AddDate(0, 0, -365).Format("2006-01-02")
+			temp = temp.Where("date_created >= ?", startDate)
+		}
+	}
+
+	return models, temp.Find(&models).Error
+}
+
 // Products is the resolver for the products field.
 func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
 	db := config.GetDB()
@@ -146,7 +204,32 @@ func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, 
 	return model, db.Where("id = ?", obj.UserID).Find(&model).Error
 }
 
+// Shop is the resolver for the shop field.
+func (r *shopReviewResolver) Shop(ctx context.Context, obj *model.ShopReview) (*model.Shop, error) {
+	db := config.GetDB()
+	var model *model.Shop
+	return model, db.Where("shop_id = ?", obj.ShopID).Find(&model).Error
+}
+
+// User is the resolver for the user field.
+func (r *shopReviewResolver) User(ctx context.Context, obj *model.ShopReview) (*model.User, error) {
+	db := config.GetDB()
+	var model *model.User
+	return model, db.Where("id = ?", obj.UserID).Find(&model).Error
+}
+
+// TransactionHeader is the resolver for the transactionHeader field.
+func (r *shopReviewResolver) TransactionHeader(ctx context.Context, obj *model.ShopReview) (*model.TransactionHeader, error) {
+	db := config.GetDB()
+	var model *model.TransactionHeader
+	return model, db.Where("id = ?", obj.TransactionHeaderID).Find(&model).Error
+}
+
 // Shop returns ShopResolver implementation.
 func (r *Resolver) Shop() ShopResolver { return &shopResolver{r} }
 
+// ShopReview returns ShopReviewResolver implementation.
+func (r *Resolver) ShopReview() ShopReviewResolver { return &shopReviewResolver{r} }
+
 type shopResolver struct{ *Resolver }
+type shopReviewResolver struct{ *Resolver }

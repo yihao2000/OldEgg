@@ -180,3 +180,16 @@ export interface WishlistReview {
   user: User;
   wishlist: Wishlist;
 }
+
+export interface ShopReview {
+  id: string;
+  user: User;
+  rating: number;
+  tag: string;
+  dateCreated: string;
+  comment: string;
+  onTimeDelivery: boolean;
+  productAccurate: boolean;
+  satisfiedService: boolean;
+  transactionHeader: TransactionHeader;
+}
