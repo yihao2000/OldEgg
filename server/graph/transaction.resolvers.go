@@ -149,6 +149,22 @@ func (r *mutationResolver) UpdateVoucher(ctx context.Context, voucherID string) 
 	return voucher, nil
 }
 
+// UpdateTransactionHeader is the resolver for the updateTransactionHeader field.
+func (r *mutationResolver) UpdateTransactionHeader(ctx context.Context, status string, transactionHeaderID string) (*model.TransactionHeader, error) {
+	db := config.GetDB()
+	transactionHeader := new(model.TransactionHeader)
+
+	err := db.First(transactionHeader, "id = ?", transactionHeaderID).Error
+	if err != nil {
+		return transactionHeader, err
+	}
+
+	transactionHeader.Status = status
+	db.Save(transactionHeader)
+
+	return transactionHeader, nil
+}
+
 // Shipping is the resolver for the shipping field.
 func (r *queryResolver) Shipping(ctx context.Context, id string) (*model.Shipping, error) {
 	panic(fmt.Errorf("not implemented: Shipping - shipping"))

@@ -151,6 +151,32 @@ func (r *queryResolver) ShopProducts(ctx context.Context, shopID string, sortBy 
 	return models, temp.Find(&models).Error
 }
 
+// ShopOrders is the resolver for the shopOrders field.
+func (r *queryResolver) ShopOrders(ctx context.Context, shopID string, filter *string) ([]*model.TransactionHeader, error) {
+	db := config.GetDB()
+	var models []*model.TransactionHeader
+
+	temp := db.Model(models).Joins("JOIN transaction_details ON transaction_headers.id = transaction_details.transaction_header_id JOIN products ON products.id = transaction_details.product_id").Where("products.shop_id = ?", shopID)
+
+	if filter != nil && *filter != "All" {
+
+		temp = temp.Where("transaction_headers.status = ?", filter)
+
+		// 	if *filter == "30days" {
+		// 		startDate := time.Now().AddDate(0, 0, -30).Format("2006-01-02")
+		// 		temp = temp.Where("date_created >= ?", startDate)
+		// 	} else if *filter == "60days" {
+		// 		startDate := time.Now().AddDate(0, 0, -60).Format("2006-01-02")
+		// 		temp = temp.Where("date_created >= ?", startDate)
+		// 	} else if *filter == "12months" {
+		// 		startDate := time.Now().AddDate(0, 0, -365).Format("2006-01-02")
+		// 		temp = temp.Where("date_created >= ?", startDate)
+		// 	}
+	}
+
+	return models, temp.Find(&models).Error
+}
+
 // ShopTotalSales is the resolver for the shopTotalSales field.
 func (r *queryResolver) ShopTotalSales(ctx context.Context, shopID string) (int, error) {
 	db := config.GetDB()

@@ -1,0 +1,57 @@
+@mixin paddingvertical($top, $bottom) {
+  padding-top: $top;
+  padding-bottom: $bottom;
+}
+
+.pagedivider {
+  display: flex;
+  padding: 40px;
+  column-gap: 100px;
+}
+
+.rightsection {
+  width: 100%;
+  padding: 30px;
+}
+
+.filtercontainer {
+  background-color: rgb(var(--background-end-rgb));
+  padding: 20px;
+}
+
+.titlelabel {
+  padding: 0;
+  margin: 0;
+}
+
+.transactionscontainer {
+  width: 100%;
+  @include paddingvertical(20px, 20px);
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+@media (max-width: 750px) {
+  .pagedivider {
+    column-gap: 30px;
+  }
+  .leftsection {
+    width: 30%;
+  }
+}
+
+@media (max-width: 550px) {
+  .pagedivider {
+    flex-direction: column;
+  }
+  .rightsection {
+    padding: 0px;
+  }
+  .leftsection {
+    padding: 0px;
+  }
+  .pagedivider {
+    // padding: 10px;
+  }
+}

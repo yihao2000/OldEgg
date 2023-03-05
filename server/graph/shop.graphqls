@@ -45,6 +45,7 @@ extend type Query{
     shops: [Shop!]! @goField(forceResolver: true)
     shop(id: ID, name: String): Shop! @goField(forceResolver: true)
     shopProducts(shopID: ID!, sortBy: String, limit: Int, offset: Int, categoryID:ID): [Product!]!
+    shopOrders(shopID: ID!, filter:String): [TransactionHeader!]!
     shopTotalSales(shopID: ID!): Int!
 
     shopReviews(shopID: ID!, filter: String, search: String): [ShopReview!]!

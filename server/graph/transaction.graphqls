@@ -56,4 +56,6 @@ extend type Mutation {
 
   createVoucher(balance: Float!): Voucher! 
   updateVoucher(voucherID: ID!): Voucher!
+
+  updateTransactionHeader(status: String!, transactionHeaderID: ID!): TransactionHeader!
 }

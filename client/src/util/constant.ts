@@ -689,8 +689,8 @@ export const UPDATE_PRODUCT_MUTATION = `mutation($productID:ID! ,$brandID:ID!, $
   }
 }`;
 
-export const SHOP_REVIEWS_QUERY = `query($shopID: ID!){
-  shopReviews(shopID:$shopID){
+export const SHOP_REVIEWS_QUERY = `query($shopID: ID!, $filter:String, $search: String){
+  shopReviews(shopID:$shopID, filter:$filter, search:$search){
     id
     user{
       name
@@ -706,5 +706,46 @@ export const SHOP_REVIEWS_QUERY = `query($shopID: ID!){
       id
       transactionDate
     }
+  }
+}`;
+
+export const SHOP_ORDERS_QUERY = `query($shopID:ID!, $filter:String){
+  shopOrders(shopID:$shopID filter:$filter){
+    	id
+    	transactionDate
+    shipping{
+      id
+      name
+      description
+      price
+    }
+    paymentType{
+      name
+      id
+    }
+    status
+    address{
+      detail
+      zipCode
+      city
+    }
+    invoice
+    transactionDetails{
+      quantity
+      product{
+        id
+        name
+        image
+        price
+        discount
+
+      }
+    }
+  }
+}`;
+
+export const UPDATE_TRANSACTION_HEADER_MUTATION = `mutation($transactionHeaderID:ID!, $status:String!){
+  updateTransactionHeader(transactionHeaderID:$transactionHeaderID, status:$status){
+    id
   }
 }`;

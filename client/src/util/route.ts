@@ -36,4 +36,7 @@ export const links = {
     return '/shop/aboutus/' + shopID;
   },
   shopInformation: '/shop/myshop/settings',
+  shopReviews: (shopID: string) => {
+    return '/shop/reviews/' + shopID;
+  },
 };

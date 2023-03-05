@@ -117,7 +117,7 @@ export default function ShopHeader() {
               All Products
             </a>
             <div className={styles.verticalseparator}></div>
-            <a href="" className={styles.hpstyle}>
+            <a href={links.shopReviews(shop.id)} className={styles.hpstyle}>
               Reviews
             </a>
             <div className={styles.verticalseparator}></div>
