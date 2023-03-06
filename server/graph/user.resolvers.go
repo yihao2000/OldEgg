@@ -31,8 +31,8 @@ func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
 }
 
 // UserUpdateInformation is the resolver for the userUpdateInformation field.
-func (r *mutationResolver) UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string, balance *float64) (*model.User, error) {
-	return service.UserUpdateInformation(ctx, currentPassword, newPassword, phone, balance)
+func (r *mutationResolver) UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string, balance *float64, banned *bool) (*model.User, error) {
+	return service.UserUpdateInformation(ctx, currentPassword, newPassword, phone, balance, banned)
 }
 
 // UserInputVerificationCode is the resolver for the userInputVerificationCode field.
@@ -93,6 +93,22 @@ func (r *mutationResolver) ValidateUserVerificationCode(ctx context.Context, ema
 	}
 }
 
+// UpdateUserInformation is the resolver for the updateUserInformation field.
+func (r *mutationResolver) UpdateUserInformation(ctx context.Context, userID string, banned *bool) (*model.User, error) {
+	db := config.GetDB()
+
+	var user model.User
+	if err := db.Model(user).Where("id LIKE ?", userID).Take(&user).Error; err != nil {
+		return nil, err
+	}
+
+	if banned != nil {
+		user.Banned = *banned
+	}
+
+	return &user, db.Save(user).Error
+}
+
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id *string, email *string) (*model.User, error) {
 	if id != nil {
@@ -133,6 +149,33 @@ func (r *queryResolver) GetUserShop(ctx context.Context) (*model.Shop, error) {
 	}
 
 	return &shop, nil
+}
+
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context, limit *int, offset *int) ([]*model.User, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var users []*model.User
+
+	temp := db.Where("id != ?", userID)
+
+	if limit != nil {
+		temp = temp.Limit(*limit)
+	}
+
+	if offset != nil {
+		temp = temp.Offset(*offset)
+	}
+
+	return users, temp.Find(&users).Error
 }
 
 // AuthOps returns AuthOpsResolver implementation.

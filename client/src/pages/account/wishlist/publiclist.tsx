@@ -159,8 +159,10 @@ const Mylist: NextPage = () => {
                     // className={styles.selectstyle}
                   >
                     <option value="date_created">Date Created</option>
-                    {/* <option value="highestprice">Highest Price</option> */}
-                    {/* <option value="featureditems">Featured Items</option> */}
+                    <option value="highestrating">Highest Rating</option>
+                    <option value="lowestprice">Lowest Price</option>
+                    <option value="highestprice">Highest Price</option>
+                    <option value="highestfollowers">Most Followers</option>
                   </select>
                 </div>
               </div>

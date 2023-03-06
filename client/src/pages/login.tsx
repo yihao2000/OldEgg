@@ -202,6 +202,9 @@ export default function Login() {
       )
       .then((res) => {
         if (res.data.data.getCurrentUser.banned == false) {
+          if (res.data.data.getCurrentUser.role == 'Admin') {
+            Router.push('/admin/home');
+          }
           setToken(token);
           Router.push('/');
         } else {

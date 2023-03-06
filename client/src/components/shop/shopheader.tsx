@@ -98,7 +98,7 @@ export default function ShopHeader() {
                 <span>
                   <b>{shopTotalSales}</b> Sales |{' '}
                   <span className={styles.accentlabel}>
-                    {shopAverageRating}/5{' '}
+                    {shopReviews?.length != 0 ? shopAverageRating : '0'}/5{' '}
                   </span>
                   ({shopReviews?.length} Total Reviews)
                 </span>

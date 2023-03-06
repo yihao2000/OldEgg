@@ -61,7 +61,7 @@ func UserLogin(ctx context.Context, email string, password string) (interface{},
 	}, nil
 }
 
-func UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string, balance *float64) (*model.User, error) {
+func UserUpdateInformation(ctx context.Context, currentPassword *string, newPassword *string, phone *string, balance *float64, banned *bool) (*model.User, error) {
 	db := config.GetDB()
 
 	if ctx.Value("auth") == nil {

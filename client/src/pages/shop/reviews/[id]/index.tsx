@@ -231,35 +231,52 @@ export default function ShopAboutUs() {
             <div className={styles.summarycontainer}>
               <div className={styles.firstsection}>
                 <span>Overall Rating: </span>
-                <span className={styles.accentlabel}>{averageRating} </span>/
-                <span> 5 ({shopAllReviews?.length} Reviews)</span>
+                <span className={styles.accentlabel}>
+                  {shopAllReviews?.length == 0 ? '0' : averageRating}{' '}
+                </span>
+                /<span> 5 ({shopAllReviews?.length} Reviews)</span>
               </div>
               {shopAllReviews && (
                 <div className={styles.secondsection}>
                   <div className={styles.rowsection}>
                     <span className={styles.accentlabel}>5 </span>Eggs:{' '}
                     {fiveEggReview} Reviews (
-                    {(fiveEggReview * 100) / shopAllReviews?.length}%)
+                    {shopAllReviews.length != 0
+                      ? (fiveEggReview * 100) / shopAllReviews?.length
+                      : '0'}
+                    %)
                   </div>
                   <div className={styles.rowsection}>
                     <span className={styles.accentlabel}>4 </span>Eggs:{' '}
                     {fourEggReview} Reviews (
-                    {(fourEggReview * 100) / shopAllReviews?.length}%)
+                    {shopAllReviews.length != 0
+                      ? (fourEggReview * 100) / shopAllReviews?.length
+                      : '0'}
+                    %)
                   </div>
                   <div className={styles.rowsection}>
                     <span className={styles.accentlabel}>3 </span>Eggs:{' '}
                     {threeEggReview} Reviews (
-                    {(threeEggReview * 100) / shopAllReviews?.length}%)
+                    {shopAllReviews.length != 0
+                      ? (threeEggReview * 100) / shopAllReviews?.length
+                      : '0'}
+                    %)
                   </div>
                   <div className={styles.rowsection}>
                     <span className={styles.accentlabel}>2 </span>Eggs:{' '}
                     {twoEggReview} Reviews (
-                    {(twoEggReview * 100) / shopAllReviews?.length}%)
+                    {shopAllReviews.length != 0
+                      ? (twoEggReview * 100) / shopAllReviews?.length
+                      : '0'}
+                    %)
                   </div>
                   <div className={styles.rowsection}>
                     <span className={styles.accentlabel}>1 </span>Eggs:{' '}
                     {oneEggReview} Reviews (
-                    {(oneEggReview * 100) / shopAllReviews?.length}%)
+                    {shopAllReviews.length != 0
+                      ? (oneEggReview * 100) / shopAllReviews?.length
+                      : '0'}
+                    %)
                   </div>
                 </div>
               )}
@@ -267,7 +284,10 @@ export default function ShopAboutUs() {
                 <div className={styles.thirdsection}>
                   <div className={styles.circularchart}>
                     <div>
-                      {(onTimeDelivery * 100) / shopAllReviews?.length} %{' '}
+                      {shopAllReviews.length != 0
+                        ? (onTimeDelivery * 100) / shopAllReviews?.length
+                        : '0'}{' '}
+                      %{' '}
                     </div>
                     <div
                       style={{
@@ -294,7 +314,10 @@ export default function ShopAboutUs() {
                   </div>
                   <div className={styles.circularchart}>
                     <div>
-                      {(accurateProduct * 100) / shopAllReviews?.length} %{' '}
+                      {shopAllReviews.length != 0
+                        ? (accurateProduct * 100) / shopAllReviews?.length
+                        : '0'}{' '}
+                      %{' '}
                     </div>
                     <div
                       style={{
@@ -321,7 +344,10 @@ export default function ShopAboutUs() {
                   </div>
                   <div className={styles.circularchart}>
                     <div>
-                      {(satisfiedService * 100) / shopAllReviews?.length} %{' '}
+                      {shopAllReviews.length != 0
+                        ? (satisfiedService * 100) / shopAllReviews?.length
+                        : '0'}{' '}
+                      %{' '}
                     </div>
                     <div
                       style={{

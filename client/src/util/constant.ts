@@ -772,3 +772,23 @@ export const TOP_SHOPS_QUERY = `query{
     image
   }
 }`;
+
+export const USER_EXCEPT_SELF_QUERY = `query($limit:Int, $offset:Int){
+  users(limit:$limit, offset:$offset){
+    id
+    name
+    email
+    phone
+    password
+    banned
+    role
+    currency
+    newslettersubscribe
+  }
+}`;
+
+export const UPDATE_USER_INFORMATION = `mutation($userID:ID!, $banned:Boolean){
+  updateUserInformation(userID:$userID, banned:$banned){
+    id
+  }
+}`;

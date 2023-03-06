@@ -12,12 +12,10 @@ import {
 import { useRouter } from 'next/router';
 import { links } from '@/util/route';
 
-export function ShopSideBar() {
+export function AdminSideBar() {
   const [token, setToken] = useSessionStorage('token', '');
 
-  const [shop, setShop] = useState<Shop>();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [user, setUser] = useState<User>();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,7 +24,7 @@ export function ShopSideBar() {
         .post(
           GRAPHQLAPI,
           {
-            query: GET_CURRENT_USER_SHOP,
+            query: CURRENT_USER_QUERY,
           },
           {
             headers: {
@@ -35,13 +33,21 @@ export function ShopSideBar() {
           },
         )
         .then((res) => {
-          setShop(res.data.data.getUserShop);
+          setUser(res.data.data.getCurrentUser);
         })
         .catch((err) => {
           console.log(err);
         });
     }
   }, [token]);
+
+  useEffect(() => {
+    if (user) {
+      if (user.role != 'Admin') {
+        router.push('/');
+      }
+    }
+  }, [user]);
 
   return (
     <div className={styles.leftside}>
@@ -51,14 +57,14 @@ export function ShopSideBar() {
             padding: 0,
           }}
         >
-          {shop?.name}
+          Admin
         </h2>
         <p
           style={{
             color: 'grey',
           }}
         >
-          Shop Menus
+          Admin Menus
         </p>
       </div>
       <hr />
@@ -72,12 +78,7 @@ export function ShopSideBar() {
         >
           Home
         </h5>
-        <h5
-          className={styles.listitems}
-          onClick={() => {
-            router.push('/shop/reviews/' + shop?.id);
-          }}
-        >
+        <h5 className={styles.listitems} onClick={() => {}}>
           Reviews
         </h5>
         {/* <h5 className={styles.listitems}>Subscription Orders</h5>

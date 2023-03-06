@@ -514,6 +514,14 @@ func (r *queryResolver) Wishlists(ctx context.Context, filter *string, sortBy *s
 	if sortBy != nil {
 		if *sortBy == "date_created" {
 			temp = temp.Order("date_created DESC")
+		} else if *sortBy == "highestrating" {
+			temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_reviews ON wishlists.id = wishlist_reviews.wishlist_id").Group("wishlists.id").Order("COUNT(wishlist_reviews.id) DESC, AVG(wishlist_reviews.rating) DESC")
+		} else if *sortBy == "highestprice" {
+			temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes ").Joins("LEFT JOIN wishlist_details ON wishlists.id = wishlist_details.wishlist_id JOIN products  ON wishlist_details.product_id = products.id").Group("wishlists.id").Order("SUM(products.price) DESC")
+		} else if *sortBy == "lowestprice" {
+			temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes ").Joins("LEFT JOIN wishlist_details ON wishlists.id = wishlist_details.wishlist_id JOIN products  ON wishlist_details.product_id = products.id").Group("wishlists.id").Order("SUM(products.price) ASC")
+		} else if *sortBy == "highestfollowers" {
+			temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_followers ON wishlists.id = wishlist_followers.wishlist_id").Group("wishlists.id").Order("COUNT(wishlist_followers.wishlist_id) DESC")
 		}
 
 	}

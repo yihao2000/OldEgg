@@ -27,6 +27,11 @@
   font-weight: lighter;
 }
 
+.listitems:hover {
+  cursor: pointer;
+  color: rgb(var(--accent-rgb));
+}
+
 .manageaccountcontainer {
   padding-top: 1px;
 }
