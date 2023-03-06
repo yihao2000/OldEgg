@@ -165,6 +165,8 @@ const Search: NextPage = () => {
                 >
                   <option value="lowestprice">Lowest Price</option>
                   <option value="highestprice">Highest Price</option>
+                  <option value="highestrating">Highest Rating</option>
+                  <option value="lowestrating">Lowest Rating</option>
                   {/* <option value="featureditems">Featured Items</option> */}
                 </select>
               </div>

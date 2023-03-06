@@ -191,6 +191,7 @@ type ComplexityRoot struct {
 		GetUserShop            func(childComplexity int) int
 		PaymentType            func(childComplexity int, id string) int
 		PaymentTypes           func(childComplexity int) int
+		PopularBrands          func(childComplexity int) int
 		Product                func(childComplexity int, id *string, name *string) int
 		ProductGroup           func(childComplexity int, id *string) int
 		ProductUserWishlists   func(childComplexity int, productID string) int
@@ -208,6 +209,7 @@ type ComplexityRoot struct {
 		ShopReviews            func(childComplexity int, shopID string, filter *string, search *string) int
 		ShopTotalSales         func(childComplexity int, shopID string) int
 		Shops                  func(childComplexity int) int
+		TopShops               func(childComplexity int) int
 		TransactionHeaders     func(childComplexity int) int
 		UpdateCart             func(childComplexity int, userID string, productID string, quantity int) int
 		User                   func(childComplexity int, id *string, email *string) int
@@ -435,6 +437,7 @@ type QueryResolver interface {
 	SavedForLaters(ctx context.Context) ([]*model.SavedForLater, error)
 	Brands(ctx context.Context) ([]*model.Brand, error)
 	Brand(ctx context.Context, id *string, name *string) (*model.Brand, error)
+	PopularBrands(ctx context.Context) ([]*model.Brand, error)
 	Categories(ctx context.Context) ([]*model.Category, error)
 	Category(ctx context.Context, id *string, name *string) (*model.Category, error)
 	Products(ctx context.Context, shopID *string, brandID *string, categoryID *string, limit *int, offset *int, productGroupID *string, search *model.SearchProduct) ([]*model.Product, error)
@@ -448,6 +451,7 @@ type QueryResolver interface {
 	ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int, categoryID *string) ([]*model.Product, error)
 	ShopOrders(ctx context.Context, shopID string, filter *string) ([]*model.TransactionHeader, error)
 	ShopTotalSales(ctx context.Context, shopID string) (int, error)
+	TopShops(ctx context.Context) ([]*model.Shop, error)
 	ShopReviews(ctx context.Context, shopID string, filter *string, search *string) ([]*model.ShopReview, error)
 	Shipping(ctx context.Context, id string) (*model.Shipping, error)
 	Shippings(ctx context.Context) ([]*model.Shipping, error)
@@ -1455,6 +1459,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.PaymentTypes(childComplexity), true
 
+	case "Query.popularBrands":
+		if e.complexity.Query.PopularBrands == nil {
+			break
+		}
+
+		return e.complexity.Query.PopularBrands(childComplexity), true
+
 	case "Query.product":
 		if e.complexity.Query.Product == nil {
 			break
@@ -1633,6 +1644,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Shops(childComplexity), true
+
+	case "Query.topShops":
+		if e.complexity.Query.TopShops == nil {
+			break
+		}
+
+		return e.complexity.Query.TopShops(childComplexity), true
 
 	case "Query.transactionHeaders":
 		if e.complexity.Query.TransactionHeaders == nil {
@@ -11152,6 +11170,59 @@ func (ec *executionContext) fieldContext_Query_brand(ctx context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_popularBrands(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_popularBrands(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PopularBrands(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Brand)
+	fc.Result = res
+	return ec.marshalNBrand2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐBrandᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_popularBrands(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Brand_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Brand_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Brand_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Brand_image(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Brand", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_categories(ctx, field)
 	if err != nil {
@@ -12041,6 +12112,69 @@ func (ec *executionContext) fieldContext_Query_shopTotalSales(ctx context.Contex
 	if fc.Args, err = ec.field_Query_shopTotalSales_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_topShops(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_topShops(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TopShops(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Shop)
+	fc.Result = res
+	return ec.marshalNShop2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐShopᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_topShops(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Shop_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Shop_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Shop_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Shop_image(ctx, field)
+			case "aboutus":
+				return ec.fieldContext_Shop_aboutus(ctx, field)
+			case "banner":
+				return ec.fieldContext_Shop_banner(ctx, field)
+			case "products":
+				return ec.fieldContext_Shop_products(ctx, field)
+			case "banned":
+				return ec.fieldContext_Shop_banned(ctx, field)
+			case "user":
+				return ec.fieldContext_Shop_user(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -20531,6 +20665,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "popularBrands":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_popularBrands(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "categories":
 			field := field
 
@@ -20781,6 +20935,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_shopTotalSales(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "topShops":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_topShops(ctx, field)
 				return res
 			}
 

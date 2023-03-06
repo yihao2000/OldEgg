@@ -151,15 +151,15 @@ const Mylist: NextPage = () => {
                 >
                   <b>Sort By:</b>
                   <select
-                    // value={orderBy}
-                    // className={styles.forminputselection}
+                    value={sortBy}
+                    className={styles.forminputselection}
                     onChange={(event) => {
-                      // setorderBy(event.target.value);
+                      setSortBy(event.target.value);
                     }}
-                    className={styles.selectstyle}
+                    // className={styles.selectstyle}
                   >
-                    <option value="lowestprice">Lowest Price</option>
-                    <option value="highestprice">Highest Price</option>
+                    <option value="date_created">Date Created</option>
+                    {/* <option value="highestprice">Highest Price</option> */}
                     {/* <option value="featureditems">Featured Items</option> */}
                   </select>
                 </div>

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { links } from '@/util/route';
 import axios from 'axios';
 import {
+  CURRENT_USER_QUERY,
   GRAPHQLAPI,
   INSERT_USER_VERIFICATION_CODE,
   LOGIN_QUERY,
@@ -38,6 +39,7 @@ export default function Login() {
   const [oneTimeCodeEnabled, setOneTimeCodeEnabled] = useState(true);
   const [verificationCodeError, setVerificationCodeError] = useState(false);
 
+  const [bannedError, setBannedError] = useState(false);
   const form = useRef<HTMLFormElement>(null);
   const sendVerificationCode = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -117,6 +119,7 @@ export default function Login() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    setBannedError(false);
 
     if (!nextPrompt && !verificationCodePrompt) {
       axios
@@ -155,8 +158,7 @@ export default function Login() {
             return;
           } else {
             setLoginInvalid(false);
-            setToken(res.data.data.auth.login.token);
-            Router.push('/');
+            logUser(res.data.data.auth.login.token);
           }
         })
         .catch(() => {
@@ -174,8 +176,7 @@ export default function Login() {
         .then((res) => {
           if (res.data.data.validateUserVerificationCode.token) {
             setVerificationCodeInvalid(false);
-            setToken(res.data.data.validateUserVerificationCode.token);
-            Router.push('/');
+            logUser(res.data.data.validateUserVerificationCode.token);
           } else {
             setVerificationCodeInvalid(true);
           }
@@ -184,6 +185,29 @@ export default function Login() {
           console.log('Error');
         });
     }
+  };
+
+  const logUser = (token: string) => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CURRENT_USER_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        if (res.data.data.getCurrentUser.banned == false) {
+          setToken(token);
+          Router.push('/');
+        } else {
+          setBannedError(true);
+        }
+      });
   };
   return (
     <>
@@ -323,6 +347,17 @@ export default function Login() {
                   We didn't find an account for this email address
                 </h4>
               )}
+              {bannedError && (
+                <h4
+                  className={styles.errorMessage}
+                  style={{
+                    textAlign: 'center',
+                    paddingBottom: '1em',
+                  }}
+                >
+                  User is Banned !
+                </h4>
+              )}
 
               <button
                 className={`${styles.formbutton} ${styles.themeaccent}`}
@@ -353,6 +388,19 @@ export default function Login() {
                 <button className={styles.formbutton}>
                   GET ONE-TIME SIGN IN CODE
                 </button>
+              )}
+              {oneTimeCodeEnabled && (
+                <a
+                  href="/forgotpassword"
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: '10px',
+                  }}
+                >
+                  Forgot Password ?
+                </a>
               )}
               {verificationCodeError && (
                 <div style={{ marginTop: '20px', color: 'red' }}>

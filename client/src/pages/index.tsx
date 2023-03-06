@@ -10,10 +10,16 @@ import { CloudinaryImage } from '@cloudinary/url-gen';
 import { AdvancedImage } from '@cloudinary/react';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { GRAPHQLAPI, PROMOS_QUERY } from '@/util/constant';
+import {
+  GRAPHQLAPI,
+  POPULAR_BRANDS_QUERY,
+  PROMOS_QUERY,
+  TOP_SHOPS_QUERY,
+} from '@/util/constant';
 import PromoCarousel from '@/components/promocarousel';
 import ProductRecommendations from '@/components/productrecommendations';
 import { useSessionStorage } from 'usehooks-ts';
+import { Brand, Shop } from '@/components/interfaces/interfaces';
 
 // const myImage = new CloudinaryImage('sample', {
 //   cloudName: 'dmpbgjnrc',
@@ -21,7 +27,64 @@ import { useSessionStorage } from 'usehooks-ts';
 
 const inter = Inter({ subsets: ['latin'] });
 
+interface BrandParameter {
+  brand: Brand;
+}
+
+const FeaturedBrandCard = (props: BrandParameter) => {
+  return (
+    <div className={styles.featuredbrandcard}>
+      <img
+        src={props.brand.image}
+        alt=""
+        className={styles.featuredbrandimage}
+      />
+    </div>
+  );
+};
+
+interface ShopParameter {
+  shop: Shop;
+}
+const FeaturedShopCard = (props: ShopParameter) => {
+  return (
+    <Link href={links.shopDetail(props.shop.id)} className={styles.shoplink}>
+      <div className={styles.featuredshopcard}>
+        <div className={styles.featuredshopcardcontainer}>
+          <img
+            src={props.shop.image}
+            alt=""
+            className={styles.featuredshopimage}
+          />
+        </div>
+        <div className={styles.featuredshopname}>{props.shop.name}</div>
+      </div>
+    </Link>
+  );
+};
+
 export default function Home() {
+  const [popularBrands, setPopularBrands] = useState<Brand[]>();
+  const [topShops, setTopShops] = useState<Shop[]>();
+  useEffect(() => {
+    axios
+      .post(GRAPHQLAPI, {
+        query: POPULAR_BRANDS_QUERY,
+      })
+      .then((res) => {
+        setPopularBrands(res.data.data.popularBrands);
+      })
+      .catch(() => {});
+
+    axios
+      .post(GRAPHQLAPI, {
+        query: TOP_SHOPS_QUERY,
+      })
+      .then((res) => {
+        setTopShops(res.data.data.topShops);
+      })
+      .catch(() => {});
+  }, []);
   return (
     <>
       <Head>
@@ -37,6 +100,22 @@ export default function Home() {
         <main className={styles.main}>
           {/* <div className={styles.promocarouseloutercontainer}> */}
           <PromoCarousel />
+          <div className={styles.featuredsection}>
+            <h1>FEATURED BRANDS</h1>
+            <div className={styles.featuredbrandscontainer}>
+              {popularBrands?.map((x) => {
+                return <FeaturedBrandCard brand={x} key={x.id} />;
+              })}
+            </div>
+          </div>
+          <div className={styles.featuredsection}>
+            <h1>FEATURED SHOPS</h1>
+            <div className={styles.featuredshopscontainer}>
+              {topShops?.map((x) => {
+                return <FeaturedShopCard shop={x} key={x.id} />;
+              })}
+            </div>
+          </div>
           {/* </div> */}
           <ProductRecommendations />
         </main>

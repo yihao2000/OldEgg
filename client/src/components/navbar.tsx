@@ -1,5 +1,9 @@
 import styles from '@/styles/componentstyles/navbar.module.css';
-import { CURRENT_USER_QUERY, GRAPHQLAPI } from '@/util/constant';
+import {
+  CURRENT_USER_QUERY,
+  GRAPHQLAPI,
+  USER_CART_QUERY,
+} from '@/util/constant';
 import { links } from '@/util/route';
 import axios from 'axios';
 import Image from 'next/image';
@@ -8,12 +12,15 @@ import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { NAME_SPLITTER } from './converter/converter';
+import { Cart } from './interfaces/interfaces';
 
 export default function Navbar() {
   const [token, setToken] = useSessionStorage('token', '');
   const [loggedIn, setLoggedIn] = useState(false);
   const [userInformation, setUserInformation] = useState('');
   const [search, setSearch] = useState('');
+  const [cartTotalPrice, setCartTotalPrice] = useState(0);
+  const [carts, setCarts] = useState<Cart[]>();
 
   useEffect(() => {
     if (token == '') {
@@ -42,8 +49,38 @@ export default function Navbar() {
         })
 
         .catch((err) => console.log(err));
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: USER_CART_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setCarts(res.data.data.carts);
+        })
+
+        .catch((err) => console.log(err));
     }
   }, [token]);
+
+  useEffect(() => {
+    var total: number = 0;
+    if (carts) {
+      carts.map((x) => {
+        total +=
+          (x.product.price - (x.product.price * x.product.discount) / 100) *
+          x.quantity;
+      });
+      setCartTotalPrice(total);
+    }
+  }, [carts]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -159,6 +196,7 @@ export default function Navbar() {
                 fontSize: '1.7em',
               }}
             ></i>
+            <span>${cartTotalPrice}</span>
           </div>
         </Link>
       </div>

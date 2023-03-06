@@ -484,210 +484,212 @@ const ProductDetail: NextPage = () => {
 
   return (
     <Layout>
-      <div className={styles.pagedivider}>
-        <div className={styles.sectionone}>
-          <div className={styles.productimagebrandcontainer}>
-            <div className={styles.productbrandcontainer}>
-              <span className={styles.productid}>Item#: {id}</span>
-              <img
-                src={product?.brand.image}
-                className={styles.productbrandimage}
-              ></img>
-            </div>
-            <div className={styles.productimagecontainer}>
-              <img
-                className={styles.productimage}
-                src={product?.image}
-                alt=""
-                style={{
-                  margin: 'auto',
-                }}
-              />
-            </div>
-          </div>
-          <div className={styles.sectiontwo}>
-            <div>
-              <h3 className={styles.visitshop}>Visit {product?.shop.name}</h3>
-            </div>
-            <div style={{ marginTop: '10px', fontSize: '28px' }}>
-              {product?.name}
-            </div>
-            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
-            <div className={styles.productinventory}>
-              <b> {available ? 'In stock.' : ''} </b>
-            </div>
-            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
-            <div className=""></div>
-            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
-            <div className={styles.productdescriptionscontainer}>
-              <ul
-                style={{ margin: 0, padding: 0, listStylePosition: 'inside' }}
-              >
-                {descriptions.map((e) => {
-                  return (
-                    <li
-                      style={{ fontSize: '0.9em', marginTop: '10px' }}
-                      key={e}
-                    >
-                      {e}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className={styles.sectionthree}>
-          <div className={styles.soldandshippedcontainer}>
-            <span className={styles.soldandshippedtext}>
-              {' '}
-              <a
-                href=""
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <FaTruck style={{ fontSize: '20px' }} />
-                SOLD & SHIPPED BY NEWEGG
-              </a>
-            </span>
-            <span>
-              <span>Free Shipping</span> from United States
-            </span>
-            <hr className={styles.horizontaldivider} />
-
-            <span style={{ display: 'block' }}>Estimated GST Inclusive</span>
-            <div className={styles.pricecontainer}>
-              <div className={styles.pricelabelcontainer}>
-                {product?.discount == 0 && (
-                  <span className={styles.pricelabel}>
-                    <b>${product?.price.toFixed(2)}</b>
-                  </span>
-                )}
-                {product?.discount != 0 && product?.price && (
-                  <div style={{ display: 'flex' }}>
-                    {' '}
-                    <span className={styles.pricelabel}>
-                      <b>
-                        $
-                        {(
-                          product?.price -
-                          (product?.price * product?.discount) / 100
-                        ).toFixed(2)}
-                      </b>
-                    </span>
-                    <span className={styles.discountedpricelabel}>
-                      ${product.price}
-                    </span>
-                  </div>
-                )}
+      {shop && shop.banned == false && (
+        <div className={styles.pagedivider}>
+          <div className={styles.sectionone}>
+            <div className={styles.productimagebrandcontainer}>
+              <div className={styles.productbrandcontainer}>
+                <span className={styles.productid}>Item#: {id}</span>
+                <img
+                  src={product?.brand.image}
+                  className={styles.productbrandimage}
+                ></img>
               </div>
-              {product?.discount != 0 && (
-                <p className={styles.discountlabel}>
-                  SAVE {product?.discount}%
-                </p>
-              )}
+              <div className={styles.productimagecontainer}>
+                <img
+                  className={styles.productimage}
+                  src={product?.image}
+                  alt=""
+                  style={{
+                    margin: 'auto',
+                  }}
+                />
+              </div>
             </div>
-
-            {shop && shop.id != product?.shop.id && (
-              <div className={styles.quantityformcontainer}>
-                <div className={styles.quantitycontainer}>
-                  <input
-                    type="number"
-                    className={styles.quantityfield}
-                    value={productQuantity}
-                    onChange={handleQuantityChange}
-                  />
-                  <button
-                    className={`${styles.quantityarrow} ${styles.uparrow}`}
-                    onClick={handleIncreaseQuantity}
-                  >
-                    +
-                  </button>
-                  <button
-                    className={`${styles.quantityarrow} ${styles.downarrow}`}
-                    onClick={handleDecreaseQuantity}
-                  >
-                    -
-                  </button>
-                </div>
-                <button
-                  className={`${styles.addtocartbutton} ${
-                    productQuantity < 0 ? styles.disablebutton : ''
-                  }`}
-                  onClick={() => {
-                    productQuantity > 0 ? handleSubmit() : null;
+            <div className={styles.sectiontwo}>
+              <div>
+                <h3 className={styles.visitshop}>Visit {product?.shop.name}</h3>
+              </div>
+              <div style={{ marginTop: '10px', fontSize: '28px' }}>
+                {product?.name}
+              </div>
+              <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+              <div className={styles.productinventory}>
+                <b> {available ? 'In stock.' : ''} </b>
+              </div>
+              <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+              <div className=""></div>
+              <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+              <div className={styles.productdescriptionscontainer}>
+                <ul
+                  style={{ margin: 0, padding: 0, listStylePosition: 'inside' }}
+                >
+                  {descriptions.map((e) => {
+                    return (
+                      <li
+                        style={{ fontSize: '0.9em', marginTop: '10px' }}
+                        key={e}
+                      >
+                        {e}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className={styles.sectionthree}>
+            <div className={styles.soldandshippedcontainer}>
+              <span className={styles.soldandshippedtext}>
+                {' '}
+                <a
+                  href=""
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
                   }}
                 >
-                  {!loading ? (
-                    product?.quantity && product?.quantity > 0 ? (
-                      'Add To Cart'
-                    ) : (
-                      'Out of Stock'
-                    )
-                  ) : (
-                    <ClipLoader size={20} />
-                  )}
-                </button>
-              </div>
-            )}
+                  <FaTruck style={{ fontSize: '20px' }} />
+                  SOLD & SHIPPED BY NEWEGG
+                </a>
+              </span>
+              <span>
+                <span>Free Shipping</span> from United States
+              </span>
+              <hr className={styles.horizontaldivider} />
 
-            {!shop ||
-              (shop.id == product?.shop.id && (
+              <span style={{ display: 'block' }}>Estimated GST Inclusive</span>
+              <div className={styles.pricecontainer}>
+                <div className={styles.pricelabelcontainer}>
+                  {product?.discount == 0 && (
+                    <span className={styles.pricelabel}>
+                      <b>${product?.price.toFixed(2)}</b>
+                    </span>
+                  )}
+                  {product?.discount != 0 && product?.price && (
+                    <div style={{ display: 'flex' }}>
+                      {' '}
+                      <span className={styles.pricelabel}>
+                        <b>
+                          $
+                          {(
+                            product?.price -
+                            (product?.price * product?.discount) / 100
+                          ).toFixed(2)}
+                        </b>
+                      </span>
+                      <span className={styles.discountedpricelabel}>
+                        ${product.price}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {product?.discount != 0 && (
+                  <p className={styles.discountlabel}>
+                    SAVE {product?.discount}%
+                  </p>
+                )}
+              </div>
+
+              {shop && shop.id != product?.shop.id && (
                 <div className={styles.quantityformcontainer}>
+                  <div className={styles.quantitycontainer}>
+                    <input
+                      type="number"
+                      className={styles.quantityfield}
+                      value={productQuantity}
+                      onChange={handleQuantityChange}
+                    />
+                    <button
+                      className={`${styles.quantityarrow} ${styles.uparrow}`}
+                      onClick={handleIncreaseQuantity}
+                    >
+                      +
+                    </button>
+                    <button
+                      className={`${styles.quantityarrow} ${styles.downarrow}`}
+                      onClick={handleDecreaseQuantity}
+                    >
+                      -
+                    </button>
+                  </div>
                   <button
-                    className={styles.editproductbutton}
+                    className={`${styles.addtocartbutton} ${
+                      productQuantity < 0 ? styles.disablebutton : ''
+                    }`}
                     onClick={() => {
-                      setOpenUpdateProductModal(true);
+                      productQuantity > 0 ? handleSubmit() : null;
                     }}
                   >
-                    Update Item
+                    {!loading ? (
+                      product?.quantity && product?.quantity > 0 ? (
+                        'Add To Cart'
+                      ) : (
+                        'Out of Stock'
+                      )
+                    ) : (
+                      <ClipLoader size={20} />
+                    )}
                   </button>
                 </div>
-              ))}
+              )}
 
-            {success ? (
-              <span
-                style={{
-                  color: 'green',
-                  fontWeight: 'bold',
-                }}
-              >
-                Item added to cart successfully !
-              </span>
-            ) : null}
+              {!shop ||
+                (shop.id == product?.shop.id && (
+                  <div className={styles.quantityformcontainer}>
+                    <button
+                      className={styles.editproductbutton}
+                      onClick={() => {
+                        setOpenUpdateProductModal(true);
+                      }}
+                    >
+                      Update Item
+                    </button>
+                  </div>
+                ))}
 
-            <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
-            {shop && shop.id != product?.shop.id && (
-              <div
-                className={styles.addtowishlistcontainer}
-                onClick={handleAddToWishlistClick}
-              >
-                <FaHeart fontSize={20} /> Add to wishlist
-              </div>
-            )}
+              {success ? (
+                <span
+                  style={{
+                    color: 'green',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Item added to cart successfully !
+                </span>
+              ) : null}
+
+              <hr style={{ color: 'grey', margin: '30px 0 30px 0' }} />
+              {shop && shop.id != product?.shop.id && (
+                <div
+                  className={styles.addtowishlistcontainer}
+                  onClick={handleAddToWishlistClick}
+                >
+                  <FaHeart fontSize={20} /> Add to wishlist
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        <div className={styles.similarproductsection}>
-          <div className={styles.similarproductcontainer}>
-            {/* Try */}
-            {similarProducts &&
-              similarProducts.map((e) => (
-                <ProductCard
-                  discount={e.discount}
-                  id={e.id}
-                  image={e.image}
-                  name={e.name}
-                  price={e.price}
-                  key={e.id}
-                  style="compact"
-                />
-              ))}
+          <div className={styles.similarproductsection}>
+            <div className={styles.similarproductcontainer}>
+              {/* Try */}
+              {similarProducts &&
+                similarProducts.map((e) => (
+                  <ProductCard
+                    discount={e.discount}
+                    id={e.id}
+                    image={e.image}
+                    name={e.name}
+                    price={e.price}
+                    key={e.id}
+                    style="compact"
+                  />
+                ))}
+            </div>
           </div>
+          <div>aas</div>
         </div>
-        <div>aas</div>
-      </div>
+      )}
       {openUpdateProductModal && product && (
         <Modal closeModal={closeUpdateProductModal} height={35} width={40}>
           <UpdateProductModalContent productID={product?.id} />
@@ -700,6 +702,19 @@ const ProductDetail: NextPage = () => {
             productId={product?.id}
           />
         </Modal>
+      )}
+      {shop && shop.banned == true && (
+        <div
+          style={{
+            height: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'red',
+          }}
+        >
+          This item is owned by a banned shop !
+        </div>
       )}
     </Layout>
   );

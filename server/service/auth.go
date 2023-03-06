@@ -92,6 +92,8 @@ func UserUpdateInformation(ctx context.Context, currentPassword *string, newPass
 			user.Password = model.HashPassword(*newPassword)
 		}
 
+	} else if newPassword != nil {
+		user.Password = model.HashPassword(*newPassword)
 	}
 
 	return &user, db.Save(user).Error

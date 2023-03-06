@@ -513,7 +513,7 @@ func (r *queryResolver) Wishlists(ctx context.Context, filter *string, sortBy *s
 
 	if sortBy != nil {
 		if *sortBy == "date_created" {
-			temp = temp.Order("date_created ASC")
+			temp = temp.Order("date_created DESC")
 		}
 
 	}

@@ -232,6 +232,18 @@ func (r *queryResolver) Brand(ctx context.Context, id *string, name *string) (*m
 	panic(fmt.Errorf("not implemented: Brand - brand"))
 }
 
+// PopularBrands is the resolver for the popularBrands field.
+func (r *queryResolver) PopularBrands(ctx context.Context) ([]*model.Brand, error) {
+	db := config.GetDB()
+
+	var models []*model.Brand
+
+	temp := db.Model(models)
+	temp = temp.Select("brands.id, brands.name, brands.description, brands.image").Joins("LEFT JOIN products ON products.brand_id = brands.id LEFT JOIN transaction_details ON transaction_details.product_id = products.id").Group("brands.id").Order("COUNT(transaction_details) DESC").Limit(10)
+
+	return models, temp.Find(&models).Error
+}
+
 // Categories is the resolver for the categories field.
 func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
 	db := config.GetDB()
@@ -294,6 +306,12 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *s
 					temp = temp.Order("price DESC")
 				} else if *search.OrderBy == "lowestprice" {
 					temp = temp.Order("price ASC")
+				} else if *search.OrderBy == "highestrating" {
+					temp = temp.Order("rating DESC")
+				} else if *search.OrderBy == "lowestrating" {
+					temp = temp.Order("rating ASC")
+				} else if *search.OrderBy == "mostreviews" {
+
 				}
 			}
 

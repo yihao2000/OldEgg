@@ -106,7 +106,7 @@ export default function ShopHeader() {
             </div>
           </div>
           <div className={styles.pagecontainer}>
-            <a href="" className={styles.hpstyle}>
+            <a href={links.shopDetail(shop.id)} className={styles.hpstyle}>
               Store Home
             </a>
             <div className={styles.verticalseparator}></div>

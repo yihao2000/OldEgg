@@ -154,6 +154,12 @@ export const USER_UPDATE_PASSWORD_MUTATION = `mutation($currentPassword:String!,
   }
 }`;
 
+export const USER_UPDATE_FORGOTTEN_PASSWORD_MUTATION = `mutation($newPassword:String!){
+  userUpdateInformation( newPassword:$newPassword){
+    id
+  }
+}`;
+
 export const USER_ADD_CART_MUTATION = `mutation($productID:ID!, $quantity:Int!){
   createCart(productID:$productID, quantity:$quantity){
    user{
@@ -747,5 +753,22 @@ export const SHOP_ORDERS_QUERY = `query($shopID:ID!, $filter:String){
 export const UPDATE_TRANSACTION_HEADER_MUTATION = `mutation($transactionHeaderID:ID!, $status:String!){
   updateTransactionHeader(transactionHeaderID:$transactionHeaderID, status:$status){
     id
+  }
+}`;
+
+export const POPULAR_BRANDS_QUERY = `query{
+  popularBrands{
+    id
+    name
+    description
+    image
+  }
+}`;
+
+export const TOP_SHOPS_QUERY = `query{
+  topShops{
+    id
+    name
+    image
   }
 }`;

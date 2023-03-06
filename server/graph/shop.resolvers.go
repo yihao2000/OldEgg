@@ -189,6 +189,18 @@ func (r *queryResolver) ShopTotalSales(ctx context.Context, shopID string) (int,
 	return total, nil
 }
 
+// TopShops is the resolver for the topShops field.
+func (r *queryResolver) TopShops(ctx context.Context) ([]*model.Shop, error) {
+	db := config.GetDB()
+
+	var models []*model.Shop
+
+	temp := db.Model(models)
+	temp = temp.Select("shops.id, shops.name, shops.description, shops.image, shops.aboutus, shops.banner, shops.banned, shops.user_id, COUNT(transaction_headers.id) as total_transactions").Joins("JOIN products ON shops.id = products.shop_id JOIN transaction_details ON transaction_details.product_id = products.id JOIN transaction_headers ON transaction_headers.id = transaction_details.transaction_header_id").Where("shops.banned = false").Group("shops.id").Order("total_transactions DESC").Limit(3)
+
+	return models, temp.Find(&models).Error
+}
+
 // ShopReviews is the resolver for the shopReviews field.
 func (r *queryResolver) ShopReviews(ctx context.Context, shopID string, filter *string, search *string) ([]*model.ShopReview, error) {
 	db := config.GetDB()

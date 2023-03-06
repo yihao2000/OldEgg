@@ -37,3 +37,17 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+@media (max-width: 1000px) {
+  .productcard {
+    width: 45%;
+    max-width: 45%;
+  }
+}
+
+@media (max-width: 500px) {
+  .productcard {
+    width: 100%;
+    max-width: 100%;
+  }
+}

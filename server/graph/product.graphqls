@@ -105,6 +105,7 @@ extend type Mutation{
 extend type Query{
     brands: [Brand!]! @goField(forceResolver: true)
     brand(id: ID, name: String): Brand! @goField(forceResolver: true)
+    popularBrands: [Brand!]! @goField (forceResolver: true)
 
     categories: [Category!]! @goField(forceResolver: true)
     category(id: ID, name: String): Category! @goField(forceResolver: true)

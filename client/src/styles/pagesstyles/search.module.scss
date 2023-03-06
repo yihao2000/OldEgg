@@ -132,3 +132,19 @@
   gap: 10px;
   align-items: center;
 }
+
+@media (max-width: 500px) {
+  .pagedivider {
+    flex-direction: column;
+  }
+  .rightside {
+    width: 100%;
+  }
+  .searchsectioncontainer {
+    flex-wrap: wrap;
+    row-gap: 20px;
+  }
+  .filtercontainer {
+    padding-top: 10px;
+  }
+}

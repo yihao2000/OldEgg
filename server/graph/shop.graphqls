@@ -48,6 +48,8 @@ extend type Query{
     shopOrders(shopID: ID!, filter:String): [TransactionHeader!]!
     shopTotalSales(shopID: ID!): Int!
 
+    topShops: [Shop!]! @goField(forceResolver: true)
+
     shopReviews(shopID: ID!, filter: String, search: String): [ShopReview!]!
 
 }
