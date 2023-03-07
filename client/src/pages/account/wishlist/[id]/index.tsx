@@ -328,7 +328,7 @@ export default function WishlistDetailPage() {
           </div>
         </div>
         <div className={styles.rightsection}>
-          <div className={styles.filtercontainer}>aa</div>
+          <div className={styles.filtercontainer}></div>
           <div className={styles.wishlistdetailcontainer}>
             {wishlistDetails.map((e) => {
               return (

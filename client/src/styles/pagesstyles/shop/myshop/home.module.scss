@@ -229,7 +229,7 @@
 
 //Admin User Section
 
-.usercard {
+@mixin defaultCard() {
   background-color: rgb(var(--background-end-rgb));
   padding: 20px;
   align-items: center;
@@ -237,20 +237,27 @@
   flex-direction: column;
   row-gap: 10px;
 }
+.usercard {
+  @include defaultCard();
+}
 
-.useridcontainer {
+.shopcard {
+  @include defaultCard();
+}
+
+.cardidcontainer {
   display: flex;
   justify-content: center;
 }
 
-.userid {
+.cardid {
   font-weight: bold;
   font-size: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.userimagecontainer {
+.cardimagecontainer {
   height: 150px;
   width: 150px;
 }
@@ -262,12 +269,12 @@
 .normalcard {
   border: 2px solid green;
 }
-.userimage {
+.cardimage {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.userinformationcontainer {
+.cardinformationcontainer {
   display: flex;
   justify-content: center;
   flex-direction: column;

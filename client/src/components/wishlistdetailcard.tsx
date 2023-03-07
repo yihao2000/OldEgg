@@ -1,9 +1,10 @@
-import { WishlistDetail } from './interfaces/interfaces';
+import { User, WishlistDetail } from './interfaces/interfaces';
 import styles from '@/styles/pagesstyles/wishlist/wishlistdetail.module.scss';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styles2 from '@/styles/pagesstyles/productdetail.module.scss';
 import {
+  CURRENT_USER_QUERY,
   DELETE_WISHLIST_DETAIL,
   DELETE_WISHLIST_WISHLISTDETAIL_MUTATION,
   GRAPHQLAPI,
@@ -21,7 +22,28 @@ interface Parameter {
 export default function WishlistDetailCard(props: Parameter) {
   const [wishlistDetailQuantity, setWishlistDetailQuantity] = useState(0);
   const [token, setToken] = useSessionStorage('token', '');
+  const [user, setUser] = useState<User>();
 
+  useEffect(() => {
+    console.log(props.wishlistdetail);
+    if (token) {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CURRENT_USER_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setUser(res.data.data.getCurrentUser);
+        });
+    }
+  }, [token]);
   useEffect(() => {
     axios
       .post(
@@ -232,33 +254,41 @@ export default function WishlistDetailCard(props: Parameter) {
         </div>
         <div className={styles.qtyaddcontainer}>
           <div className={styles2.quantitycontainer}>
-            <div
-              className={`${styles2.quantitycontainer}`}
-              style={{ marginRight: '5px' }}
-            >
-              <input
-                style={{
-                  userSelect: 'none',
-                }}
-                type="number"
-                className={styles2.quantityfield}
-                value={wishlistDetailQuantity}
-                onChange={handleQuantityChange}
-              />
+            {props.wishlistdetail.wishlist.id == user?.id && (
+              <div
+                className={`${styles2.quantitycontainer}`}
+                style={{ marginRight: '5px' }}
+              >
+                <input
+                  style={{
+                    userSelect: 'none',
+                  }}
+                  type="number"
+                  className={styles2.quantityfield}
+                  value={wishlistDetailQuantity}
+                  onChange={handleQuantityChange}
+                />
 
-              <button
-                className={`${styles2.quantityarrow} ${styles2.uparrow}`}
-                onClick={handleIncreaseQuantity}
-              >
-                +
-              </button>
-              <button
-                className={`${styles2.quantityarrow} ${styles2.downarrow}`}
-                onClick={handleDecreaseQuantity}
-              >
-                -
-              </button>
-            </div>
+                <button
+                  className={`${styles2.quantityarrow} ${styles2.uparrow}`}
+                  onClick={handleIncreaseQuantity}
+                >
+                  +
+                </button>
+                <button
+                  className={`${styles2.quantityarrow} ${styles2.downarrow}`}
+                  onClick={handleDecreaseQuantity}
+                >
+                  -
+                </button>
+              </div>
+            )}
+
+            {props.wishlistdetail.wishlist.id != user?.id && (
+              <div style={{ paddingRight: '20px' }}>
+                {props.wishlistdetail.quantity}
+              </div>
+            )}
           </div>
           <button
             className={styles.addtocartbutton}
@@ -268,12 +298,14 @@ export default function WishlistDetailCard(props: Parameter) {
           </button>
         </div>
         <div className={styles.removecontainer}>
-          <button
-            className={styles.removebutton}
-            onClick={handleRemoveButtonClick}
-          >
-            Remove
-          </button>
+          {props.wishlistdetail.wishlist.user.id == user?.id && (
+            <button
+              className={styles.removebutton}
+              onClick={handleRemoveButtonClick}
+            >
+              Remove
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -39,4 +39,6 @@ export const links = {
   shopReviews: (shopID: string) => {
     return '/shop/reviews/' + shopID;
   },
+
+  orderHistory: '/account/order/orderhistory',
 };

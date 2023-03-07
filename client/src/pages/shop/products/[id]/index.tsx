@@ -19,7 +19,7 @@ export default function ShopProducts() {
   const [token, setToken] = useSessionStorage('token', '');
 
   //Pagination
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(2);
   const [offset, setOffset] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -113,7 +113,7 @@ export default function ShopProducts() {
         <ShopHeader />
         <div className={styles.contentsection}>
           <div className={styles.pagedivider}>
-            <div className={styles.leftsection}>sadsa</div>
+            <div className={styles.leftsection}></div>
             <div className={styles.rightsection}>
               <div className={styles.contentcontainer}>
                 <div className={styles.filtercontainer}>
@@ -186,10 +186,10 @@ export default function ShopProducts() {
                           setLimit(Number(event.target.value));
                         }}
                       >
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="150">150</option>
-                        <option value="200">200</option>
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="6">6</option>
+                        <option value="8">8</option>
                       </select>
                     </div>
                   </div>

@@ -99,6 +99,7 @@ export default function UpdatePassword() {
 
     if (!validatePasswordValid()) {
       setNewPasswordError('Invalid password format !');
+      return;
     }
 
     axios
@@ -118,16 +119,20 @@ export default function UpdatePassword() {
         },
       )
       .then((res) => {
+        console.log(res);
         setLoading(true);
+
         setTimeout(() => {
           setCurrentPassword('');
           setNewPassword('');
           setLoading(false);
-          console.log(res.data.data.userUpdateInformation.id);
-
-          setError(false);
-          alert('Successfully update password !');
-          Router.push('/account/settings');
+          if (res.data.data.userUpdateInformation == null) {
+            setError(true);
+          } else {
+            setError(false);
+            alert('Successfully update password !');
+            Router.push('/account/settings');
+          }
         }, 3000);
       })
       .catch((error) => {

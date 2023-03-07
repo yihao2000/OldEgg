@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from '@/styles/componentstyles/footer.module.scss';
+import { links } from '@/util/route';
 
 export default function Footer() {
   return (
@@ -47,7 +48,7 @@ export default function Footer() {
         <div className={styles.sectioncontent}>
           <a
             className={styles.linkcontainer}
-            href="https://secure.newegg.com/login/signin"
+            href={links.login}
             style={
               {
                 // fontSize: '14px',
@@ -59,7 +60,7 @@ export default function Footer() {
 
           <a
             className={styles.linkcontainer}
-            href="https://secure.newegg.com/orders/list"
+            href={links.orderHistory}
             style={
               {
                 // fontSize: '14px',

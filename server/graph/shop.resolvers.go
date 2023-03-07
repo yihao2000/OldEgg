@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -98,7 +97,13 @@ func (r *mutationResolver) CreateShopReview(ctx context.Context, shopID string, 
 
 // Shops is the resolver for the shops field.
 func (r *queryResolver) Shops(ctx context.Context) ([]*model.Shop, error) {
-	panic(fmt.Errorf("not implemented: Shops - shops"))
+	db := config.GetDB()
+
+	var models []*model.Shop
+
+	temp := db.Model(models)
+
+	return models, temp.Find(&models).Error
 }
 
 // Shop is the resolver for the shop field.

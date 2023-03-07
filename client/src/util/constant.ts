@@ -402,7 +402,9 @@ export const WISHLIST_DETAILS_QUERY = `query($wishlistID:ID!){
   wishlistDetails(wishlistId:$wishlistID){
     wishlist{
       id
-
+      user{
+        id
+      }
     }
     product{
       id

@@ -44,6 +44,9 @@ export default function MyShop() {
   const [sortBy, setSortBy] = useState('featureditems');
   const [users, setUsers] = useState<User[]>();
 
+  const [shops, setShops] = useState<Shop[]>();
+  const [filterBy, setFilterBy] = useState('');
+
   const [openAddModal, setOpenAddModal] = useState(false);
 
   const [refresh, setRefresh] = useState(false);
@@ -115,17 +118,17 @@ export default function MyShop() {
           props.user.banned == true ? styles.bannedcard : styles.normalcard
         }`}
       >
-        <div className={styles.userimagecontainer}>
+        <div className={styles.cardimagecontainer}>
           <img
             src="https://res.cloudinary.com/dmpbgjnrc/image/upload/v1678103779/userplaceholder_bloytq.webp"
             alt=""
-            className={styles.userimage}
+            className={styles.cardimage}
           />
         </div>
-        <div className={styles.useridcontainer}>
-          <div className={styles.userid}>{props.user.id}</div>
+        <div className={styles.cardidcontainer}>
+          <div className={styles.cardid}>{props.user.id}</div>
         </div>
-        <div className={styles.userinformationcontainer}>
+        <div className={styles.cardinformationcontainer}>
           <div className={styles.username}>{props.user.name}</div>
           <div className={styles.useremail}>{props.user.email}</div>
         </div>
@@ -147,6 +150,94 @@ export default function MyShop() {
         </div>
       </div>
     );
+  };
+
+  interface ShopParameter {
+    shop: Shop;
+  }
+  const ShopCard = (props: ShopParameter) => {
+    // const handleBanUserClick = () => {
+    //   // axios
+    //   //   .post(
+    //   //     GRAPHQLAPI,
+    //   //     {
+    //   //       query: UPDATE_USER_INFORMATION,
+    //   //       variables: {
+    //   //         userID: props.user.id,
+    //   //         banned: true,
+    //   //       },
+    //   //     },
+    //   //     {
+    //   //       headers: {
+    //   //         Authorization: 'Bearer ' + token,
+    //   //       },
+    //   //     },
+    //   //   )
+    //   //   .then((res) => {
+    //   //     refreshComponent();
+    //   //   })
+    //   //   .catch((err) => {
+    //   //     console.log(err);
+    //   //   });
+    // };
+    // const handleUnbanUserClick = () => {
+    //   // axios
+    //   //   .post(
+    //   //     GRAPHQLAPI,
+    //   //     {
+    //   //       query: UPDATE_USER_INFORMATION,
+    //   //       variables: {
+    //   //         userID: props.user.id,
+    //   //         banned: false,
+    //   //       },
+    //   //     },
+    //   //     {
+    //   //       headers: {
+    //   //         Authorization: 'Bearer ' + token,
+    //   //       },
+    //   //     },
+    //   //   )
+    //   //   .then((res) => {
+    //   //     refreshComponent();
+    //   //   })
+    //   //   .catch((err) => {
+    //   //     console.log(err);
+    //   //   });
+    // };
+    // return (
+    //   <div className={`${styles.shopcard} `}>
+    //     <div className={styles.cardimagecontainer}>
+    //       <img
+    //         src="https://res.cloudinary.com/dmpbgjnrc/image/upload/v1678103779/userplaceholder_bloytq.webp"
+    //         alt=""
+    //         className={styles.cardimage}
+    //       />
+    //     </div>
+    //     <div className={styles.cardidcontainer}>
+    //       <div className={styles.cardid}>{props.user.id}</div>
+    //     </div>
+    //     <div className={styles.cardinformationcontainer}>
+    //       <div className={styles.username}>{props.user.name}</div>
+    //       <div className={styles.useremail}>{props.user.email}</div>
+    //     </div>
+    //     <div className={styles.actioncontainer}>
+    //       {props.user.banned == true && (
+    //         <button
+    //           className={styles.unbanbutton}
+    //           onClick={handleUnbanUserClick}
+    //         >
+    //           UNBAN
+    //         </button>
+    //       )}
+    //       {props.user.banned == false && (
+    //         <button className={styles.banbutton} onClick={handleBanUserClick}>
+    //           BAN
+    //         </button>
+    //       )}
+    //       {/* <button>Send Newsletter</button> */}
+    //     </div>
+    //   </div>
+    // );
   };
 
   const refreshComponent = () => {
@@ -229,6 +320,8 @@ export default function MyShop() {
     }
   };
 
+  useEffect(() => {}, [filterBy]);
+
   return (
     <Layout>
       <div className={styles.maincontainer}>
@@ -308,6 +401,29 @@ export default function MyShop() {
                     // />
                   );
                 })}
+            </div>
+            <div>
+              <h2>Manage Shops</h2>
+              <div className={styles.filtercontainer}>
+                <div className={styles.filtersubcontainer}>
+                  <div className={styles.orderBycontainer}>
+                    <b>Filter By:</b>
+                    <select
+                      value={sortBy}
+                      className={styles.forminputselection}
+                      onChange={(event) => {
+                        setSortBy(event.target.value);
+                      }}
+                    >
+                      <option value="lowestprice">Lowest Price</option>
+                      <option value="highestprice">Highest Price</option>
+                      <option value="featureditems">Featured Items</option>
+                      <option value="toprating">Top Rating</option>
+                      <option value="topsold">Top Sold</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -130,7 +130,7 @@ const Mylist: NextPage = () => {
     <Layout>
       <WishlistNav />
       <div className={styles.pagedivider}>
-        <div className={styles.leftside}>asdsa</div>
+        <div className={styles.leftside}></div>
         <div className={styles.rightside}>
           <div className={styles.contentcontainer}>
             <div className={styles.filtercontainer}>

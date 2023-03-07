@@ -164,6 +164,7 @@ const Cart: NextPage = () => {
                   )
                   .then((x) => {
                     reloadComponent();
+                    router.push('/account/order/orderhistory');
                   })
                   .catch((error) => {
                     console.log(error);

@@ -105,9 +105,9 @@ const Search: NextPage = () => {
   return (
     <Layout>
       <div className={styles.maincontainer}>
-        <div className={styles.header}>This is Header</div>
+        <div className={styles.header}></div>
         <div className={styles.pagedivider}>
-          <div className={styles.leftside}>aa</div>
+          <div className={styles.leftside}></div>
           <div className={styles.rightside}>
             <div className={styles.searchsectioncontainer}>
               <div className={styles.searchcontainer}>
