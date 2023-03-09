@@ -37,12 +37,13 @@ type ShopReview{
 extend type Mutation{
     createShop(input: NewShop!): Shop! 
     updateShop(name: String!, aboutus: String!, description: String!, image: String!, shopID: ID!): Shop!
+    updateShopStatus(banned: Boolean, shopID: ID!): Shop!
 
     createShopReview(shopID:ID!, userID:ID!, rating:Float!, tag:String, comment:String!, oneTimeDelivery:Boolean!, productAccurate:Boolean!, satisfiedService:Boolean!, transactionHeaderID: ID!): ShopReview!
 } 
 
 extend type Query{
-    shops: [Shop!]! @goField(forceResolver: true)
+    shops(banned:Boolean): [Shop!]! @goField(forceResolver: true)
     shop(id: ID, name: String): Shop! @goField(forceResolver: true)
     shopProducts(shopID: ID!, sortBy: String, limit: Int, offset: Int, categoryID:ID): [Product!]!
     shopOrders(shopID: ID!, filter:String): [TransactionHeader!]!

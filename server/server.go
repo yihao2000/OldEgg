@@ -19,6 +19,10 @@ import (
 
 const defaultPort = "8080"
 
+// func setupRoutes() {
+// 	pool:= websocket.NewPool();
+// }
+
 func main() {
 	// dsn := "host=localhost user=postgres password=admin dbname=tpaweb port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 
@@ -67,6 +71,8 @@ func main() {
 	c.Directives.Auth = directives.Auth
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(c))
+
+	// setupRoutes()
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)

@@ -193,3 +193,10 @@ export interface ShopReview {
   satisfiedService: boolean;
   transactionHeader: TransactionHeader;
 }
+
+export interface Promo {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+}

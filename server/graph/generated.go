@@ -123,6 +123,7 @@ type ComplexityRoot struct {
 		DeleteAllWishlistWishlistDetail  func(childComplexity int, wishlistID string) int
 		DeleteCart                       func(childComplexity int, productID string) int
 		DeleteProductFromWishlistDetails func(childComplexity int, productID string) int
+		DeletePromo                      func(childComplexity int, promoID string) int
 		DeleteSavedForLater              func(childComplexity int, productID string) int
 		DeleteWishlist                   func(childComplexity int, wishlistID string) int
 		DeleteWishlistDetail             func(childComplexity int, wishlistID string, productID string) int
@@ -136,6 +137,7 @@ type ComplexityRoot struct {
 		UpdateProductVariant             func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
 		UpdatePromo                      func(childComplexity int, input model.NewPromo) int
 		UpdateShop                       func(childComplexity int, name string, aboutus string, description string, image string, shopID string) int
+		UpdateShopStatus                 func(childComplexity int, banned *bool, shopID string) int
 		UpdateTransactionHeader          func(childComplexity int, status string, transactionHeaderID string) int
 		UpdateUserInformation            func(childComplexity int, userID string, banned *bool) int
 		UpdateVoucher                    func(childComplexity int, voucherID string) int
@@ -189,7 +191,9 @@ type ComplexityRoot struct {
 		Categories             func(childComplexity int) int
 		Category               func(childComplexity int, id *string, name *string) int
 		GetCurrentUser         func(childComplexity int) int
+		GetSubscribedUsers     func(childComplexity int) int
 		GetUserShop            func(childComplexity int) int
+		NoShopUsers            func(childComplexity int) int
 		PaymentType            func(childComplexity int, id string) int
 		PaymentTypes           func(childComplexity int) int
 		PopularBrands          func(childComplexity int) int
@@ -209,7 +213,7 @@ type ComplexityRoot struct {
 		ShopProducts           func(childComplexity int, shopID string, sortBy *string, limit *int, offset *int, categoryID *string) int
 		ShopReviews            func(childComplexity int, shopID string, filter *string, search *string) int
 		ShopTotalSales         func(childComplexity int, shopID string) int
-		Shops                  func(childComplexity int) int
+		Shops                  func(childComplexity int, banned *bool) int
 		TopShops               func(childComplexity int) int
 		TransactionHeaders     func(childComplexity int) int
 		UpdateCart             func(childComplexity int, userID string, productID string, quantity int) int
@@ -400,9 +404,11 @@ type MutationResolver interface {
 	UpdateProductVariant(ctx context.Context, input model.NewProductVariant, lastUpdateID string) (*model.Product, error)
 	CreatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error)
 	UpdatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error)
+	DeletePromo(ctx context.Context, promoID string) (bool, error)
 	CreateReview(ctx context.Context, productID string, rating int, description string) (*model.Review, error)
 	CreateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 	UpdateShop(ctx context.Context, name string, aboutus string, description string, image string, shopID string) (*model.Shop, error)
+	UpdateShopStatus(ctx context.Context, banned *bool, shopID string) (*model.Shop, error)
 	CreateShopReview(ctx context.Context, shopID string, userID string, rating float64, tag *string, comment string, oneTimeDelivery bool, productAccurate bool, satisfiedService bool, transactionHeaderID string) (*model.ShopReview, error)
 	Checkout(ctx context.Context, shippingID string, paymentTypeID string, addressID string) (*model.TransactionHeader, error)
 	CreateVoucher(ctx context.Context, balance float64) (*model.Voucher, error)
@@ -420,9 +426,11 @@ type ProductResolver interface {
 type QueryResolver interface {
 	User(ctx context.Context, id *string, email *string) (*model.User, error)
 	GetCurrentUser(ctx context.Context) (*model.User, error)
+	GetSubscribedUsers(ctx context.Context) ([]*model.User, error)
 	Protected(ctx context.Context) (string, error)
 	GetUserShop(ctx context.Context) (*model.Shop, error)
 	Users(ctx context.Context, limit *int, offset *int) ([]*model.User, error)
+	NoShopUsers(ctx context.Context) ([]*model.User, error)
 	Address(ctx context.Context, id string) (*model.Address, error)
 	Addresses(ctx context.Context) ([]*model.Address, error)
 	UserAddresses(ctx context.Context) ([]*model.Address, error)
@@ -450,7 +458,7 @@ type QueryResolver interface {
 	ProductGroup(ctx context.Context, id *string) (*model.ProductGroup, error)
 	Promos(ctx context.Context) ([]*model.Promo, error)
 	Reviews(ctx context.Context, productID string) ([]*model.Review, error)
-	Shops(ctx context.Context) ([]*model.Shop, error)
+	Shops(ctx context.Context, banned *bool) ([]*model.Shop, error)
 	Shop(ctx context.Context, id *string, name *string) (*model.Shop, error)
 	ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int, categoryID *string) ([]*model.Product, error)
 	ShopOrders(ctx context.Context, shopID string, filter *string) ([]*model.TransactionHeader, error)
@@ -967,6 +975,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteProductFromWishlistDetails(childComplexity, args["productId"].(string)), true
 
+	case "Mutation.deletePromo":
+		if e.complexity.Mutation.DeletePromo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deletePromo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeletePromo(childComplexity, args["promoID"].(string)), true
+
 	case "Mutation.deleteSavedForLater":
 		if e.complexity.Mutation.DeleteSavedForLater == nil {
 			break
@@ -1122,6 +1142,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateShop(childComplexity, args["name"].(string), args["aboutus"].(string), args["description"].(string), args["image"].(string), args["shopID"].(string)), true
+
+	case "Mutation.updateShopStatus":
+		if e.complexity.Mutation.UpdateShopStatus == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateShopStatus_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateShopStatus(childComplexity, args["banned"].(*bool), args["shopID"].(string)), true
 
 	case "Mutation.updateTransactionHeader":
 		if e.complexity.Mutation.UpdateTransactionHeader == nil {
@@ -1449,12 +1481,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetCurrentUser(childComplexity), true
 
+	case "Query.getSubscribedUsers":
+		if e.complexity.Query.GetSubscribedUsers == nil {
+			break
+		}
+
+		return e.complexity.Query.GetSubscribedUsers(childComplexity), true
+
 	case "Query.getUserShop":
 		if e.complexity.Query.GetUserShop == nil {
 			break
 		}
 
 		return e.complexity.Query.GetUserShop(childComplexity), true
+
+	case "Query.noShopUsers":
+		if e.complexity.Query.NoShopUsers == nil {
+			break
+		}
+
+		return e.complexity.Query.NoShopUsers(childComplexity), true
 
 	case "Query.paymentType":
 		if e.complexity.Query.PaymentType == nil {
@@ -1659,7 +1705,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Shops(childComplexity), true
+		args, err := ec.field_Query_shops_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Shops(childComplexity, args["banned"].(*bool)), true
 
 	case "Query.topShops":
 		if e.complexity.Query.TopShops == nil {
@@ -3088,6 +3139,21 @@ func (ec *executionContext) field_Mutation_deleteProductFromWishlistDetails_args
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deletePromo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["promoID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("promoID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["promoID"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteSavedForLater_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -3328,6 +3394,30 @@ func (ec *executionContext) field_Mutation_updatePromo_args(ctx context.Context,
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateShopStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *bool
+	if tmp, ok := rawArgs["banned"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("banned"))
+		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["banned"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["shopID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("shopID"))
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["shopID"] = arg1
 	return args, nil
 }
 
@@ -4048,6 +4138,21 @@ func (ec *executionContext) field_Query_shop_args(ctx context.Context, rawArgs m
 		}
 	}
 	args["name"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_shops_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *bool
+	if tmp, ok := rawArgs["banned"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("banned"))
+		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["banned"] = arg0
 	return args, nil
 }
 
@@ -8198,6 +8303,60 @@ func (ec *executionContext) fieldContext_Mutation_updatePromo(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_deletePromo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deletePromo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeletePromo(rctx, fc.Args["promoID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deletePromo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deletePromo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createReview(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createReview(ctx, field)
 	if err != nil {
@@ -8428,6 +8587,80 @@ func (ec *executionContext) fieldContext_Mutation_updateShop(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateShop_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateShopStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateShopStatus(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateShopStatus(rctx, fc.Args["banned"].(*bool), fc.Args["shopID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Shop)
+	fc.Result = res
+	return ec.marshalNShop2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐShop(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateShopStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Shop_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Shop_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Shop_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Shop_image(ctx, field)
+			case "aboutus":
+				return ec.fieldContext_Shop_aboutus(ctx, field)
+			case "banner":
+				return ec.fieldContext_Shop_banner(ctx, field)
+			case "products":
+				return ec.fieldContext_Shop_products(ctx, field)
+			case "banned":
+				return ec.fieldContext_Shop_banned(ctx, field)
+			case "user":
+				return ec.fieldContext_Shop_user(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateShopStatus_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -9950,6 +10183,93 @@ func (ec *executionContext) fieldContext_Query_getCurrentUser(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_getSubscribedUsers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getSubscribedUsers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().GetSubscribedUsers(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*model.User); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/yihao2000/gqlgen-todos/graph/model.User`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getSubscribedUsers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "verificationcode":
+				return ec.fieldContext_User_verificationcode(ctx, field)
+			case "verificationcodevalidtime":
+				return ec.fieldContext_User_verificationcodevalidtime(ctx, field)
+			case "newslettersubscribe":
+				return ec.fieldContext_User_newslettersubscribe(ctx, field)
+			case "currency":
+				return ec.fieldContext_User_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_protected(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_protected(ctx, field)
 	if err != nil {
@@ -10190,6 +10510,73 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 	if fc.Args, err = ec.field_Query_users_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_noShopUsers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_noShopUsers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NoShopUsers(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_noShopUsers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "verificationcode":
+				return ec.fieldContext_User_verificationcode(ctx, field)
+			case "verificationcodevalidtime":
+				return ec.fieldContext_User_verificationcodevalidtime(ctx, field)
+			case "newslettersubscribe":
+				return ec.fieldContext_User_newslettersubscribe(ctx, field)
+			case "currency":
+				return ec.fieldContext_User_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -12042,7 +12429,7 @@ func (ec *executionContext) _Query_shops(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Shops(rctx)
+		return ec.resolvers.Query().Shops(rctx, fc.Args["banned"].(*bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -12087,6 +12474,17 @@ func (ec *executionContext) fieldContext_Query_shops(ctx context.Context, field 
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Shop", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_shops_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -20125,6 +20523,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_updatePromo(ctx, field)
 			})
 
+		case "deletePromo":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deletePromo(ctx, field)
+			})
+
 		case "createReview":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -20141,6 +20545,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateShop(ctx, field)
+			})
+
+		case "updateShopStatus":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateShopStatus(ctx, field)
 			})
 
 		case "createShopReview":
@@ -20532,6 +20942,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "getSubscribedUsers":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getSubscribedUsers(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "protected":
 			field := field
 
@@ -20582,6 +21012,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_users(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "noShopUsers":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_noShopUsers(ctx, field)
 				return res
 			}
 

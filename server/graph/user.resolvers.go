@@ -126,6 +126,36 @@ func (r *queryResolver) GetCurrentUser(ctx context.Context) (*model.User, error)
 	return service.UserGetByToken(ctx)
 }
 
+// GetSubscribedUsers is the resolver for the getSubscribedUsers field.
+func (r *queryResolver) GetSubscribedUsers(ctx context.Context) ([]*model.User, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var user model.User
+	if err := db.Model(user).Where("id LIKE ?", userID).Take(&user).Error; err != nil {
+		return nil, err
+	}
+
+	if user.Role != "Admin" {
+		return nil, &gqlerror.Error{
+			Message: "You are not admin !",
+		}
+	}
+
+	var users []*model.User
+
+	temp := db.Where("users.role = 'User' AND users.news_letter_subscribe = ?", true)
+
+	return users, temp.Find(&users).Error
+}
+
 // Protected is the resolver for the protected field.
 func (r *queryResolver) Protected(ctx context.Context) (string, error) {
 	return "Success" + fmt.Sprintf("%+v\n", ctx.Value("auth")), nil
@@ -178,6 +208,23 @@ func (r *queryResolver) Users(ctx context.Context, limit *int, offset *int) ([]*
 	return users, temp.Find(&users).Error
 }
 
+// NoShopUsers is the resolver for the noShopUsers field.
+func (r *queryResolver) NoShopUsers(ctx context.Context) ([]*model.User, error) {
+	db := config.GetDB()
+
+	var users []*model.User
+
+	temp := db.Where("users.id NOT IN (SELECT user_id FROM shops)")
+
+	// 	SELECT *
+	// FROM users
+	// WHERE users.id NOT IN (
+	// SELECT user_id FROM shops
+	// )
+
+	return users, temp.Find(&users).Error
+}
+
 // AuthOps returns AuthOpsResolver implementation.
 func (r *Resolver) AuthOps() AuthOpsResolver { return &authOpsResolver{r} }
 
@@ -197,4 +244,8 @@ type queryResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) GetSubscribedUser(ctx context.Context) ([]*model.User, error) {
+	panic(fmt.Errorf("not implemented: GetSubscribedUser - getSubscribedUser"))
+}
+
 type userResolver struct{ *Resolver }

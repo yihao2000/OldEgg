@@ -25,6 +25,7 @@ export const LOGIN_QUERY = `mutation($email:String!, $password:String!){
 export const USER_QUERY = `query($id:ID, $email:String){
   user(id:$id, email:$email){
     id
+    email
   }
 }`;
 
@@ -793,4 +794,74 @@ export const UPDATE_USER_INFORMATION = `mutation($userID:ID!, $banned:Boolean){
   updateUserInformation(userID:$userID, banned:$banned){
     id
   }
+}`;
+
+export const SHOPS_QUERY = `query($banned:Boolean){
+  shops(banned:$banned){
+    id
+    name
+    description
+    image
+    aboutus
+    banner
+    banned
+  }
+}`;
+
+export const UPDATE_SHOP_STATUS = `mutation($shopID:ID!, $banned:Boolean){
+  updateShopStatus(shopID:$shopID, banned:$banned){
+    id
+  }
+}`;
+
+export const CREATE_SHOP_MUTATION = `mutation($name:String!, $description:String!, $image:String!, $aboutus:String!, $banner:String!, $userID:ID!){
+  createShop(input:{
+    name:$name,
+    description:$description,
+    image:$image,
+    aboutus:$aboutus,
+    banner:$banner,
+    userID:$userID
+  }){
+    id
+  }
+}`;
+
+export const USER_NO_SHOP_QUERY = `query{
+  noShopUsers{
+    id
+    name
+  }
+}`;
+
+export const ADD_VOUCHER_MUTATION = `mutation($balance:Float!){
+  createVoucher(balance:$balance){
+    id
+    balance
+  }
+}`;
+
+export const SUBSCRIBED_USERS_QUERY = `query{
+  getSubscribedUsers{
+    id
+    name
+    email
+  }
+}`;
+
+export const CREATE_PROMO_MUTATION = `mutation($name:String!, $description:String!, $image:String!){
+  createPromo(input:{
+    name:$name
+    description:$description
+    image:$image
+  }){
+    id
+    name
+    description
+    image
+  }
+}`;
+
+export const DELETE_PROMO_MUTATION = `mutation($promoID:ID!){
+  deletePromo(promoID:$promoID)
 }`;

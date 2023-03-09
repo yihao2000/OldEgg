@@ -9,8 +9,10 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
+	"github.com/yihao2000/gqlgen-todos/service"
 )
 
 // CreatePromo is the resolver for the createPromo field.
@@ -34,6 +36,38 @@ func (r *mutationResolver) CreatePromo(ctx context.Context, input model.NewPromo
 // UpdatePromo is the resolver for the updatePromo field.
 func (r *mutationResolver) UpdatePromo(ctx context.Context, input model.NewPromo) (*model.Promo, error) {
 	panic(fmt.Errorf("not implemented: UpdatePromo - updatePromo"))
+}
+
+// DeletePromo is the resolver for the deletePromo field.
+func (r *mutationResolver) DeletePromo(ctx context.Context, promoID string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	user := new(model.User)
+
+	err := db.First(user, "id = ?", userID).Error
+	if err != nil {
+		return false, err
+	}
+
+	if user.Role != "Admin" {
+		return false, &gqlerror.Error{
+			Message: "Error, User bukan Admin",
+		}
+	}
+
+	model := new(model.Promo)
+	if err := db.First(model, "id = ? ", promoID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // Promos is the resolver for the promos field.

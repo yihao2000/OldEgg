@@ -66,6 +66,26 @@ func (r *mutationResolver) UpdateShop(ctx context.Context, name string, aboutus 
 	return shop, nil
 }
 
+// UpdateShopStatus is the resolver for the updateShopStatus field.
+func (r *mutationResolver) UpdateShopStatus(ctx context.Context, banned *bool, shopID string) (*model.Shop, error) {
+	db := config.GetDB()
+
+	shop := new(model.Shop)
+
+	err := db.First(shop, "id = ?", shopID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if banned != nil {
+		shop.Banned = *banned
+	}
+
+	db.Save(shop)
+
+	return shop, nil
+}
+
 // CreateShopReview is the resolver for the createShopReview field.
 func (r *mutationResolver) CreateShopReview(ctx context.Context, shopID string, userID string, rating float64, tag *string, comment string, oneTimeDelivery bool, productAccurate bool, satisfiedService bool, transactionHeaderID string) (*model.ShopReview, error) {
 	db := config.GetDB()
@@ -96,12 +116,16 @@ func (r *mutationResolver) CreateShopReview(ctx context.Context, shopID string, 
 }
 
 // Shops is the resolver for the shops field.
-func (r *queryResolver) Shops(ctx context.Context) ([]*model.Shop, error) {
+func (r *queryResolver) Shops(ctx context.Context, banned *bool) ([]*model.Shop, error) {
 	db := config.GetDB()
 
 	var models []*model.Shop
 
 	temp := db.Model(models)
+
+	if banned != nil {
+		temp = temp.Where("banned = ?", banned)
+	}
 
 	return models, temp.Find(&models).Error
 }

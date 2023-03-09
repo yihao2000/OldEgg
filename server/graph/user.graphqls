@@ -51,6 +51,7 @@ type Mutation {
 
   updateUserInformation(userID: ID!, banned: Boolean): User! 
    
+  
 }
 
 
@@ -58,10 +59,12 @@ type Query{
     user(id: ID, email: String): User! @goField(forceResolver: true)
     getCurrentUser: User! @goField(forceResolver: true) @auth
     # getUserReviews: [Review]
+    getSubscribedUsers: [User!]! @auth
 
     protected: String! @goField(forceResolver: true) @auth
     getUserShop: Shop! @goField(forceResolver: true) @auth
     users(limit: Int, offset: Int): [User!]! @goField(forceResolver: true) @auth
+    noShopUsers: [User!]! 
 
 
 

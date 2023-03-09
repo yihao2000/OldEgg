@@ -122,6 +122,27 @@ func (r *mutationResolver) CreateVoucher(ctx context.Context, balance float64) (
 		DateCreated: time.Now(),
 	}
 
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	user := new(model.User)
+
+	err := db.First(user, "id = ?", userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Role != "Admin" {
+		return nil, &gqlerror.Error{
+			Message: "Error, User bukan Admin",
+		}
+	}
+
 	return &voucher, db.Model(voucher).Create(&voucher).Error
 }
 

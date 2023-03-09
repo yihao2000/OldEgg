@@ -1,29 +1,41 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import Layout from '@/components/layout';
 import ShopHeader from '@/components/shop/shopheader';
 import styles from '@/styles/pagesstyles/shop/myshop/home.module.scss';
-
+import styles2 from '@/styles/pagesstyles/shop/myshop/home.module.scss';
+import emailjs from '@emailjs/browser';
 import {
   Brand,
   Category,
   Product,
+  Promo,
   Shop,
   User,
 } from '@/components/interfaces/interfaces';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import {
+  ADD_VOUCHER_MUTATION,
   BRANDS_QUERY,
   CATEGORIES_QUERY,
   CREATE_NEW_PRODUCT_MUTATION,
+  CREATE_PROMO_MUTATION,
+  CREATE_SHOP_MUTATION,
+  DELETE_PROMO_MUTATION,
   GET_CURRENT_USER_SHOP,
   GRAPHQLAPI,
+  PROMOS_QUERY,
+  SHOPS_QUERY,
   SHOP_PRODUCTS_QUERY,
   SHOP_TOTAL_SALES_QUERY,
+  SUBSCRIBED_USERS_QUERY,
+  UPDATE_SHOP_STATUS,
   UPDATE_USER_INFORMATION,
   USER_EXCEPT_SELF_QUERY,
+  USER_NO_SHOP_QUERY,
+  USER_QUERY,
 } from '@/util/constant';
 import ProductCard from '@/components/productcard';
 import { LAPTOP_NAME_CONVERTER } from '@/components/converter/converter';
@@ -45,14 +57,36 @@ export default function MyShop() {
   const [users, setUsers] = useState<User[]>();
 
   const [shops, setShops] = useState<Shop[]>();
-  const [filterBy, setFilterBy] = useState('');
+  const [filterBy, setFilterBy] = useState('All');
 
-  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openAddShopModal, setOpenAddShopModal] = useState(false);
 
   const [refresh, setRefresh] = useState(false);
 
-  const closeAddModal = () => {
-    setOpenAddModal(false);
+  //Add Voucher
+  const [openAddVoucherModal, setOpenAddVoucherModal] = useState(false);
+
+  //Newsletter
+  const [openAddNewsLetterModal, setOpenAddNewsLetterModal] = useState(false);
+
+  //Promos
+  const [promos, setPromos] = useState<Promo[]>();
+  const [openAddPromoModal, setOpenAddPromoModal] = useState(false);
+
+  const closeAddPromoModal = () => {
+    setOpenAddPromoModal(false);
+  };
+
+  const closeAddNewsLetterModal = () => {
+    setOpenAddNewsLetterModal(false);
+  };
+
+  const closeOpenAddVoucherModal = () => {
+    setOpenAddVoucherModal(false);
+  };
+
+  const closeAddShopModal = () => {
+    setOpenAddShopModal(false);
   };
 
   useEffect(() => {
@@ -151,93 +185,144 @@ export default function MyShop() {
       </div>
     );
   };
+  interface PromoParameter {
+    promo: Promo;
+  }
+  const PromoCard = (props: PromoParameter) => {
+    const handleDeletePromoClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: DELETE_PROMO_MUTATION,
+            variables: {
+              promoID: props.promo.id,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          console.log(res);
+          refreshComponent();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    return (
+      <div
+        className={`${styles.usercard}
+        }`}
+      >
+        <div className={styles.cardimagecontainer}>
+          <img src={props.promo.image} alt="" className={styles.cardimage} />
+        </div>
+        <div className={styles.cardidcontainer}>
+          <div className={styles.cardid}>{props.promo.id}</div>
+        </div>
+        <div className={styles.cardinformationcontainer}>
+          <div className={styles.username}>{props.promo.name}</div>
+          <div className={styles.useremail}>{props.promo.description}</div>
+        </div>
+        <div className={styles.actioncontainer}>
+          <button className={styles.banbutton} onClick={handleDeletePromoClick}>
+            DELETE
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   interface ShopParameter {
     shop: Shop;
   }
   const ShopCard = (props: ShopParameter) => {
-    // const handleBanUserClick = () => {
-    //   // axios
-    //   //   .post(
-    //   //     GRAPHQLAPI,
-    //   //     {
-    //   //       query: UPDATE_USER_INFORMATION,
-    //   //       variables: {
-    //   //         userID: props.user.id,
-    //   //         banned: true,
-    //   //       },
-    //   //     },
-    //   //     {
-    //   //       headers: {
-    //   //         Authorization: 'Bearer ' + token,
-    //   //       },
-    //   //     },
-    //   //   )
-    //   //   .then((res) => {
-    //   //     refreshComponent();
-    //   //   })
-    //   //   .catch((err) => {
-    //   //     console.log(err);
-    //   //   });
-    // };
-    // const handleUnbanUserClick = () => {
-    //   // axios
-    //   //   .post(
-    //   //     GRAPHQLAPI,
-    //   //     {
-    //   //       query: UPDATE_USER_INFORMATION,
-    //   //       variables: {
-    //   //         userID: props.user.id,
-    //   //         banned: false,
-    //   //       },
-    //   //     },
-    //   //     {
-    //   //       headers: {
-    //   //         Authorization: 'Bearer ' + token,
-    //   //       },
-    //   //     },
-    //   //   )
-    //   //   .then((res) => {
-    //   //     refreshComponent();
-    //   //   })
-    //   //   .catch((err) => {
-    //   //     console.log(err);
-    //   //   });
-    // };
-    // return (
-    //   <div className={`${styles.shopcard} `}>
-    //     <div className={styles.cardimagecontainer}>
-    //       <img
-    //         src="https://res.cloudinary.com/dmpbgjnrc/image/upload/v1678103779/userplaceholder_bloytq.webp"
-    //         alt=""
-    //         className={styles.cardimage}
-    //       />
-    //     </div>
-    //     <div className={styles.cardidcontainer}>
-    //       <div className={styles.cardid}>{props.user.id}</div>
-    //     </div>
-    //     <div className={styles.cardinformationcontainer}>
-    //       <div className={styles.username}>{props.user.name}</div>
-    //       <div className={styles.useremail}>{props.user.email}</div>
-    //     </div>
-    //     <div className={styles.actioncontainer}>
-    //       {props.user.banned == true && (
-    //         <button
-    //           className={styles.unbanbutton}
-    //           onClick={handleUnbanUserClick}
-    //         >
-    //           UNBAN
-    //         </button>
-    //       )}
-    //       {props.user.banned == false && (
-    //         <button className={styles.banbutton} onClick={handleBanUserClick}>
-    //           BAN
-    //         </button>
-    //       )}
-    //       {/* <button>Send Newsletter</button> */}
-    //     </div>
-    //   </div>
-    // );
+    const handleBanUserClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: UPDATE_SHOP_STATUS,
+            variables: {
+              shopID: props.shop.id,
+              banned: true,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          refreshComponent();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const handleUnbanUserClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: UPDATE_SHOP_STATUS,
+            variables: {
+              shopID: props.shop.id,
+              banned: false,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          refreshComponent();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    return (
+      <div
+        className={`${styles.shopcard} ${
+          props.shop.banned == true ? styles.bannedcard : styles.normalcard
+        }`}
+      >
+        <div className={styles.cardimagecontainer}>
+          <img src={props.shop.image} alt="" className={styles.cardimage} />
+        </div>
+        <div className={styles.cardidcontainer}>
+          <div className={styles.cardid}>{props.shop.id}</div>
+        </div>
+        <div className={styles.cardinformationcontainer}>
+          <div className={styles.username}>{props.shop.name}</div>
+          <div className={styles.useremail}>{props.shop.description}</div>
+        </div>
+        <div className={styles.actioncontainer}>
+          {props.shop.banned == true && (
+            <button
+              className={styles.unbanbutton}
+              onClick={handleUnbanUserClick}
+            >
+              UNBAN
+            </button>
+          )}
+          {props.shop.banned == false && (
+            <button className={styles.banbutton} onClick={handleBanUserClick}>
+              BAN
+            </button>
+          )}
+          {/* <button>Send Newsletter</button> */}
+        </div>
+      </div>
+    );
   };
 
   const refreshComponent = () => {
@@ -246,15 +331,15 @@ export default function MyShop() {
 
   useEffect(() => {
     refreshComponent();
-    console.log(orderBy);
-  }, [token, limit, orderBy]);
+  }, [token, limit, orderBy, filterBy]);
 
-  const handleAddProductClick = () => {
-    setOpenAddModal(true);
+  const handleAddShopClick = () => {
+    setOpenAddShopModal(true);
   };
 
   useEffect(() => {
     if (token) {
+      console.log(token);
       axios
         .post(
           GRAPHQLAPI,
@@ -272,6 +357,52 @@ export default function MyShop() {
           setTotalPage(Math.ceil(res.data.data.users.length / limit));
           setCurrentPage(1);
           setOffset(0);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: SHOPS_QUERY,
+            variables: {
+              banned:
+                filterBy != 'All'
+                  ? filterBy == 'Banned'
+                    ? true
+                    : false
+                  : null,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setShops(res.data.data.shops);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: PROMOS_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setPromos(res.data.data.promos);
         })
         .catch((err) => {
           console.log(err);
@@ -320,7 +451,594 @@ export default function MyShop() {
     }
   };
 
-  useEffect(() => {}, [filterBy]);
+  const AddShopModalContent = () => {
+    const [shopName, setShopName] = useState('');
+    const [shopDescription, setShopDescription] = useState('');
+    const [shopImage, setShopImage] = useState('');
+    const [shopAboutUs, setShopAboutUs] = useState('');
+    const [shopBanner, setShopBanner] = useState('');
+    const [selectedUserID, setSelectedUserID] = useState('');
+    const [selectedUser, setSelectedUser] = useState<User>();
+    const [noShopUsers, setNoShopUsers] = useState<User[]>();
+
+    const [error, setError] = useState('');
+
+    const form = useRef<HTMLFormElement>(null);
+
+    useEffect(() => {
+      if (selectedUserID) {
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: USER_QUERY,
+              variables: {
+                id: selectedUserID,
+              },
+            },
+            {
+              headers: {
+                Authorization: 'Bearer ' + token,
+              },
+            },
+          )
+          .then((res) => {
+            setSelectedUser(res.data.data.user);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }, [selectedUserID]);
+
+    const handleSubmitAddProductClick = (
+      e: React.FormEvent<HTMLFormElement>,
+    ) => {
+      e.preventDefault();
+
+      if (
+        shopName == '' ||
+        shopDescription == '' ||
+        shopImage == '' ||
+        shopAboutUs == '' ||
+        shopBanner == '' ||
+        selectedUserID == ''
+      ) {
+        setError('All Fields must be Filled!');
+      } else {
+        axios
+          .post(
+            GRAPHQLAPI,
+            {
+              query: CREATE_SHOP_MUTATION,
+              variables: {
+                name: shopName,
+                description: shopDescription,
+                image: shopImage,
+                aboutus: shopAboutUs,
+                banner: shopBanner,
+                userID: selectedUserID,
+              },
+            },
+            {
+              headers: {
+                Authorization: 'Bearer ' + token,
+              },
+            },
+          )
+          .then((res) => {
+            emailjs
+              .sendForm(
+                'service_dsn89wa',
+                'template_0bl2oge',
+                form.current!,
+                'gM8J9ZjItBS3Hw4je',
+              )
+              .then(
+                (result) => {
+                  console.log(result);
+                  router.reload();
+                },
+                (error) => {
+                  console.log(error.text);
+                },
+              );
+          })
+
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    };
+
+    useEffect(() => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: USER_NO_SHOP_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setNoShopUsers(res.data.data.noShopUsers);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, []);
+
+    return (
+      <div className={styles.addproductcontainer}>
+        <h2>Add New Shop</h2>
+        <form
+          style={{
+            width: '100%',
+            paddingBottom: '15px',
+          }}
+          onSubmit={handleSubmitAddProductClick}
+          ref={form}
+        >
+          <div className={styles.rowcontainer}>
+            <span
+              style={{
+                display: 'block',
+                fontWeight: 'bold',
+                fontSize: '17px',
+              }}
+            >
+              Shop Name
+            </span>
+            <input
+              type="text"
+              className={styles.forminputcontainer}
+              placeholder="Good Shop"
+              value={shopName}
+              onChange={(event) => {
+                setShopName(event.target.value);
+              }}
+            />
+          </div>
+          <div className={styles.rowcontainer}>
+            <span
+              style={{
+                display: 'block',
+                fontWeight: 'bold',
+                fontSize: '17px',
+              }}
+            >
+              Shop Description
+            </span>
+            <input
+              type="text"
+              className={styles.forminputcontainer}
+              placeholder="Good Quality Shop"
+              value={shopDescription}
+              onChange={(event) => {
+                setShopDescription(event.target.value);
+              }}
+            />
+          </div>
+          <div className={styles.rowcontainer}>
+            <span
+              style={{
+                display: 'block',
+                fontWeight: 'bold',
+                fontSize: '17px',
+              }}
+            >
+              {' '}
+              Shop Image
+            </span>
+            <input
+              type="text"
+              className={styles.forminputcontainer}
+              placeholder="https://sampleimage.org"
+              value={shopImage}
+              onChange={(event) => {
+                setShopImage(event.target.value);
+              }}
+            />
+          </div>
+          <div className={styles.rowcontainer}>
+            <span
+              style={{
+                display: 'block',
+                fontWeight: 'bold',
+                fontSize: '17px',
+              }}
+            >
+              {' '}
+              Shop Banner
+            </span>
+            <input
+              type="text"
+              className={styles.forminputcontainer}
+              placeholder="https://sampleimage.org"
+              value={shopBanner}
+              onChange={(event) => {
+                setShopBanner(event.target.value);
+              }}
+            />
+          </div>
+          <div className={styles.rowcontainer}>
+            <span
+              style={{
+                display: 'block',
+                fontWeight: 'bold',
+                fontSize: '17px',
+              }}
+            >
+              {' '}
+              Shop About Us
+            </span>
+            <input
+              type="text"
+              className={styles.forminputcontainer}
+              placeholder="About Us"
+              value={shopAboutUs}
+              onChange={(event) => {
+                setShopAboutUs(event.target.value);
+              }}
+            />
+          </div>
+          <div className={styles.dropdowncontainer}>
+            {' '}
+            <select
+              style={{
+                width: '50%',
+                padding: '5px',
+                marginTop: '10px',
+              }}
+              value={selectedUserID}
+              className={styles.forminputselection}
+              onChange={(event) => {
+                setSelectedUserID(event.target.value);
+              }}
+            >
+              {noShopUsers?.map((x) => {
+                return <option value={x.id}>{x.name}</option>;
+              })}
+            </select>
+          </div>
+          <input
+            type="email"
+            style={{
+              marginBottom: '15px',
+              display: 'none',
+            }}
+            className={styles.formtextinput}
+            id="email"
+            name="email"
+            required
+            placeholder="Email Address"
+            value={selectedUser?.email}
+            formNoValidate
+          />
+          <input
+            type="text"
+            style={{
+              marginBottom: '15px',
+              display: 'none',
+            }}
+            className={styles.formtextinput}
+            id="content"
+            name="content"
+            required
+            placeholder="Email Address"
+            value={'You have successfully opened a new shop !'}
+            formNoValidate
+          />
+
+          <div className={styles.gapcontainer}>
+            <span style={{ color: 'red' }}>{error}</span>
+            <button className={styles.addbutton}>Add Shop</button>
+          </div>
+        </form>
+      </div>
+    );
+  };
+
+  const AddVoucherModalContent = () => {
+    const [voucherBalance, setVoucherBalance] = useState(0);
+    const [error, setError] = useState('');
+
+    const handleSubmitAddVoucherClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: ADD_VOUCHER_MUTATION,
+            variables: {
+              balance: voucherBalance,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          if (res.data.data.createVoucher.id != null) {
+            alert(
+              'Voucher Successfully Created with ID: ' +
+                res.data.data.createVoucher.id,
+            );
+            router.reload();
+          } else {
+            setError('Unable to create voucher !');
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    return (
+      <div className={styles.addproductcontainer}>
+        <h2>Add New Voucher</h2>
+
+        <div className={styles.rowcontainer}>
+          <span
+            style={{
+              display: 'block',
+              fontWeight: 'bold',
+              fontSize: '17px',
+            }}
+          >
+            Voucher Balance
+          </span>
+          <input
+            type="number"
+            className={styles.forminputcontainer}
+            placeholder="Good Shop"
+            value={voucherBalance}
+            onChange={(event) => {
+              setVoucherBalance(Number(event.target.value));
+            }}
+          />
+        </div>
+
+        <div className={styles.gapcontainer}>
+          <span style={{ color: 'red' }}>{error != '' ? error : ''}</span>
+          <button
+            className={styles.addbutton}
+            onClick={handleSubmitAddVoucherClick}
+          >
+            Add Voucher
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const AddNewsLetterModalContent = () => {
+    const [subscribedUsers, setSubscribedUsers] = useState<User[]>();
+
+    const [newsLetterContent, setNewsLetterContent] = useState('');
+    const [error, setError] = useState('');
+
+    const form = useRef<HTMLFormElement>(null);
+
+    useEffect(() => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: SUBSCRIBED_USERS_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setSubscribedUsers(res.data.data.getSubscribedUsers);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, []);
+
+    const handleSendNewsLetterClick = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      if (subscribedUsers) {
+        subscribedUsers.map(
+          (x) => {
+            setTimeout(() => {
+              var templateParams = {
+                email: x.email,
+                content: newsLetterContent,
+              };
+              emailjs
+                .send(
+                  'service_dsn89wa',
+                  'template_0bl2oge',
+                  templateParams,
+                  'gM8J9ZjItBS3Hw4je',
+                )
+                .then(
+                  (result) => {
+                    console.log(result);
+                  },
+                  (error) => {
+                    console.log(error.text);
+                  },
+                );
+            });
+          },
+          [1000],
+        );
+        router.reload();
+      }
+    };
+    return (
+      <form
+        style={{
+          width: '100%',
+          paddingBottom: '15px',
+        }}
+        onSubmit={handleSendNewsLetterClick}
+        ref={form}
+      >
+        <div className={styles.addproductcontainer}>
+          <h2>Send Newsletter</h2>
+
+          <div className={styles.rowcontainer}>
+            <span
+              style={{
+                display: 'block',
+                fontWeight: 'bold',
+                fontSize: '17px',
+              }}
+            >
+              News Content
+            </span>
+            <input
+              type="text"
+              name="content"
+              id="content"
+              className={styles.forminputcontainer}
+              placeholder="Discount 50 %Only available this wednesday !"
+              value={newsLetterContent}
+              onChange={(event) => {
+                setNewsLetterContent(event.target.value);
+              }}
+            />
+          </div>
+
+          <div className={styles.gapcontainer}>
+            <span style={{ color: 'red' }}>{error != '' ? error : ''}</span>
+            <button className={styles.addbutton}>Send News</button>
+          </div>
+        </div>
+      </form>
+    );
+  };
+
+  const AddPromoModalContent = () => {
+    const [promoName, setPromoName] = useState('');
+    const [promoDescription, setPromoDescription] = useState('');
+    const [promoImage, setPromoImage] = useState('');
+
+    const [error, setError] = useState('');
+
+    const handleAddPromoClick = () => {
+      setError('');
+      if (promoName == '' || promoImage == '' || promoDescription == '') {
+        setError('All Fields Must be Filled !');
+        return;
+      }
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CREATE_PROMO_MUTATION,
+            variables: {
+              name: promoName,
+              description: promoDescription,
+              image: promoImage,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          console.log(res);
+          refreshComponent();
+          closeAddPromoModal();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    return (
+      <div className={styles.addproductcontainer}>
+        <h2>Add New Promo</h2>
+
+        <div className={styles.rowcontainer}>
+          <span
+            style={{
+              display: 'block',
+              fontWeight: 'bold',
+              fontSize: '17px',
+            }}
+          >
+            Promo Name
+          </span>
+          <input
+            type="text"
+            className={styles.forminputcontainer}
+            placeholder="Buy 1 get 1"
+            value={promoName}
+            onChange={(event) => {
+              setPromoName(event.target.value);
+            }}
+          />
+        </div>
+        <div className={styles.rowcontainer}>
+          <span
+            style={{
+              display: 'block',
+              fontWeight: 'bold',
+              fontSize: '17px',
+            }}
+          >
+            Promo Description
+          </span>
+          <input
+            type="text"
+            className={styles.forminputcontainer}
+            placeholder="All Items Buy 1 Get 1!"
+            value={promoDescription}
+            onChange={(event) => {
+              setPromoDescription(event.target.value);
+            }}
+          />
+        </div>
+        <div className={styles.rowcontainer}>
+          <span
+            style={{
+              display: 'block',
+              fontWeight: 'bold',
+              fontSize: '17px',
+            }}
+          >
+            {' '}
+            Promo Image
+          </span>
+          <input
+            type="text"
+            className={styles.forminputcontainer}
+            placeholder="https://sampleimage.org"
+            value={promoImage}
+            onChange={(event) => {
+              setPromoImage(event.target.value);
+            }}
+          />
+        </div>
+
+        <div className={styles.gapcontainer}>
+          <span style={{ color: 'red' }}>{error}</span>
+          <button className={styles.addbutton} onClick={handleAddPromoClick}>
+            Add Promo
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Layout>
@@ -328,6 +1046,51 @@ export default function MyShop() {
         <div className={styles.pagedivider}>
           <AdminSideBar />
           <div className={styles.rightsection}>
+            <div className={styles.flexbetween}>
+              <h2>Admin Utility</h2>
+            </div>
+            <div className={styles.productcardcontainer}>
+              <button
+                onClick={() => {
+                  setOpenAddVoucherModal(true);
+                }}
+                style={{
+                  height: '100px',
+                  fontSize: '20px',
+                }}
+              >
+                Add New Voucher
+              </button>
+
+              <button
+                onClick={() => {
+                  setOpenAddNewsLetterModal(true);
+                }}
+                style={{
+                  height: '100px',
+                  fontSize: '20px',
+                }}
+              >
+                Send Newsletter
+              </button>
+            </div>
+            <div className={styles.flexbetween}>
+              <h2>Manage Promo Carousel</h2>
+              <button
+                className={styles.addbutton}
+                onClick={() => {
+                  setOpenAddPromoModal(true);
+                }}
+              >
+                Add Promos
+              </button>
+            </div>
+            <div className={styles.productcardcontainer}>
+              {promos?.map((promo) => {
+                return <PromoCard promo={promo} key={promo.id} />;
+              })}
+            </div>
+            <div className={styles.productcardcontainer}></div>
             <div className={styles.flexbetween}>
               <h2>Manage Users</h2>
               {/* <button
@@ -388,18 +1151,7 @@ export default function MyShop() {
             <div className={styles.productcardcontainer}>
               {users &&
                 users.map((user) => {
-                  return (
-                    <UserCard user={user} key={user.id} />
-                    // <ProductCard
-                    //   style="original"
-                    //   id={product.id}
-                    //   image={product.image}
-                    //   name={LAPTOP_NAME_CONVERTER(product.name)}
-                    //   price={product.price}
-                    //   key={product.id}
-                    //   discount={product.discount}
-                    // />
-                  );
+                  return <UserCard user={user} key={user.id} />;
                 })}
             </div>
             <div>
@@ -409,31 +1161,52 @@ export default function MyShop() {
                   <div className={styles.orderBycontainer}>
                     <b>Filter By:</b>
                     <select
-                      value={sortBy}
+                      value={filterBy}
                       className={styles.forminputselection}
                       onChange={(event) => {
-                        setSortBy(event.target.value);
+                        setFilterBy(event.target.value);
                       }}
                     >
-                      <option value="lowestprice">Lowest Price</option>
-                      <option value="highestprice">Highest Price</option>
-                      <option value="featureditems">Featured Items</option>
-                      <option value="toprating">Top Rating</option>
-                      <option value="topsold">Top Sold</option>
+                      <option value="All">All</option>
+                      <option value="Banned">Banned</option>
+                      <option value="Unbanned">Unbanned</option>
                     </select>
                   </div>
                 </div>
+                <div className={styles.filtersubcontainer}>
+                  <button onClick={handleAddShopClick}>Add New Shop</button>
+                </div>
+              </div>
+              <div className={styles.productcardcontainer}>
+                {shops?.map((shop) => {
+                  return <ShopCard shop={shop} key={shop.id} />;
+                })}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* {openAddModal && (
-        <Modal closeModal={closeAddModal} height={50} width={50}>
-          <AddProductModalContent />
+      {openAddShopModal && (
+        <Modal closeModal={closeAddShopModal} height={50} width={50}>
+          <AddShopModalContent />
         </Modal>
-      )} */}
+      )}
+      {openAddVoucherModal && (
+        <Modal closeModal={closeOpenAddVoucherModal} height={50} width={50}>
+          <AddVoucherModalContent />
+        </Modal>
+      )}
+      {openAddNewsLetterModal && (
+        <Modal closeModal={closeAddNewsLetterModal} height={50} width={50}>
+          <AddNewsLetterModalContent />
+        </Modal>
+      )}
+      {openAddPromoModal && (
+        <Modal closeModal={closeAddPromoModal} height={50} width={50}>
+          <AddPromoModalContent />
+        </Modal>
+      )}
     </Layout>
   );
 }
