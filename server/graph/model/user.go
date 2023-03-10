@@ -18,6 +18,14 @@ type User struct {
 	VerificationCodeValidTime *time.Time `json:"verificationcodevalidtime"`
 	NewsLetterSubscribe       bool       `json:"newslettersubscribe"`
 	Currency                  float64    `json:"currency"`
+	LocationID                string
+	Location                  *Location `json:"location" gorm:"foreignKey:LocationID"`
+}
+type Voucher struct {
+	ID          string     `json:"id"`
+	Balance     float64    `json:"balance"`
+	DateCreated time.Time  `json:"dateCreated"`
+	DateUsed    *time.Time `json:"dateUsed"`
 }
 
 func HashPassword(s string) string {

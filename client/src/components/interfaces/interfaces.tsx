@@ -67,6 +67,8 @@ export interface User {
   banned: boolean;
   role: string;
   currency: number;
+  newslettersubscribe: boolean;
+  location: Location;
 }
 
 export interface ProductCardData {
@@ -199,4 +201,17 @@ export interface Promo {
   name: string;
   description: string;
   image: string;
+}
+
+export interface Location {
+  id: string;
+  name: string;
+  longitude: number;
+  latitude: number;
+}
+
+export interface UserSavedSearch {
+  id: string;
+  keyword: string;
+  userID: string;
 }

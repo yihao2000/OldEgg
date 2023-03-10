@@ -16,6 +16,26 @@ type User{
   verificationcodevalidtime: Time
   newslettersubscribe: Boolean!
   currency: Float!
+  location: Location! @goField(forceResolver:true)
+  userSavedSearches: [UserSavedSearch!]! @goField(forceResolver:true)
+}
+
+type UserSavedSearch{
+  id: ID!
+  keyword: String!
+  userID: ID!
+}
+
+type PopularSavedSearch{
+  keyword: String!
+  count: Int!
+}
+
+type Location{
+  id: ID!
+  name: String!
+  longitude: Float!
+  latitude: Float!
 }
 
 
@@ -51,6 +71,12 @@ type Mutation {
 
   updateUserInformation(userID: ID!, banned: Boolean): User! 
    
+   userUpdateNewsLetterSubscription(userID: ID!, subscribed:Boolean!): User!
+
+   createUserSavedSearch(keyword: String!): UserSavedSearch!
+   deleteUserSavedSearch(keyword: String!): Boolean!
+
+   
   
 }
 
@@ -66,6 +92,11 @@ type Query{
     users(limit: Int, offset: Int): [User!]! @goField(forceResolver: true) @auth
     noShopUsers: [User!]! 
 
+    locations: [Location!]!
+    getUserLocation: Location!
 
+    userSavedSearches: [UserSavedSearch!]!
+    popularSavedSearches: [PopularSavedSearch!]!
+    
 
 }

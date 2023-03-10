@@ -12,7 +12,8 @@ import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { NAME_SPLITTER } from './converter/converter';
-import { Cart } from './interfaces/interfaces';
+import { Cart, User } from './interfaces/interfaces';
+import LocationCard from './navbar/locationcard';
 
 export default function Navbar() {
   const [token, setToken] = useSessionStorage('token', '');
@@ -21,6 +22,7 @@ export default function Navbar() {
   const [search, setSearch] = useState('');
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
   const [carts, setCarts] = useState<Cart[]>();
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     if (token == '') {
@@ -45,6 +47,7 @@ export default function Navbar() {
             //   setUserInformation(name[0])
             // }
             setUserInformation(res.data.data.getCurrentUser.name);
+            setUser(res.data.data.getCurrentUser);
           }
         })
 
@@ -165,7 +168,9 @@ export default function Navbar() {
             fontSize: '30px',
             color: 'wheat',
           }}
-        ></i>
+        >
+          {user && <LocationCard />}
+        </i>
 
         <div
           className={styles.usercontainer}

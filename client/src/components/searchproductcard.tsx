@@ -4,6 +4,10 @@ import Link from 'next/link';
 import React, { ReactNode } from 'react';
 import { links } from '../util/route';
 import styles from '@/styles/componentstyles/searchproductcard.module.scss';
+import { useEffect, useState } from 'react';
+import Modal from './modal/modal';
+import ProductDetail from '@/pages/product/[id]';
+import ProductDetailModalContent from './modal/content/productdetail';
 
 interface Product {
   id: string;
@@ -14,8 +18,19 @@ interface Product {
 }
 
 const SearchProductcard = (props: Product) => {
+  const [openQuickViewModal, setOpenQuickViewModal] = useState(false);
+  const handleQuickViewClick = () => {
+    setOpenQuickViewModal(true);
+  };
+
+  const closeQuickViewModal = () => {
+    setOpenQuickViewModal(false);
+  };
   return (
     <div className={styles.productcard}>
+      <button className={styles.quickviewbutton} onClick={handleQuickViewClick}>
+        Quick View
+      </button>
       <Link href={links.productDetail(props.id)} passHref>
         <img src={props.image} alt="" className={styles.productcardimage} />
       </Link>
@@ -82,6 +97,16 @@ const SearchProductcard = (props: Product) => {
           </div>
         )}
       </div>
+      {openQuickViewModal && (
+        <Modal
+          closeModal={closeQuickViewModal}
+          height={50}
+          width={30}
+          key={props.id}
+        >
+          <ProductDetailModalContent productID={props.id} />
+        </Modal>
+      )}
     </div>
   );
 };

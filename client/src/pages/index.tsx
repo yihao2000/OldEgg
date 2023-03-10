@@ -13,6 +13,7 @@ import axios from 'axios';
 import {
   GRAPHQLAPI,
   POPULAR_BRANDS_QUERY,
+  POPULAR_SAVED_SEARCHES_QUERY,
   PROMOS_QUERY,
   TOP_SHOPS_QUERY,
 } from '@/util/constant';
@@ -20,6 +21,7 @@ import PromoCarousel from '@/components/promocarousel';
 import ProductRecommendations from '@/components/productrecommendations';
 import { useSessionStorage } from 'usehooks-ts';
 import { Brand, Shop } from '@/components/interfaces/interfaces';
+import NewsLetter from '@/components/newsletter';
 
 // const myImage = new CloudinaryImage('sample', {
 //   cloudName: 'dmpbgjnrc',
@@ -27,6 +29,10 @@ import { Brand, Shop } from '@/components/interfaces/interfaces';
 
 const inter = Inter({ subsets: ['latin'] });
 
+interface PopularSavedSearch {
+  keyword: string;
+  count: number;
+}
 interface BrandParameter {
   brand: Brand;
 }
@@ -63,9 +69,21 @@ const FeaturedShopCard = (props: ShopParameter) => {
   );
 };
 
+interface SearchParameter {
+  popularSearch: PopularSavedSearch;
+}
+const SearchCard = (props: SearchParameter) => {
+  return (
+    <div className={styles.featuredsearchcard}>
+      {props.popularSearch.keyword}
+    </div>
+  );
+};
+
 export default function Home() {
   const [popularBrands, setPopularBrands] = useState<Brand[]>();
   const [topShops, setTopShops] = useState<Shop[]>();
+  const [popularSearch, setPopularSearch] = useState<PopularSavedSearch[]>();
   useEffect(() => {
     axios
       .post(GRAPHQLAPI, {
@@ -82,6 +100,15 @@ export default function Home() {
       })
       .then((res) => {
         setTopShops(res.data.data.topShops);
+      })
+      .catch(() => {});
+
+    axios
+      .post(GRAPHQLAPI, {
+        query: POPULAR_SAVED_SEARCHES_QUERY,
+      })
+      .then((res) => {
+        setPopularSearch(res.data.data.popularSavedSearches);
       })
       .catch(() => {});
   }, []);
@@ -116,8 +143,19 @@ export default function Home() {
               })}
             </div>
           </div>
+          <div className={styles.featuredsection}>
+            <h1>POPULAR SEARCH</h1>
+            <div className={styles.featuredsearchcontainer}>
+              {popularSearch?.map((x) => {
+                return <SearchCard popularSearch={x} />;
+              })}
+            </div>
+          </div>
           {/* </div> */}
           <ProductRecommendations />
+          <div className={styles.featuredsection}>
+            <NewsLetter />
+          </div>
         </main>
       </Layout>
     </>

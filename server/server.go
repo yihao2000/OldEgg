@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -15,13 +16,35 @@ import (
 	"github.com/yihao2000/gqlgen-todos/graph"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 	middlewares "github.com/yihao2000/gqlgen-todos/middleware"
+	"github.com/yihao2000/gqlgen-todos/pkg/websocket"
 )
 
 const defaultPort = "8080"
 
-// func setupRoutes() {
-// 	pool:= websocket.NewPool();
-// }
+func serveWS(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("WebSocket endpoint reached")
+
+	conn, err := websocket.Upgrade(w, r)
+
+	if err != nil {
+		fmt.Fprintf(w, "%+v\n", err)
+	}
+	client := &websocket.Client{
+		Conn: conn,
+		Pool: pool,
+	}
+	pool.Register <- client
+	client.Read()
+}
+
+func setupRoutes() {
+	pool := websocket.NewPool()
+	go pool.Start()
+
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWS(pool, w, r)
+	})
+}
 
 func main() {
 	// dsn := "host=localhost user=postgres password=admin dbname=tpaweb port=5432 sslmode=disable TimeZone=Asia/Shanghai"
@@ -55,6 +78,7 @@ func main() {
 	db.AutoMigrate(&model.WishlistReview{})
 	db.AutoMigrate(&model.Voucher{})
 	db.AutoMigrate(&model.ShopReview{})
+	db.AutoMigrate(&model.UserSavedSearch{})
 
 	router := chi.NewRouter()
 

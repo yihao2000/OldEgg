@@ -38,6 +38,19 @@
   cursor: pointer;
 }
 
+.quickviewbutton {
+  // display: none;
+  width: 100%;
+  padding: 5px;
+  display: none;
+}
+
+.productcard:hover {
+  .quickviewbutton {
+    display: block;
+  }
+}
+
 @media (max-width: 1000px) {
   .productcard {
     width: 45%;

@@ -50,6 +50,7 @@ type ResolverRoot interface {
 	ShopReview() ShopReviewResolver
 	TransactionDetail() TransactionDetailResolver
 	TransactionHeader() TransactionHeaderResolver
+	User() UserResolver
 	Wishlist() WishlistResolver
 	WishlistDetail() WishlistDetailResolver
 	WishlistFollower() WishlistFollowerResolver
@@ -97,6 +98,13 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 	}
 
+	Location struct {
+		ID        func(childComplexity int) int
+		Latitude  func(childComplexity int) int
+		Longitude func(childComplexity int) int
+		Name      func(childComplexity int) int
+	}
+
 	Mutation struct {
 		Auth                             func(childComplexity int) int
 		Checkout                         func(childComplexity int, shippingID string, paymentTypeID string, addressID string) int
@@ -112,6 +120,7 @@ type ComplexityRoot struct {
 		CreateSavedForLater              func(childComplexity int, productID string, quantity int) int
 		CreateShop                       func(childComplexity int, input model.NewShop) int
 		CreateShopReview                 func(childComplexity int, shopID string, userID string, rating float64, tag *string, comment string, oneTimeDelivery bool, productAccurate bool, satisfiedService bool, transactionHeaderID string) int
+		CreateUserSavedSearch            func(childComplexity int, keyword string) int
 		CreateVoucher                    func(childComplexity int, balance float64) int
 		CreateWishlist                   func(childComplexity int, input model.NewWishlist) int
 		CreateWishlistDetail             func(childComplexity int, wishlistID string, productID string, quantity int) int
@@ -125,6 +134,7 @@ type ComplexityRoot struct {
 		DeleteProductFromWishlistDetails func(childComplexity int, productID string) int
 		DeletePromo                      func(childComplexity int, promoID string) int
 		DeleteSavedForLater              func(childComplexity int, productID string) int
+		DeleteUserSavedSearch            func(childComplexity int, keyword string) int
 		DeleteWishlist                   func(childComplexity int, wishlistID string) int
 		DeleteWishlistDetail             func(childComplexity int, wishlistID string, productID string) int
 		DeleteWishlistFollower           func(childComplexity int, wishlistID string) int
@@ -145,12 +155,18 @@ type ComplexityRoot struct {
 		UpdateWishlistDetail             func(childComplexity int, productID string, wishlistID string, quantity int) int
 		UserInputVerificationCode        func(childComplexity int, email string, verificationcode string) int
 		UserUpdateInformation            func(childComplexity int, currentPassword *string, newPassword *string, phone *string, balance *float64, banned *bool) int
+		UserUpdateNewsLetterSubscription func(childComplexity int, userID string, subscribed bool) int
 		ValidateUserVerificationCode     func(childComplexity int, email string, verificationcode string) int
 	}
 
 	PaymentType struct {
 		ID   func(childComplexity int) int
 		Name func(childComplexity int) int
+	}
+
+	PopularSavedSearch struct {
+		Count   func(childComplexity int) int
+		Keyword func(childComplexity int) int
 	}
 
 	Product struct {
@@ -192,11 +208,14 @@ type ComplexityRoot struct {
 		Category               func(childComplexity int, id *string, name *string) int
 		GetCurrentUser         func(childComplexity int) int
 		GetSubscribedUsers     func(childComplexity int) int
+		GetUserLocation        func(childComplexity int) int
 		GetUserShop            func(childComplexity int) int
+		Locations              func(childComplexity int) int
 		NoShopUsers            func(childComplexity int) int
 		PaymentType            func(childComplexity int, id string) int
 		PaymentTypes           func(childComplexity int) int
 		PopularBrands          func(childComplexity int) int
+		PopularSavedSearches   func(childComplexity int) int
 		Product                func(childComplexity int, id *string, name *string) int
 		ProductGroup           func(childComplexity int, id *string) int
 		ProductUserWishlists   func(childComplexity int, productID string) int
@@ -220,6 +239,7 @@ type ComplexityRoot struct {
 		User                   func(childComplexity int, id *string, email *string) int
 		UserAddresses          func(childComplexity int) int
 		UserFollowedWishlists  func(childComplexity int) int
+		UserSavedSearches      func(childComplexity int) int
 		UserTransactionHeaders func(childComplexity int, ordersWithin *int, ordersType *string, search *string) int
 		Users                  func(childComplexity int, limit *int, offset *int) int
 		Userwishlists          func(childComplexity int) int
@@ -302,13 +322,21 @@ type ComplexityRoot struct {
 		Currency                  func(childComplexity int) int
 		Email                     func(childComplexity int) int
 		ID                        func(childComplexity int) int
+		Location                  func(childComplexity int) int
 		Name                      func(childComplexity int) int
 		NewsLetterSubscribe       func(childComplexity int) int
 		Password                  func(childComplexity int) int
 		Phone                     func(childComplexity int) int
 		Role                      func(childComplexity int) int
+		UserSavedSearches         func(childComplexity int) int
 		VerificationCode          func(childComplexity int) int
 		VerificationCodeValidTime func(childComplexity int) int
+	}
+
+	UserSavedSearch struct {
+		ID      func(childComplexity int) int
+		Keyword func(childComplexity int) int
+		UserID  func(childComplexity int) int
 	}
 
 	Voucher struct {
@@ -371,6 +399,9 @@ type MutationResolver interface {
 	UserInputVerificationCode(ctx context.Context, email string, verificationcode string) (*model.User, error)
 	ValidateUserVerificationCode(ctx context.Context, email string, verificationcode string) (interface{}, error)
 	UpdateUserInformation(ctx context.Context, userID string, banned *bool) (*model.User, error)
+	UserUpdateNewsLetterSubscription(ctx context.Context, userID string, subscribed bool) (*model.User, error)
+	CreateUserSavedSearch(ctx context.Context, keyword string) (*model.UserSavedSearch, error)
+	DeleteUserSavedSearch(ctx context.Context, keyword string) (bool, error)
 	CreateAddress(ctx context.Context, name string, detail string, region string, city string, zipCode string, phone string, isPrimary bool) (*model.Address, error)
 	TogglePrimary(ctx context.Context, id string) (*model.Address, error)
 	DeleteAddress(ctx context.Context, id string) (bool, error)
@@ -431,6 +462,10 @@ type QueryResolver interface {
 	GetUserShop(ctx context.Context) (*model.Shop, error)
 	Users(ctx context.Context, limit *int, offset *int) ([]*model.User, error)
 	NoShopUsers(ctx context.Context) ([]*model.User, error)
+	Locations(ctx context.Context) ([]*model.Location, error)
+	GetUserLocation(ctx context.Context) (*model.Location, error)
+	UserSavedSearches(ctx context.Context) ([]*model.UserSavedSearch, error)
+	PopularSavedSearches(ctx context.Context) ([]*model.PopularSavedSearch, error)
 	Address(ctx context.Context, id string) (*model.Address, error)
 	Addresses(ctx context.Context) ([]*model.Address, error)
 	UserAddresses(ctx context.Context) ([]*model.Address, error)
@@ -502,6 +537,10 @@ type TransactionHeaderResolver interface {
 	Address(ctx context.Context, obj *model.TransactionHeader) (*model.Address, error)
 
 	TransactionDetails(ctx context.Context, obj *model.TransactionHeader) ([]*model.TransactionDetail, error)
+}
+type UserResolver interface {
+	Location(ctx context.Context, obj *model.User) (*model.Location, error)
+	UserSavedSearches(ctx context.Context, obj *model.User) ([]*model.UserSavedSearch, error)
 }
 type WishlistResolver interface {
 	User(ctx context.Context, obj *model.Wishlist) (*model.User, error)
@@ -695,6 +734,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Category.Name(childComplexity), true
 
+	case "Location.id":
+		if e.complexity.Location.ID == nil {
+			break
+		}
+
+		return e.complexity.Location.ID(childComplexity), true
+
+	case "Location.latitude":
+		if e.complexity.Location.Latitude == nil {
+			break
+		}
+
+		return e.complexity.Location.Latitude(childComplexity), true
+
+	case "Location.longitude":
+		if e.complexity.Location.Longitude == nil {
+			break
+		}
+
+		return e.complexity.Location.Longitude(childComplexity), true
+
+	case "Location.name":
+		if e.complexity.Location.Name == nil {
+			break
+		}
+
+		return e.complexity.Location.Name(childComplexity), true
+
 	case "Mutation.auth":
 		if e.complexity.Mutation.Auth == nil {
 			break
@@ -853,6 +920,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateShopReview(childComplexity, args["shopID"].(string), args["userID"].(string), args["rating"].(float64), args["tag"].(*string), args["comment"].(string), args["oneTimeDelivery"].(bool), args["productAccurate"].(bool), args["satisfiedService"].(bool), args["transactionHeaderID"].(string)), true
 
+	case "Mutation.createUserSavedSearch":
+		if e.complexity.Mutation.CreateUserSavedSearch == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createUserSavedSearch_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateUserSavedSearch(childComplexity, args["keyword"].(string)), true
+
 	case "Mutation.createVoucher":
 		if e.complexity.Mutation.CreateVoucher == nil {
 			break
@@ -998,6 +1077,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteSavedForLater(childComplexity, args["productId"].(string)), true
+
+	case "Mutation.deleteUserSavedSearch":
+		if e.complexity.Mutation.DeleteUserSavedSearch == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteUserSavedSearch_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteUserSavedSearch(childComplexity, args["keyword"].(string)), true
 
 	case "Mutation.deleteWishlist":
 		if e.complexity.Mutation.DeleteWishlist == nil {
@@ -1239,6 +1330,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UserUpdateInformation(childComplexity, args["currentPassword"].(*string), args["newPassword"].(*string), args["phone"].(*string), args["balance"].(*float64), args["banned"].(*bool)), true
 
+	case "Mutation.userUpdateNewsLetterSubscription":
+		if e.complexity.Mutation.UserUpdateNewsLetterSubscription == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_userUpdateNewsLetterSubscription_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UserUpdateNewsLetterSubscription(childComplexity, args["userID"].(string), args["subscribed"].(bool)), true
+
 	case "Mutation.validateUserVerificationCode":
 		if e.complexity.Mutation.ValidateUserVerificationCode == nil {
 			break
@@ -1264,6 +1367,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PaymentType.Name(childComplexity), true
+
+	case "PopularSavedSearch.count":
+		if e.complexity.PopularSavedSearch.Count == nil {
+			break
+		}
+
+		return e.complexity.PopularSavedSearch.Count(childComplexity), true
+
+	case "PopularSavedSearch.keyword":
+		if e.complexity.PopularSavedSearch.Keyword == nil {
+			break
+		}
+
+		return e.complexity.PopularSavedSearch.Keyword(childComplexity), true
 
 	case "Product.brand":
 		if e.complexity.Product.Brand == nil {
@@ -1488,12 +1605,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetSubscribedUsers(childComplexity), true
 
+	case "Query.getUserLocation":
+		if e.complexity.Query.GetUserLocation == nil {
+			break
+		}
+
+		return e.complexity.Query.GetUserLocation(childComplexity), true
+
 	case "Query.getUserShop":
 		if e.complexity.Query.GetUserShop == nil {
 			break
 		}
 
 		return e.complexity.Query.GetUserShop(childComplexity), true
+
+	case "Query.locations":
+		if e.complexity.Query.Locations == nil {
+			break
+		}
+
+		return e.complexity.Query.Locations(childComplexity), true
 
 	case "Query.noShopUsers":
 		if e.complexity.Query.NoShopUsers == nil {
@@ -1527,6 +1658,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.PopularBrands(childComplexity), true
+
+	case "Query.popularSavedSearches":
+		if e.complexity.Query.PopularSavedSearches == nil {
+			break
+		}
+
+		return e.complexity.Query.PopularSavedSearches(childComplexity), true
 
 	case "Query.product":
 		if e.complexity.Query.Product == nil {
@@ -1763,6 +1901,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.UserFollowedWishlists(childComplexity), true
+
+	case "Query.userSavedSearches":
+		if e.complexity.Query.UserSavedSearches == nil {
+			break
+		}
+
+		return e.complexity.Query.UserSavedSearches(childComplexity), true
 
 	case "Query.userTransactionHeaders":
 		if e.complexity.Query.UserTransactionHeaders == nil {
@@ -2210,6 +2355,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.ID(childComplexity), true
 
+	case "User.location":
+		if e.complexity.User.Location == nil {
+			break
+		}
+
+		return e.complexity.User.Location(childComplexity), true
+
 	case "User.name":
 		if e.complexity.User.Name == nil {
 			break
@@ -2245,6 +2397,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Role(childComplexity), true
 
+	case "User.userSavedSearches":
+		if e.complexity.User.UserSavedSearches == nil {
+			break
+		}
+
+		return e.complexity.User.UserSavedSearches(childComplexity), true
+
 	case "User.verificationcode":
 		if e.complexity.User.VerificationCode == nil {
 			break
@@ -2258,6 +2417,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.VerificationCodeValidTime(childComplexity), true
+
+	case "UserSavedSearch.id":
+		if e.complexity.UserSavedSearch.ID == nil {
+			break
+		}
+
+		return e.complexity.UserSavedSearch.ID(childComplexity), true
+
+	case "UserSavedSearch.keyword":
+		if e.complexity.UserSavedSearch.Keyword == nil {
+			break
+		}
+
+		return e.complexity.UserSavedSearch.Keyword(childComplexity), true
+
+	case "UserSavedSearch.userID":
+		if e.complexity.UserSavedSearch.UserID == nil {
+			break
+		}
+
+		return e.complexity.UserSavedSearch.UserID(childComplexity), true
 
 	case "Voucher.balance":
 		if e.complexity.Voucher.Balance == nil {
@@ -2950,6 +3130,21 @@ func (ec *executionContext) field_Mutation_createShop_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createUserSavedSearch_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["keyword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["keyword"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createVoucher_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -3166,6 +3361,21 @@ func (ec *executionContext) field_Mutation_deleteSavedForLater_args(ctx context.
 		}
 	}
 	args["productId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteUserSavedSearch_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["keyword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["keyword"] = arg0
 	return args, nil
 }
 
@@ -3664,6 +3874,30 @@ func (ec *executionContext) field_Mutation_userUpdateInformation_args(ctx contex
 		}
 	}
 	args["banned"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_userUpdateNewsLetterSubscription_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["userID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userID"] = arg0
+	var arg1 bool
+	if tmp, ok := rawArgs["subscribed"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("subscribed"))
+		arg1, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["subscribed"] = arg1
 	return args, nil
 }
 
@@ -4838,6 +5072,10 @@ func (ec *executionContext) fieldContext_Address_user(ctx context.Context, field
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -5192,6 +5430,10 @@ func (ec *executionContext) fieldContext_Cart_user(ctx context.Context, field gr
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -5449,6 +5691,182 @@ func (ec *executionContext) fieldContext_Category_description(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Location_id(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Location_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Location_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Location_name(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Location_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Location_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Location_longitude(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Location_longitude(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Longitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Location_longitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Location_latitude(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Location_latitude(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Latitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Location_latitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_auth(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_auth(ctx, field)
 	if err != nil {
@@ -5558,6 +5976,10 @@ func (ec *executionContext) fieldContext_Mutation_userUpdateInformation(ctx cont
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -5636,6 +6058,10 @@ func (ec *executionContext) fieldContext_Mutation_userInputVerificationCode(ctx 
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -5768,6 +6194,10 @@ func (ec *executionContext) fieldContext_Mutation_updateUserInformation(ctx cont
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -5780,6 +6210,204 @@ func (ec *executionContext) fieldContext_Mutation_updateUserInformation(ctx cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateUserInformation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_userUpdateNewsLetterSubscription(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_userUpdateNewsLetterSubscription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UserUpdateNewsLetterSubscription(rctx, fc.Args["userID"].(string), fc.Args["subscribed"].(bool))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_userUpdateNewsLetterSubscription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "verificationcode":
+				return ec.fieldContext_User_verificationcode(ctx, field)
+			case "verificationcodevalidtime":
+				return ec.fieldContext_User_verificationcodevalidtime(ctx, field)
+			case "newslettersubscribe":
+				return ec.fieldContext_User_newslettersubscribe(ctx, field)
+			case "currency":
+				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_userUpdateNewsLetterSubscription_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createUserSavedSearch(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createUserSavedSearch(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateUserSavedSearch(rctx, fc.Args["keyword"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserSavedSearch)
+	fc.Result = res
+	return ec.marshalNUserSavedSearch2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserSavedSearch(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createUserSavedSearch(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserSavedSearch_id(ctx, field)
+			case "keyword":
+				return ec.fieldContext_UserSavedSearch_keyword(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserSavedSearch_userID(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserSavedSearch", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createUserSavedSearch_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteUserSavedSearch(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteUserSavedSearch(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteUserSavedSearch(rctx, fc.Args["keyword"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteUserSavedSearch(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteUserSavedSearch_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -9129,6 +9757,94 @@ func (ec *executionContext) fieldContext_PaymentType_name(ctx context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _PopularSavedSearch_keyword(ctx context.Context, field graphql.CollectedField, obj *model.PopularSavedSearch) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PopularSavedSearch_keyword(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Keyword, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PopularSavedSearch_keyword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PopularSavedSearch",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PopularSavedSearch_count(ctx context.Context, field graphql.CollectedField, obj *model.PopularSavedSearch) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PopularSavedSearch_count(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Count, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PopularSavedSearch_count(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PopularSavedSearch",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_id(ctx, field)
 	if err != nil {
@@ -10078,6 +10794,10 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -10176,6 +10896,10 @@ func (ec *executionContext) fieldContext_Query_getCurrentUser(ctx context.Contex
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -10263,6 +10987,10 @@ func (ec *executionContext) fieldContext_Query_getSubscribedUsers(ctx context.Co
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -10496,6 +11224,10 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -10574,8 +11306,218 @@ func (ec *executionContext) fieldContext_Query_noShopUsers(ctx context.Context, 
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_locations(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_locations(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Locations(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Location)
+	fc.Result = res
+	return ec.marshalNLocation2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐLocationᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_locations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Location_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Location_name(ctx, field)
+			case "longitude":
+				return ec.fieldContext_Location_longitude(ctx, field)
+			case "latitude":
+				return ec.fieldContext_Location_latitude(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getUserLocation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getUserLocation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetUserLocation(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Location)
+	fc.Result = res
+	return ec.marshalNLocation2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getUserLocation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Location_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Location_name(ctx, field)
+			case "longitude":
+				return ec.fieldContext_Location_longitude(ctx, field)
+			case "latitude":
+				return ec.fieldContext_Location_latitude(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_userSavedSearches(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userSavedSearches(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserSavedSearches(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.UserSavedSearch)
+	fc.Result = res
+	return ec.marshalNUserSavedSearch2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserSavedSearchᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userSavedSearches(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserSavedSearch_id(ctx, field)
+			case "keyword":
+				return ec.fieldContext_UserSavedSearch_keyword(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserSavedSearch_userID(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserSavedSearch", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_popularSavedSearches(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_popularSavedSearches(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PopularSavedSearches(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PopularSavedSearch)
+	fc.Result = res
+	return ec.marshalNPopularSavedSearch2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐPopularSavedSearchᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_popularSavedSearches(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "keyword":
+				return ec.fieldContext_PopularSavedSearch_keyword(ctx, field)
+			case "count":
+				return ec.fieldContext_PopularSavedSearch_count(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PopularSavedSearch", field.Name)
 		},
 	}
 	return fc, nil
@@ -13511,6 +14453,10 @@ func (ec *executionContext) fieldContext_Review_user(ctx context.Context, field 
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -13785,6 +14731,10 @@ func (ec *executionContext) fieldContext_SavedForLater_user(ctx context.Context,
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -14529,6 +15479,10 @@ func (ec *executionContext) fieldContext_Shop_user(ctx context.Context, field gr
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -14705,6 +15659,10 @@ func (ec *executionContext) fieldContext_ShopReview_user(ctx context.Context, fi
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -15412,6 +16370,10 @@ func (ec *executionContext) fieldContext_TransactionHeader_user(ctx context.Cont
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -16202,6 +17164,244 @@ func (ec *executionContext) fieldContext_User_currency(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _User_location(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_location(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.User().Location(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Location)
+	fc.Result = res
+	return ec.marshalNLocation2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_location(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Location_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Location_name(ctx, field)
+			case "longitude":
+				return ec.fieldContext_Location_longitude(ctx, field)
+			case "latitude":
+				return ec.fieldContext_Location_latitude(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_userSavedSearches(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_userSavedSearches(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.User().UserSavedSearches(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.UserSavedSearch)
+	fc.Result = res
+	return ec.marshalNUserSavedSearch2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserSavedSearchᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_userSavedSearches(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserSavedSearch_id(ctx, field)
+			case "keyword":
+				return ec.fieldContext_UserSavedSearch_keyword(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserSavedSearch_userID(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserSavedSearch", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserSavedSearch_id(ctx context.Context, field graphql.CollectedField, obj *model.UserSavedSearch) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserSavedSearch_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserSavedSearch_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserSavedSearch",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserSavedSearch_keyword(ctx context.Context, field graphql.CollectedField, obj *model.UserSavedSearch) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserSavedSearch_keyword(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Keyword, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserSavedSearch_keyword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserSavedSearch",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserSavedSearch_userID(ctx context.Context, field graphql.CollectedField, obj *model.UserSavedSearch) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserSavedSearch_userID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserSavedSearch_userID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserSavedSearch",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Voucher_id(ctx context.Context, field graphql.CollectedField, obj *model.Voucher) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Voucher_id(ctx, field)
 	if err != nil {
@@ -16524,6 +17724,10 @@ func (ec *executionContext) fieldContext_Wishlist_user(ctx context.Context, fiel
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -17180,6 +18384,10 @@ func (ec *executionContext) fieldContext_WishlistFollower_user(ctx context.Conte
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -17400,6 +18608,10 @@ func (ec *executionContext) fieldContext_WishlistReview_user(ctx context.Context
 				return ec.fieldContext_User_newslettersubscribe(ctx, field)
 			case "currency":
 				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -20277,6 +21489,55 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var locationImplementors = []string{"Location"}
+
+func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet, obj *model.Location) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, locationImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Location")
+		case "id":
+
+			out.Values[i] = ec._Location_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "name":
+
+			out.Values[i] = ec._Location_name(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "longitude":
+
+			out.Values[i] = ec._Location_longitude(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "latitude":
+
+			out.Values[i] = ec._Location_latitude(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -20323,6 +21584,24 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateUserInformation(ctx, field)
+			})
+
+		case "userUpdateNewsLetterSubscription":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_userUpdateNewsLetterSubscription(ctx, field)
+			})
+
+		case "createUserSavedSearch":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createUserSavedSearch(ctx, field)
+			})
+
+		case "deleteUserSavedSearch":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteUserSavedSearch(ctx, field)
 			})
 
 		case "createAddress":
@@ -20611,6 +21890,41 @@ func (ec *executionContext) _PaymentType(ctx context.Context, sel ast.SelectionS
 		case "name":
 
 			out.Values[i] = ec._PaymentType_name(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var popularSavedSearchImplementors = []string{"PopularSavedSearch"}
+
+func (ec *executionContext) _PopularSavedSearch(ctx context.Context, sel ast.SelectionSet, obj *model.PopularSavedSearch) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, popularSavedSearchImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PopularSavedSearch")
+		case "keyword":
+
+			out.Values[i] = ec._PopularSavedSearch_keyword(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "count":
+
+			out.Values[i] = ec._PopularSavedSearch_count(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -21032,6 +22346,86 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_noShopUsers(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "locations":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_locations(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getUserLocation":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getUserLocation(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "userSavedSearches":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userSavedSearches(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "popularSavedSearches":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_popularSavedSearches(ctx, field)
 				return res
 			}
 
@@ -22544,21 +23938,21 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._User_id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 
 			out.Values[i] = ec._User_name(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "email":
 
 			out.Values[i] = ec._User_email(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "phone":
 
@@ -22569,21 +23963,21 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._User_password(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "banned":
 
 			out.Values[i] = ec._User_banned(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "role":
 
 			out.Values[i] = ec._User_role(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "verificationcode":
 
@@ -22598,11 +23992,93 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._User_newslettersubscribe(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "currency":
 
 			out.Values[i] = ec._User_currency(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "location":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_location(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		case "userSavedSearches":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_userSavedSearches(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userSavedSearchImplementors = []string{"UserSavedSearch"}
+
+func (ec *executionContext) _UserSavedSearch(ctx context.Context, sel ast.SelectionSet, obj *model.UserSavedSearch) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userSavedSearchImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserSavedSearch")
+		case "id":
+
+			out.Values[i] = ec._UserSavedSearch_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "keyword":
+
+			out.Values[i] = ec._UserSavedSearch_keyword(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userID":
+
+			out.Values[i] = ec._UserSavedSearch_userID(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -23684,6 +25160,64 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) marshalNLocation2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v model.Location) graphql.Marshaler {
+	return ec._Location(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLocation2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐLocationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Location) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNLocation2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐLocation(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNLocation2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Location(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNNewBrand2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐNewBrand(ctx context.Context, v interface{}) (model.NewBrand, error) {
 	res, err := ec.unmarshalInputNewBrand(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -23780,6 +25314,60 @@ func (ec *executionContext) marshalNPaymentType2ᚖgithubᚗcomᚋyihao2000ᚋgq
 		return graphql.Null
 	}
 	return ec._PaymentType(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPopularSavedSearch2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐPopularSavedSearchᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.PopularSavedSearch) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPopularSavedSearch2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐPopularSavedSearch(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNPopularSavedSearch2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐPopularSavedSearch(ctx context.Context, sel ast.SelectionSet, v *model.PopularSavedSearch) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PopularSavedSearch(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNProduct2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v model.Product) graphql.Marshaler {
@@ -24400,6 +25988,64 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑ
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNUserSavedSearch2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserSavedSearch(ctx context.Context, sel ast.SelectionSet, v model.UserSavedSearch) graphql.Marshaler {
+	return ec._UserSavedSearch(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUserSavedSearch2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserSavedSearchᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.UserSavedSearch) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNUserSavedSearch2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserSavedSearch(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNUserSavedSearch2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserSavedSearch(ctx context.Context, sel ast.SelectionSet, v *model.UserSavedSearch) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._UserSavedSearch(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNVoucher2githubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐVoucher(ctx context.Context, sel ast.SelectionSet, v model.Voucher) graphql.Marshaler {

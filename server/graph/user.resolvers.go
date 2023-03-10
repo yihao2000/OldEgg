@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
@@ -107,6 +108,81 @@ func (r *mutationResolver) UpdateUserInformation(ctx context.Context, userID str
 	}
 
 	return &user, db.Save(user).Error
+}
+
+// UserUpdateNewsLetterSubscription is the resolver for the userUpdateNewsLetterSubscription field.
+func (r *mutationResolver) UserUpdateNewsLetterSubscription(ctx context.Context, userID string, subscribed bool) (*model.User, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	currUserID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	if currUserID != userID {
+		return nil, &gqlerror.Error{
+			Message: "Error, Beda User !",
+		}
+	}
+
+	var user model.User
+	if err := db.Model(user).Where("id LIKE ?", userID).Take(&user).Error; err != nil {
+		return nil, err
+	}
+	user.NewsLetterSubscribe = subscribed
+
+	return &user, db.Save(user).Error
+}
+
+// CreateUserSavedSearch is the resolver for the createUserSavedSearch field.
+func (r *mutationResolver) CreateUserSavedSearch(ctx context.Context, keyword string) (*model.UserSavedSearch, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.UserSavedSearch
+	db.Where("user_id = ? ", userID).Find(&models)
+
+	if len(models) >= 10 {
+		return nil, &gqlerror.Error{
+			Message: "Saved query reached limit !",
+		}
+	}
+
+	savedSearch := model.UserSavedSearch{
+		ID:      uuid.NewString(),
+		Keyword: keyword,
+		UserID:  userID,
+	}
+
+	return &savedSearch, db.Model(savedSearch).Create(&savedSearch).Error
+}
+
+// DeleteUserSavedSearch is the resolver for the deleteUserSavedSearch field.
+func (r *mutationResolver) DeleteUserSavedSearch(ctx context.Context, keyword string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.UserSavedSearch)
+	if err := db.First(model, "user_id = ? AND keyword LIKE ?", userID, keyword).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // User is the resolver for the user field.
@@ -216,13 +292,94 @@ func (r *queryResolver) NoShopUsers(ctx context.Context) ([]*model.User, error) 
 
 	temp := db.Where("users.id NOT IN (SELECT user_id FROM shops)")
 
-	// 	SELECT *
-	// FROM users
-	// WHERE users.id NOT IN (
-	// SELECT user_id FROM shops
-	// )
-
 	return users, temp.Find(&users).Error
+}
+
+// Locations is the resolver for the locations field.
+func (r *queryResolver) Locations(ctx context.Context) ([]*model.Location, error) {
+	db := config.GetDB()
+	var models []*model.Location
+	return models, db.Find(&models).Error
+}
+
+// GetUserLocation is the resolver for the getUserLocation field.
+func (r *queryResolver) GetUserLocation(ctx context.Context) (*model.Location, error) {
+	db := config.GetDB()
+
+	user := new(model.User)
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	err := db.Where("id = ?", userID).Find(&user).Error
+
+	if err != nil {
+		return nil, err
+	}
+	model := new(model.Location)
+	if &user.LocationID != nil {
+		return model, db.First(model, "id = ?", user.LocationID).Error
+	}
+
+	return nil, &gqlerror.Error{
+		Message: "User gapunya location",
+	}
+}
+
+// UserSavedSearches is the resolver for the userSavedSearches field.
+func (r *queryResolver) UserSavedSearches(ctx context.Context) ([]*model.UserSavedSearch, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.UserSavedSearch
+	return models, db.Where("user_id = ? ", userID).Find(&models).Error
+}
+
+// PopularSavedSearches is the resolver for the popularSavedSearches field.
+func (r *queryResolver) PopularSavedSearches(ctx context.Context) ([]*model.PopularSavedSearch, error) {
+	db := config.GetDB()
+
+	var popularSearches []*model.PopularSavedSearch
+
+	err := db.Table("user_saved_searches").
+		Select("keyword, COUNT(*) AS count").
+		Group("keyword").
+		Order("count DESC").
+		Limit(5).
+		Scan(&popularSearches).Error
+
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: "Failed",
+		}
+	}
+
+	return popularSearches, nil
+
+}
+
+// Location is the resolver for the location field.
+func (r *userResolver) Location(ctx context.Context, obj *model.User) (*model.Location, error) {
+	db := config.GetDB()
+	model := new(model.Location)
+
+	return model, db.First(model, "id = ?", obj.LocationID).Error
+}
+
+// UserSavedSearches is the resolver for the userSavedSearches field.
+func (r *userResolver) UserSavedSearches(ctx context.Context, obj *model.User) ([]*model.UserSavedSearch, error) {
+	db := config.GetDB()
+	var models []*model.UserSavedSearch
+	return models, db.Where("user_id = ? ", obj.ID).Find(&models).Error
 }
 
 // AuthOps returns AuthOpsResolver implementation.
@@ -234,9 +391,13 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// User returns UserResolver implementation.
+func (r *Resolver) User() UserResolver { return &userResolver{r} }
+
 type authOpsResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }
 
 // !!! WARNING !!!
 // The code below was going to be deleted when updating resolvers. It has been copied here so you have
@@ -247,5 +408,3 @@ type queryResolver struct{ *Resolver }
 func (r *queryResolver) GetSubscribedUser(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented: GetSubscribedUser - getSubscribedUser"))
 }
-
-type userResolver struct{ *Resolver }

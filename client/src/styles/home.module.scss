@@ -525,6 +525,17 @@
   display: flex;
   justify-content: space-between;
 }
+.featuredsearchcontainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.featuredsearchcard {
+  display: flex;
+  background-color: rgb(var(--background-end-rgb));
+  padding: 40px;
+  font-size: 20px;
+}
 
 .featuredshopcard {
   // padding: 75px;
@@ -566,6 +577,92 @@
   object-fit: cover;
   width: 100%;
   height: 100%;
+}
+
+.newslettercontainer {
+  padding: 20px;
+  background-color: rgb(var(--background-end-rgb));
+  width: 400px;
+  margin-bottom: 100px;
+}
+
+.newslettercontent {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin buttonDefaultStyling($bgcolor) {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 10px;
+  outline: none;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: 1px solid #d9d9d9;
+  background: $bgcolor;
+  color: #222;
+  font-weight: bold;
+  font-stretch: condensed;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.subscribebutton {
+  @include buttonDefaultStyling(rgb(var(--accent-rgb)));
+}
+
+.unsubscribebutton {
+  @include buttonDefaultStyling(red);
+}
+
+.locationcard {
+  padding: 15px;
+  border-radius: 30px;
+}
+.locationcard:hover {
+  background-color: rgb(var(--foreground-lighter-rgb));
+  cursor: pointer;
+}
+
+.locationtitle {
+  font-size: 15px;
+  color: rgb(var(--accent-rgb));
+}
+
+.locationcontent {
+  font-size: 14px;
+}
+
+.productdetailcontainer {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.productdetailimagecontainer {
+  max-width: 50%;
+}
+
+.productdetailimage {
+  object-fit: cover;
+  width: 100%;
+}
+
+.productdetailinfocontainer {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.flexbetween {
+  display: flex;
+  justify-content: space-between;
 }
 
 @media (max-width: 450px) {

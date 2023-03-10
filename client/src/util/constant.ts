@@ -38,6 +38,8 @@ export const CURRENT_USER_QUERY = `query{
     banned
     role
     currency
+    newslettersubscribe
+
   }
 }`;
 
@@ -864,4 +866,54 @@ export const CREATE_PROMO_MUTATION = `mutation($name:String!, $description:Strin
 
 export const DELETE_PROMO_MUTATION = `mutation($promoID:ID!){
   deletePromo(promoID:$promoID)
+}`;
+
+export const UPDATE_USER_SUBSCRIPTION_MUTATION = `mutation($userID:ID!, $subscribed:Boolean!){
+  userUpdateNewsLetterSubscription(userID:$userID subscribed:$subscribed){
+    id
+  }
+}`;
+
+export const LOCATIONS_QUERY = `query{
+  locations{
+    id
+    name
+    longitude
+    latitude
+  }
+}`;
+
+export const USER_LOCATION_QUERY = `query{
+  getUserLocation{
+    id
+    name
+    longitude
+    latitude
+  }
+}`;
+
+export const USER_SAVED_SEARCHES = `query{
+  userSavedSearches{
+    id
+    keyword
+  }
+}`;
+
+export const CREATE_USER_SAVED_SEARCH = `mutation($keyword:String!){
+  createUserSavedSearch(keyword:$keyword){
+    id
+    keyword
+    userID
+  }
+}`;
+
+export const DELETE_USER_SAVED_SEARCH = `mutation($keyword:String!){
+  deleteUserSavedSearch(keyword:$keyword)
+}`;
+
+export const POPULAR_SAVED_SEARCHES_QUERY = `query{
+  popularSavedSearches{
+    keyword
+    count
+  }
 }`;

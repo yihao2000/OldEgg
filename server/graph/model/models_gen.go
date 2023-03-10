@@ -11,6 +11,13 @@ type AuthOps struct {
 	Register interface{} `json:"register"`
 }
 
+type Location struct {
+	ID        string  `json:"id"`
+	Name      string  `json:"name"`
+	Longitude float64 `json:"longitude"`
+	Latitude  float64 `json:"latitude"`
+}
+
 type NewBrand struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -79,6 +86,11 @@ type NewWishlist struct {
 	Privacy string `json:"privacy"`
 }
 
+type PopularSavedSearch struct {
+	Keyword string `json:"keyword"`
+	Count   int    `json:"count"`
+}
+
 type SearchProduct struct {
 	Keyword        *string  `json:"keyword"`
 	MinPrice       *float64 `json:"minPrice"`
@@ -90,9 +102,8 @@ type SearchProduct struct {
 	HighRating     *bool    `json:"highRating"`
 }
 
-type Voucher struct {
-	ID          string     `json:"id"`
-	Balance     float64    `json:"balance"`
-	DateCreated time.Time  `json:"dateCreated"`
-	DateUsed    *time.Time `json:"dateUsed"`
+type UserSavedSearch struct {
+	ID      string `json:"id"`
+	Keyword string `json:"keyword"`
+	UserID  string `json:"userID"`
 }

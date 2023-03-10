@@ -6,16 +6,20 @@ import { useRouter } from 'next/router';
 import Layout from '@/components/layout';
 import { useEffect, useState, useTransition } from 'react';
 import {
+  CREATE_USER_SAVED_SEARCH,
+  DELETE_USER_SAVED_SEARCH,
   GRAPHQLAPI,
   PRODUCTS_QUERY,
   SEARCH_PRODUCTS_QUERY,
+  USER_SAVED_SEARCHES,
 } from '@/util/constant';
 import axios from 'axios';
-import { Product } from '@/components/interfaces/interfaces';
+import { Product, UserSavedSearch } from '@/components/interfaces/interfaces';
 import styles from '@/styles/pagesstyles/search.module.scss';
 import ProductCard from '@/components/productcard';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import SearchProductcard from '@/components/searchproductcard';
+import { useSessionStorage } from 'usehooks-ts';
 
 const Search: NextPage = () => {
   const router = useRouter();
@@ -27,7 +31,13 @@ const Search: NextPage = () => {
   const [totalPage, setTotalPage] = useState(0);
   const [orderBy, setorderBy] = useState('');
 
+  const [token, setToken] = useSessionStorage('token', '');
   const [refresh, setRefresh] = useState(false);
+
+  const [userSavedSearches, setUserSavedSearches] =
+    useState<UserSavedSearch[]>();
+
+  const [keywordSaved, setKeywordSaved] = useState(false);
 
   const refreshComponent = () => {
     setRefresh(!refresh);
@@ -53,8 +63,35 @@ const Search: NextPage = () => {
           console.log(err);
           console.log('Eror disini');
         });
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: USER_SAVED_SEARCHES,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
+        .then((res) => {
+          setUserSavedSearches(res.data.data.userSavedSearches);
+        })
+        .catch((err) => {});
     }
   }, [refresh]);
+
+  useEffect(() => {
+    if (search) {
+      const containSearch = userSavedSearches?.find((x) => {
+        return x.keyword === search;
+      });
+
+      setKeywordSaved(containSearch != null);
+    }
+  }, [userSavedSearches]);
 
   useEffect(() => {
     refreshComponent();
@@ -101,6 +138,55 @@ const Search: NextPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const handleSaveQuery = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CREATE_USER_SAVED_SEARCH,
+          variables: {
+            keyword: search,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then((res) => {
+        refreshComponent();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleUnsaveQuery = () => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: DELETE_USER_SAVED_SEARCH,
+          variables: {
+            keyword: search,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then((res) => {
+        console.log(res);
+        refreshComponent();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <Layout>
@@ -185,6 +271,30 @@ const Search: NextPage = () => {
                   <option value="12">12</option>
                 </select>
               </div>
+            </div>
+            <div className={styles.filtercontainer}>
+              {!keywordSaved && (
+                <button
+                  onClick={handleSaveQuery}
+                  style={{
+                    backgroundColor: 'green',
+                    color: 'white',
+                  }}
+                >
+                  Save this Query
+                </button>
+              )}
+              {keywordSaved && (
+                <button
+                  onClick={handleUnsaveQuery}
+                  style={{
+                    backgroundColor: 'red',
+                    color: 'white',
+                  }}
+                >
+                  Unsave this Query
+                </button>
+              )}
             </div>
             <div className={styles.productcontainer}>
               {products.map((e) => {
