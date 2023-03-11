@@ -294,7 +294,7 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, brandID *s
 				temp = temp.Where("price <= ?", *search.MaxPrice)
 			}
 			if search.Keyword != nil {
-				temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*search.Keyword+"%", "%"+*search.Keyword+"%")
+				temp = temp.Joins("JOIN brands ON brands.id = products.brand_id").Where("products.name LIKE ? OR brands.name LIKE ?", "%"+*search.Keyword+"%", "%"+*search.Keyword+"%")
 			}
 			if search.CategoryID != nil {
 				temp = temp.Where("category_id = ?", *search.CategoryID)
@@ -339,6 +339,21 @@ func (r *queryResolver) Product(ctx context.Context, id *string, name *string) (
 // ProductsGroup is the resolver for the productsGroup field.
 func (r *queryResolver) ProductsGroup(ctx context.Context, category *string, brand *string, productgroup *string, shop *string) ([]*model.Product, error) {
 	panic(fmt.Errorf("not implemented: ProductsGroup - productsGroup"))
+}
+
+// SearchProductsRecommendations is the resolver for the searchProductsRecommendations field.
+func (r *queryResolver) SearchProductsRecommendations(ctx context.Context, keyword string) ([]*model.Product, error) {
+	db := config.GetDB()
+
+	var models []*model.Product
+
+	err := db.Joins("JOIN brands ON brands.id = products.brand_id").Where("products.name LIKE ? OR brands.name LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Limit(5).Find(&models).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return models, nil
 }
 
 // ProductGroup is the resolver for the productGroup field.

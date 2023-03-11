@@ -364,7 +364,6 @@ func (r *queryResolver) PopularSavedSearches(ctx context.Context) ([]*model.Popu
 	}
 
 	return popularSearches, nil
-
 }
 
 // Location is the resolver for the location field.

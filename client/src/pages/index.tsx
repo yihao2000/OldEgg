@@ -84,6 +84,7 @@ export default function Home() {
   const [popularBrands, setPopularBrands] = useState<Brand[]>();
   const [topShops, setTopShops] = useState<Shop[]>();
   const [popularSearch, setPopularSearch] = useState<PopularSavedSearch[]>();
+
   useEffect(() => {
     axios
       .post(GRAPHQLAPI, {

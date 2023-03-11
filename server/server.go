@@ -79,6 +79,7 @@ func main() {
 	db.AutoMigrate(&model.Voucher{})
 	db.AutoMigrate(&model.ShopReview{})
 	db.AutoMigrate(&model.UserSavedSearch{})
+	db.AutoMigrate(&model.WishlistReviewTag{})
 
 	router := chi.NewRouter()
 

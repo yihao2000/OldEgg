@@ -114,6 +114,8 @@ extend type Query{
     product(id: ID, name: String): Product! @goField(forceResolver: true)
     productsGroup(category: ID, brand: ID, productgroup: ID, shop: ID): [Product!]! @goField(forceResolver: true)
 
+    searchProductsRecommendations(keyword: String!): [Product!]! 
+
     productGroup(id: ID): ProductGroup! @goField(forceResolver: true)
 
     

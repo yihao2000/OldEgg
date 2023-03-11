@@ -50,6 +50,12 @@ type WishlistReview{
   comment: String!
 }
 
+type WishlistReviewTag{
+  wishlistReview: WishlistReview!
+  user: User!
+  helpful: Boolean!
+}
+
 
 
 extend type Mutation{
@@ -78,6 +84,8 @@ extend type Mutation{
   createSavedForLater(productId: ID!, quantity: Int!): SavedForLater! @auth
   deleteSavedForLater(productId: ID!): Boolean! @auth
   deleteAllSavedForLater: Boolean! @auth
+
+  createWishlistReviewTag(wishlistReviewID: ID!, helpful: Boolean!): WishlistReviewTag!
 } 
 
 extend type Query{

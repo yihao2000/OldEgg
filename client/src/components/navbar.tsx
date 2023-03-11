@@ -2,6 +2,7 @@ import styles from '@/styles/componentstyles/navbar.module.css';
 import {
   CURRENT_USER_QUERY,
   GRAPHQLAPI,
+  SEARCH_PRODUCTS_QUERY,
   USER_CART_QUERY,
 } from '@/util/constant';
 import { links } from '@/util/route';
@@ -12,7 +13,7 @@ import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { NAME_SPLITTER } from './converter/converter';
-import { Cart, User } from './interfaces/interfaces';
+import { Cart, Product, User } from './interfaces/interfaces';
 import LocationCard from './navbar/locationcard';
 
 export default function Navbar() {
@@ -23,6 +24,8 @@ export default function Navbar() {
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
   const [carts, setCarts] = useState<Cart[]>();
   const [user, setUser] = useState<User>();
+
+  const [searchResult, setSearchResult] = useState<Product[]>();
 
   useEffect(() => {
     if (token == '') {
@@ -84,6 +87,34 @@ export default function Navbar() {
       setCartTotalPrice(total);
     }
   }, [carts]);
+
+  useEffect(() => {
+    if (search != '') {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: SEARCH_PRODUCTS_QUERY,
+            variables: {
+              limit: 5,
+              keyword: search,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setSearchResult(res.data.data.products);
+        })
+
+        .catch((err) => console.log(err));
+    } else {
+      setSearchResult([]);
+    }
+  }, [search]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -159,6 +190,38 @@ export default function Navbar() {
             <button type="submit" className={styles.navbarsearchbutton}>
               <i className="fa fa-search" style={{ fontSize: '20px' }}></i>
             </button>
+            <div className={styles.searchresultcontainer}>
+              {searchResult?.map((x) => {
+                return (
+                  <Link href={links.productDetail(x.id)} passHref>
+                    <div
+                      className={styles.searchresultcard}
+                      onClick={() => {
+                        links.productDetail(x.id);
+                      }}
+                    >
+                      <div className={styles.searchresultimagecontainer}>
+                        <img
+                          src={x.image}
+                          alt=""
+                          className={styles.searchresultimage}
+                        />
+                      </div>
+                      <div className={styles.searchresultinfocontainer}>
+                        <div
+                          style={{
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {x.name}
+                        </div>
+                        <div>{x.brand.name}</div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </form>
 

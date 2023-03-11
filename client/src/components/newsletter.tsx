@@ -87,7 +87,7 @@ export default function NewsLetter() {
   }, [token, refresh]);
   return (
     <div className={styles.newslettercontainer}>
-      {token && (
+      {token && user && (
         <div className={styles.newslettercontent}>
           {' '}
           <h2>Hello, {user?.name}!</h2>

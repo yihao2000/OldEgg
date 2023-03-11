@@ -474,6 +474,26 @@ func (r *mutationResolver) DeleteAllSavedForLater(ctx context.Context) (bool, er
 	return true, db.Delete(&models).Error
 }
 
+// CreateWishlistReviewTag is the resolver for the createWishlistReviewTag field.
+func (r *mutationResolver) CreateWishlistReviewTag(ctx context.Context, wishlistReviewID string, helpful bool) (*model.WishlistReviewTag, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	wishlistReview := &model.WishlistReviewTag{
+		WishlistReviewID: wishlistReviewID,
+		UserID:           userID,
+		Helpful:          helpful,
+	}
+
+	return wishlistReview, db.Model(wishlistReview).Create(&wishlistReview).Error
+}
+
 // Cart is the resolver for the cart field.
 func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart, error) {
 	panic(fmt.Errorf("not implemented: Cart - cart"))
@@ -777,19 +797,3 @@ type wishlistResolver struct{ *Resolver }
 type wishlistDetailResolver struct{ *Resolver }
 type wishlistFollowerResolver struct{ *Resolver }
 type wishlistReviewResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *wishlistReviewResolver) ID(ctx context.Context, obj *model.WishlistReview) (string, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
-}
-func (r *wishlistReviewResolver) CustomName(ctx context.Context, obj *model.WishlistReview) (string, error) {
-	panic(fmt.Errorf("not implemented: CustomName - customName"))
-}
-func (r *wishlistResolver) Notes(ctx context.Context, obj *model.Wishlist) (string, error) {
-	panic(fmt.Errorf("not implemented: Notes - notes"))
-}
