@@ -66,7 +66,7 @@ type Mutation {
    auth: AuthOps! @goField(forceResolver: true)
    userUpdateInformation(currentPassword: String, newPassword: String, phone: String, balance: Float, banned: Boolean): User! @goField(forceResolver: true)
 
-   userInputVerificationCode(email:String!, verificationcode:String!): User! @goField(forceResolver:true)
+   userInputVerificationCode(email:String!, verificationcode:String!, duration: Int!): User! @goField(forceResolver:true)
    validateUserVerificationCode(email: String!, verificationcode:String!): Any! @goField(forceResolver:true)
 
   updateUserInformation(userID: ID!, banned: Boolean): User! 
@@ -98,5 +98,6 @@ type Query{
     userSavedSearches: [UserSavedSearch!]!
     popularSavedSearches: [PopularSavedSearch!]!
     
-
+    userProductReviews: [ProductReview!]!
+    userWishlistReviews: [WishlistReview!]!
 }

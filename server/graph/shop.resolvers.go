@@ -6,12 +6,14 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
+	"github.com/yihao2000/gqlgen-todos/service"
 )
 
 // CreateShop is the resolver for the createShop field.
@@ -51,7 +53,15 @@ func (r *mutationResolver) UpdateShop(ctx context.Context, name string, aboutus 
 
 	shop := new(model.Shop)
 
-	err := db.First(shop, "id = ?", shopID).Error
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	err := db.First(shop, "id = ? AND user_id = ?", shopID, userID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -113,6 +123,29 @@ func (r *mutationResolver) CreateShopReview(ctx context.Context, shopID string, 
 	}
 
 	return &shopReview, nil
+}
+
+// CreateShopReviewTag is the resolver for the createShopReviewTag field.
+func (r *mutationResolver) CreateShopReviewTag(ctx context.Context, shopReviewID string, tag string) (*model.ShopReviewTag, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, Invalid Token !",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	shopReviewTag := model.ShopReviewTag{
+		ShopReviewID: shopReviewID,
+		UserID:       userID,
+		Tag:          tag,
+	}
+	if err := db.Model(shopReviewTag).Create(&shopReviewTag).Error; err != nil {
+		return nil, err
+	}
+
+	return &shopReviewTag, nil
 }
 
 // Shops is the resolver for the shops field.
@@ -257,6 +290,25 @@ func (r *queryResolver) ShopReviews(ctx context.Context, shopID string, filter *
 	return models, temp.Find(&models).Error
 }
 
+// ShopReviewTag is the resolver for the shopReviewTag field.
+func (r *queryResolver) ShopReviewTag(ctx context.Context, shopReviewID string) (*model.ShopReviewTag, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, Invalid Token !",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var model *model.ShopReviewTag
+	err := db.Where("shop_review_id = ? AND user_id = ?", shopReviewID, userID).Find(&model).Error
+
+	if err != nil || model == nil {
+		return nil, err
+	}
+	return model, nil
+}
+
 // Products is the resolver for the products field.
 func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
 	db := config.GetDB()
@@ -300,3 +352,15 @@ func (r *Resolver) ShopReview() ShopReviewResolver { return &shopReviewResolver{
 
 type shopResolver struct{ *Resolver }
 type shopReviewResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *shopReviewTagResolver) Tag(ctx context.Context, obj *model.ShopReviewTag) (string, error) {
+	panic(fmt.Errorf("not implemented: Tag - tag"))
+}
+
+type shopReviewTagResolver struct{ *Resolver }

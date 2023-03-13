@@ -62,6 +62,7 @@ export default function Login() {
               variables: {
                 email: email,
                 verificationcode: verificationCode,
+                duration: 15,
               },
             })
             .then((res) => {

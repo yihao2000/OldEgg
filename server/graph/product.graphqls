@@ -45,6 +45,14 @@ type Product{
   rating: Float!
 }
 
+type ProductReview{
+  product: Product! @goField(forceResolver:true)
+  user: User! @goField(forceResolver:true)
+  rating: Float!
+  title: String!
+  comment: String!
+}
+
 
 input NewProduct{
     brandId: ID!
@@ -100,6 +108,10 @@ extend type Mutation{
     
     createProductVariant(input: NewProductVariant!): Product!
     updateProductVariant(input: NewProductVariant!, lastUpdateId: ID!): Product!
+
+    createProductReview(productID: String!, rating: Float!, title: String!, comment: String!): ProductReview!
+    updateProductReview(productID: String!, rating: Float!, title: String!, comment: String!): ProductReview!
+    deleteProductReview(productID: String!): Boolean!
 } 
 
 extend type Query{
@@ -118,5 +130,6 @@ extend type Query{
 
     productGroup(id: ID): ProductGroup! @goField(forceResolver: true)
 
+    productReviews(productID: ID!): [ProductReview!]!
     
 }

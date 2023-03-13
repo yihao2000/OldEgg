@@ -215,3 +215,11 @@ export interface UserSavedSearch {
   keyword: string;
   userID: string;
 }
+
+export interface ProductReview {
+  product: Product;
+  user: User;
+  rating: number;
+  title: string;
+  comment: string;
+}

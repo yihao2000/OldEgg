@@ -56,11 +56,3 @@ type WishlistReview struct {
 	Title      string    `json:"title"`
 	Comment    string    `json:"comment"`
 }
-
-type WishlistReviewTag struct {
-	WishlistReviewID string          `json:"wishlistReviewID" gorm:"primaryKey"`
-	WishlistReview   *WishlistReview `json:"wishlistReview"`
-	UserID           string          `json:"userID" gorm:"primaryKey"`
-	User             *User           `json:"user"`
-	Helpful          bool            `json:"helpful"`
-}

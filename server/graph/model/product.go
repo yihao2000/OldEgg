@@ -43,3 +43,13 @@ type Category struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+type ProductReview struct {
+	ProductID string   `json:"productID" gorm:"primaryKey"`
+	Product   *Product `json:"product"`
+	UserID    string   `json:"userID" gorm:"primaryKey"`
+	User      *User    `json:"user"`
+	Rating    float64  `json:"rating"`
+	Title     string   `json:"title"`
+	Comment   string   `json:"comment"`
+}

@@ -14,6 +14,26 @@
   border-left: thin solid grey;
 }
 
+@mixin defaultTextInput {
+  background: transparent;
+  box-sizing: border-box;
+  background-color: rgba(var(--background-start-rgb), 0, 5);
+
+  font-size: 1em;
+  height: 30px;
+
+  padding: 2vh 1vw;
+  border-radius: var(--border-radius);
+}
+.fulltextinput {
+  @include defaultTextInput();
+  display: block;
+  width: 100%;
+}
+.textinput {
+  @include defaultTextInput();
+}
+
 .leftside {
   width: 16%;
   padding-left: 50px;
@@ -89,6 +109,38 @@
   text-decoration: none !important;
   text-transform: uppercase;
   border-radius: 3px;
+}
+
+.contentcontainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.cardcontainer {
+  // width: 100%;
+  padding: 20px;
+  background-color: rgb(var(--background-end-rgb));
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+}
+
+.commentcontainer {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.ratinglabel {
+  color: rgb(var(--accent-rgb));
+}
+
+.namecontainer {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 70%;
 }
 
 @media (max-width: 900px) {

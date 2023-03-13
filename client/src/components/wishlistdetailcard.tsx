@@ -1,4 +1,4 @@
-import { User, WishlistDetail } from './interfaces/interfaces';
+import { ProductReview, User, WishlistDetail } from './interfaces/interfaces';
 import styles from '@/styles/pagesstyles/wishlist/wishlistdetail.module.scss';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,7 @@ import {
   DELETE_WISHLIST_WISHLISTDETAIL_MUTATION,
   GRAPHQLAPI,
   PRODUCT_QUERY,
+  PRODUCT_REVIEWS_QUERY,
   UPDATE_WISHLIST_DETAIL,
   USER_ADD_CART_MUTATION,
 } from '@/util/constant';
@@ -23,7 +24,18 @@ export default function WishlistDetailCard(props: Parameter) {
   const [wishlistDetailQuantity, setWishlistDetailQuantity] = useState(0);
   const [token, setToken] = useSessionStorage('token', '');
   const [user, setUser] = useState<User>();
+  const [productReviews, setProductReviews] = useState<ProductReview[]>();
+  const [productAvgRating, setProductAvgRating] = useState(0);
 
+  useEffect(() => {
+    if (productReviews) {
+      var total = 0;
+      productReviews.map((x) => {
+        total += x.rating;
+      });
+      setProductAvgRating(total / productReviews.length);
+    }
+  }, [productReviews]);
   useEffect(() => {
     console.log(props.wishlistdetail);
     if (token) {
@@ -41,6 +53,25 @@ export default function WishlistDetailCard(props: Parameter) {
         )
         .then((res) => {
           setUser(res.data.data.getCurrentUser);
+        });
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: PRODUCT_REVIEWS_QUERY,
+            variables: {
+              productID: props.wishlistdetail.product.id,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setProductReviews(res.data.data.productReviews);
         });
     }
   }, [token]);
@@ -236,8 +267,18 @@ export default function WishlistDetailCard(props: Parameter) {
       </div>
       <div className={styles.descriptioncontainer}>
         <div className={styles.fullgapcontainer}>
-          <span>Review</span>
-          <span>Brand</span>
+          {productReviews?.length != 0 && (
+            <span>
+              <span
+                style={{
+                  color: 'yellow',
+                }}
+              >
+                {productAvgRating}
+              </span>
+              /5 Eggs ({productReviews?.length} Reviews)
+            </span>
+          )}
         </div>
         <div className={styles.titlecontainer}>
           {LAPTOP_NAME_CONVERTER(props.wishlistdetail.product.name)}
@@ -254,7 +295,7 @@ export default function WishlistDetailCard(props: Parameter) {
         </div>
         <div className={styles.qtyaddcontainer}>
           <div className={styles2.quantitycontainer}>
-            {props.wishlistdetail.wishlist.id == user?.id && (
+            {props.wishlistdetail.wishlist.user.id == user?.id && (
               <div
                 className={`${styles2.quantitycontainer}`}
                 style={{ marginRight: '5px' }}
@@ -284,7 +325,7 @@ export default function WishlistDetailCard(props: Parameter) {
               </div>
             )}
 
-            {props.wishlistdetail.wishlist.id != user?.id && (
+            {props.wishlistdetail.wishlist.user.id != user?.id && (
               <div style={{ paddingRight: '20px' }}>
                 {props.wishlistdetail.quantity}
               </div>

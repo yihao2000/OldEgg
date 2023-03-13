@@ -37,7 +37,7 @@ func (r *mutationResolver) UserUpdateInformation(ctx context.Context, currentPas
 }
 
 // UserInputVerificationCode is the resolver for the userInputVerificationCode field.
-func (r *mutationResolver) UserInputVerificationCode(ctx context.Context, email string, verificationcode string) (*model.User, error) {
+func (r *mutationResolver) UserInputVerificationCode(ctx context.Context, email string, verificationcode string, duration int) (*model.User, error) {
 	db := config.GetDB()
 
 	var user model.User
@@ -56,7 +56,7 @@ func (r *mutationResolver) UserInputVerificationCode(ctx context.Context, email 
 	}
 
 	user.VerificationCode = verificationcode
-	validtime := time.Now().Add(time.Minute * 15)
+	validtime := time.Now().Add(time.Minute * time.Duration(duration))
 	user.VerificationCodeValidTime = &validtime
 
 	return &user, db.Save(user).Error
@@ -364,6 +364,36 @@ func (r *queryResolver) PopularSavedSearches(ctx context.Context) ([]*model.Popu
 	}
 
 	return popularSearches, nil
+}
+
+// UserProductReviews is the resolver for the userProductReviews field.
+func (r *queryResolver) UserProductReviews(ctx context.Context) ([]*model.ProductReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var models []*model.ProductReview
+	return models, db.Where("user_id = ? ", userID).Find(&models).Error
+}
+
+// UserWishlistReviews is the resolver for the userWishlistReviews field.
+func (r *queryResolver) UserWishlistReviews(ctx context.Context) ([]*model.WishlistReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var models []*model.WishlistReview
+	return models, db.Where("user_id = ? ", userID).Find(&models).Error
 }
 
 // Location is the resolver for the location field.

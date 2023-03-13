@@ -34,12 +34,20 @@ type ShopReview{
 
 }
 
+type ShopReviewTag{
+  shopReview: ShopReview!
+  user: User!
+  tag: String!
+}
+
 extend type Mutation{
     createShop(input: NewShop!): Shop! 
     updateShop(name: String!, aboutus: String!, description: String!, image: String!, shopID: ID!): Shop!
     updateShopStatus(banned: Boolean, shopID: ID!): Shop!
 
     createShopReview(shopID:ID!, userID:ID!, rating:Float!, tag:String, comment:String!, oneTimeDelivery:Boolean!, productAccurate:Boolean!, satisfiedService:Boolean!, transactionHeaderID: ID!): ShopReview!
+
+    createShopReviewTag(shopReviewID: ID!, tag:String!): ShopReviewTag!
 } 
 
 extend type Query{
@@ -52,5 +60,8 @@ extend type Query{
     topShops: [Shop!]! @goField(forceResolver: true)
 
     shopReviews(shopID: ID!, filter: String, search: String): [ShopReview!]!
+
+    shopReviewTag(shopReviewID: ID!): ShopReviewTag!
+    
 
 }

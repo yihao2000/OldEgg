@@ -12,6 +12,7 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
+	"github.com/yihao2000/gqlgen-todos/service"
 )
 
 // CreateBrand is the resolver for the createBrand field.
@@ -151,7 +152,7 @@ func (r *mutationResolver) UpdateProduct(ctx context.Context, productID string, 
 
 	product := new(model.Product)
 
-	err := db.First(product, "id = ?", productID).Error
+	err := db.First(product, "id = ? AND shop_id = ?", productID, input.ShopID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -179,6 +180,79 @@ func (r *mutationResolver) CreateProductVariant(ctx context.Context, input model
 // UpdateProductVariant is the resolver for the updateProductVariant field.
 func (r *mutationResolver) UpdateProductVariant(ctx context.Context, input model.NewProductVariant, lastUpdateID string) (*model.Product, error) {
 	panic(fmt.Errorf("not implemented: UpdateProductVariant - updateProductVariant"))
+}
+
+// CreateProductReview is the resolver for the createProductReview field.
+func (r *mutationResolver) CreateProductReview(ctx context.Context, productID string, rating float64, title string, comment string) (*model.ProductReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	productReview := model.ProductReview{
+		ProductID: productID,
+		UserID:    userID,
+		Rating:    rating,
+		Title:     title,
+		Comment:   comment,
+	}
+	if err := db.Model(productReview).Create(&productReview).Error; err != nil {
+		return nil, err
+	}
+
+	return &productReview, nil
+}
+
+// UpdateProductReview is the resolver for the updateProductReview field.
+func (r *mutationResolver) UpdateProductReview(ctx context.Context, productID string, rating float64, title string, comment string) (*model.ProductReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	productReview := new(model.ProductReview)
+
+	err := db.First(productReview, "product_id = ? AND user_id = ?", productID, userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	productReview.Title = title
+	productReview.Comment = comment
+	productReview.Rating = rating
+
+	db.Save(productReview)
+
+	return productReview, nil
+}
+
+// DeleteProductReview is the resolver for the deleteProductReview field.
+func (r *mutationResolver) DeleteProductReview(ctx context.Context, productID string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.ProductReview)
+	if err := db.First(model, "product_id = ? AND user_id = ?", productID, userID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // Productgroup is the resolver for the productgroup field.
@@ -218,6 +292,19 @@ func (r *productResolver) Reviews(ctx context.Context, obj *model.Product) ([]*m
 	db := config.GetDB()
 	var models []*model.Review
 	return models, db.Where("product_id = ?", obj.ID).Order("created_at DESC").Find(&models).Error
+}
+
+// Product is the resolver for the product field.
+func (r *productReviewResolver) Product(ctx context.Context, obj *model.ProductReview) (*model.Product, error) {
+	db := config.GetDB()
+	product := new(model.Product)
+
+	return product, db.Where("id = ?", obj.ProductID).Order("valid_to ASC").Limit(1).Find(&product).Error
+}
+
+// User is the resolver for the user field.
+func (r *productReviewResolver) User(ctx context.Context, obj *model.ProductReview) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: User - user"))
 }
 
 // Brands is the resolver for the brands field.
@@ -364,10 +451,29 @@ func (r *queryResolver) ProductGroup(ctx context.Context, id *string) (*model.Pr
 	return productGroup, db.Where("id = ?", id).Limit(1).Find(&productGroup).Error
 }
 
+// ProductReviews is the resolver for the productReviews field.
+func (r *queryResolver) ProductReviews(ctx context.Context, productID string) ([]*model.ProductReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var models []*model.ProductReview
+	return models, db.Where("product_id = ? AND user_id = ?", productID, userID).Find(&models).Error
+}
+
 // Product returns ProductResolver implementation.
 func (r *Resolver) Product() ProductResolver { return &productResolver{r} }
 
+// ProductReview returns ProductReviewResolver implementation.
+func (r *Resolver) ProductReview() ProductReviewResolver { return &productReviewResolver{r} }
+
 type productResolver struct{ *Resolver }
+type productReviewResolver struct{ *Resolver }
 
 // !!! WARNING !!!
 // The code below was going to be deleted when updating resolvers. It has been copied here so you have

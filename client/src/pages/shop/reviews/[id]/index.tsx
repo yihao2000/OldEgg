@@ -9,10 +9,12 @@ import styles from '@/styles/pagesstyles/shop/reviews/shopreviews.module.scss';
 import { Product, Shop, ShopReview } from '@/components/interfaces/interfaces';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import {
+  CREATE_SHOP_REVIEW_TAG_MUTATION,
   GRAPHQLAPI,
   SHOP_PRODUCTS_QUERY,
   SHOP_QUERY,
   SHOP_REVIEWS_QUERY,
+  SHOP_REVIEW_TAG_QUERY,
   SHOP_TOTAL_SALES_QUERY,
 } from '@/util/constant';
 import ProductCard from '@/components/productcard';
@@ -56,15 +58,94 @@ export default function ShopAboutUs() {
   interface Paramater {
     shopReview: ShopReview;
   }
+
   const ReviewCard = (props: Paramater) => {
+    interface ShopReviewTag {
+      tag: string;
+    }
+
     const [orderDate, setOrderDate] = useState<Date>();
     const [reviewDate, setReviewDate] = useState<Date>();
+    const [shopReviewTag, setShopReviewTag] = useState<ShopReviewTag>();
     useEffect(() => {
       setOrderDate(
         new Date(props.shopReview.transactionHeader.transactionDate),
       );
       setReviewDate(new Date(props.shopReview.dateCreated));
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: SHOP_REVIEW_TAG_QUERY,
+            variables: {
+              shopReviewID: props.shopReview.id,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          console.log(res);
+          setShopReviewTag(res.data.data.shopReviewTag);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }, []);
+
+    const handleHelpfulReviewClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CREATE_SHOP_REVIEW_TAG_MUTATION,
+            variables: {
+              shopReviewID: props.shopReview.id,
+              tag: 'Helpful',
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          refreshComponent();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    const handleUnhelpfulReviewClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CREATE_SHOP_REVIEW_TAG_MUTATION,
+            variables: {
+              shopReviewID: props.shopReview.id,
+              tag: 'Unhelpful',
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          refreshComponent();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     return (
       <div className={styles.reviewcard}>
         <div className={styles.reviewfirstsection}>
@@ -88,6 +169,42 @@ export default function ShopAboutUs() {
         </div>
         <div className={styles.reviewthirdsection}>
           <h5>{reviewDate?.toDateString()}</h5>
+          {shopReviewTag?.tag == '' && (
+            <div
+              style={{
+                display: 'flex',
+                columnGap: '10px',
+              }}
+            >
+              <button
+                style={{
+                  background: 'green',
+                  color: 'white',
+                }}
+                onClick={handleHelpfulReviewClick}
+              >
+                Helpful
+              </button>
+              <button
+                style={{
+                  background: 'red',
+                  color: 'white',
+                }}
+                onClick={handleUnhelpfulReviewClick}
+              >
+                Unfelpful
+              </button>
+            </div>
+          )}
+          {shopReviewTag?.tag != '' && (
+            <div
+              style={{
+                fontSize: '10px',
+              }}
+            >
+              You have tagged this review as : {shopReviewTag?.tag}
+            </div>
+          )}
         </div>
       </div>
     );

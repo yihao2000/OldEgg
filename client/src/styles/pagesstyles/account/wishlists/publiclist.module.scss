@@ -42,6 +42,22 @@
   width: 30%;
 }
 
+.ratingcontainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.pricecontainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.custompricecontainer {
+  display: flex;
+  column-gap: 20px;
+}
+
 .rightside {
   @include padding(0px, 20px);
   width: 70%;

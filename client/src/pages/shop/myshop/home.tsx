@@ -431,7 +431,10 @@ export default function MyShop() {
                   Add Product
                 </button>
               </div>
-
+              <div>
+                {' '}
+                <span>({products.length} Products)</span>
+              </div>
               <div className={styles.filtercontainer}>
                 <div className={styles.filtersubcontainer}>
                   <div className={styles.orderBycontainer}>
@@ -451,6 +454,7 @@ export default function MyShop() {
                     </select>
                   </div>
                 </div>
+
                 <div
                   className={styles.filtersubcontainer}
                   style={{

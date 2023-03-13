@@ -1,5 +1,6 @@
 import styles from '@/styles/componentstyles/navbar.module.css';
 import {
+  CATEGORIES_QUERY,
   CURRENT_USER_QUERY,
   GRAPHQLAPI,
   SEARCH_PRODUCTS_QUERY,
@@ -13,7 +14,7 @@ import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { NAME_SPLITTER } from './converter/converter';
-import { Cart, Product, User } from './interfaces/interfaces';
+import { Cart, Category, Product, User } from './interfaces/interfaces';
 import LocationCard from './navbar/locationcard';
 
 export default function Navbar() {
@@ -26,6 +27,10 @@ export default function Navbar() {
   const [user, setUser] = useState<User>();
 
   const [searchResult, setSearchResult] = useState<Product[]>();
+
+  const [openCategoryDropdown, setOpenCategoryDropdown] = useState(false);
+
+  const [categories, setCategories] = useState<Category[]>();
 
   useEffect(() => {
     if (token == '') {
@@ -70,6 +75,24 @@ export default function Navbar() {
         )
         .then((res) => {
           setCarts(res.data.data.carts);
+        })
+
+        .catch((err) => console.log(err));
+
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: CATEGORIES_QUERY,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setCategories(res.data.data.categories);
         })
 
         .catch((err) => console.log(err));
@@ -142,10 +165,28 @@ export default function Navbar() {
   return (
     <nav>
       <div className={styles.navbarcontainer}>
-        <div className={styles.hamburgercontainer}>
+        <div
+          className={styles.hamburgercontainer}
+          onClick={() => {
+            setOpenCategoryDropdown(!openCategoryDropdown);
+          }}
+        >
           <div className={styles.hamburgercomponent}></div>
           <div className={styles.hamburgercomponent}></div>
           <div className={styles.hamburgercomponent}></div>
+          {openCategoryDropdown && (
+            <div className={styles.categorydropdown}>
+              <h2>Categories</h2>
+
+              {categories?.map((x) => {
+                return (
+                  <div style={{ marginTop: '15px', zIndex: '100000000' }}>
+                    {x.name}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
         <div className={styles.hamburgerresponsivecontainer}>
           <div className={styles.hamburgerresponsivecomponent}></div>

@@ -14,6 +14,7 @@
 .hamburgercontainer {
   display: inline-block;
   cursor: pointer;
+  position: relative;
 }
 
 .hamburgercomponent {
@@ -36,6 +37,14 @@
   background-color: rgb(var(--foreground-rgb));
   margin: 6px 0;
   transition: 0.4s;
+}
+
+.categorydropdown {
+  position: absolute;
+  top: 20;
+  background-color: rgb(var(--secondary-secondary-rgb));
+  padding: 20px;
+  z-index: 10000;
 }
 
 .navbarsearch {

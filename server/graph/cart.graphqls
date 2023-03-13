@@ -50,11 +50,11 @@ type WishlistReview{
   comment: String!
 }
 
-type WishlistReviewTag{
-  wishlistReview: WishlistReview!
-  user: User!
-  helpful: Boolean!
-}
+# type WishlistReviewTag{
+#   wishlistReview: WishlistReview!
+#   user: User!
+#   helpful: Boolean!
+# }
 
 
 
@@ -76,7 +76,8 @@ extend type Mutation{
   deleteProductFromWishlistDetails(productId: ID!): Boolean!
 
   createWishlistReview(wishlistID: ID!, customName:String!, rating: Float!, title: String!, comment: String!): WishlistReview!
-
+  updateWishlistReview(wishlistReviewID: ID!, rating: Float!, title: String!, comment: String!): WishlistReview!
+  deleteWishlistReview(wishlistReviewID: ID!): Boolean!
 
   createWishlistFollower(wishlistID: ID!): WishlistFollower! @auth
   deleteWishlistFollower(wishlistID: ID!): Boolean! @auth
@@ -85,7 +86,7 @@ extend type Mutation{
   deleteSavedForLater(productId: ID!): Boolean! @auth
   deleteAllSavedForLater: Boolean! @auth
 
-  createWishlistReviewTag(wishlistReviewID: ID!, helpful: Boolean!): WishlistReviewTag!
+  # createWishlistReviewTag(wishlistReviewID: ID!, helpful: Boolean!): WishlistReviewTag!
 } 
 
 extend type Query{
@@ -94,7 +95,7 @@ extend type Query{
   updateCart(userID: ID!, productID: ID!, quantity: Int!): Cart! @auth
   
 
-  wishlists(filter: String, sortBy: String, offset: Int, limit: Int, ): [Wishlist!]!  @goField(forceResolver:true)
+  wishlists(filter: String, sortBy: String, offset: Int, limit: Int, ratingFilter: Float, startPriceFilter: Float, endPriceFilter: Float): [Wishlist!]!  @goField(forceResolver:true)
   userwishlists: [Wishlist!]! @goField(forceResolver:true)
   wishlistDetails(wishlistId: ID!): [WishlistDetail!]!
   wishlistFollowers(wishlistID: ID!): [WishlistFollower!]!

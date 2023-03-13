@@ -30,3 +30,11 @@ type ShopReview struct {
 	ProductAccurate     bool      `json:"productAccurate"`
 	SatisfiedService    bool      `json:"satisfiedService"`
 }
+
+type ShopReviewTag struct {
+	ShopReviewID string      `json:"shopReviewID" gorm:"primaryKey"`
+	ShopReview   *ShopReview `json:"shopReview"`
+	UserID       string      `json:"userID" gorm:"primaryKey"`
+	User         *User       `json:"user"`
+	Tag          string      `json:"tag"`
+}

@@ -52,6 +52,11 @@ const Mylist: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
 
+  //Filter
+  const [ratingFilter, setRatingFilter] = useState(0);
+  const [minimumPriceFilter, setMinimumPriceFilter] = useState(0);
+  const [maximumPriceFilter, setMaximumPriceFilter] = useState(0);
+
   useEffect(() => {
     refreshComponent();
   }, [sortBy]);
@@ -92,6 +97,7 @@ const Mylist: NextPage = () => {
   }, [limit]);
 
   useEffect(() => {
+    console.log(maximumPriceFilter);
     if (totalPage) {
       axios
         .post(GRAPHQLAPI, {
@@ -100,16 +106,28 @@ const Mylist: NextPage = () => {
             limit: limit,
             offset: offset,
             sortBy: sortBy,
+            ratingFilter: ratingFilter != 0 ? ratingFilter : null,
+            startPriceFilter:
+              minimumPriceFilter == 0 ? null : minimumPriceFilter,
+            endPriceFilter: maximumPriceFilter == 0 ? null : maximumPriceFilter,
           },
         })
         .then((res) => {
+          console.log(res);
           setWishlists(res.data.data.wishlists);
         })
         .catch((err) => {
           console.log(err);
         });
     }
-  }, [totalPage, offset, sortBy]);
+  }, [
+    totalPage,
+    offset,
+    sortBy,
+    ratingFilter,
+    minimumPriceFilter,
+    maximumPriceFilter,
+  ]);
 
   useEffect(() => {
     setOffset((currentPage - 1) * limit);
@@ -130,7 +148,103 @@ const Mylist: NextPage = () => {
     <Layout>
       <WishlistNav />
       <div className={styles.pagedivider}>
-        <div className={styles.leftside}></div>
+        <div className={styles.leftside}>
+          <div className={styles.ratingcontainer}>
+            <h2>Lists Rating</h2>
+
+            <label htmlFor="">
+              <input
+                type="checkbox"
+                checked={ratingFilter == 5}
+                onChange={() => {
+                  setRatingFilter(5);
+                }}
+              />
+              <span>5 Eggs</span>
+            </label>
+            <label htmlFor="">
+              <input
+                type="checkbox"
+                checked={ratingFilter == 4}
+                onChange={() => {
+                  setRatingFilter(4);
+                }}
+              />
+              <span>4 Eggs</span>
+            </label>
+            <label htmlFor="">
+              <input
+                type="checkbox"
+                checked={ratingFilter == 3}
+                onChange={() => {
+                  setRatingFilter(3);
+                }}
+              />
+              <span>3 Eggs</span>
+            </label>
+            <label htmlFor="">
+              <input
+                type="checkbox"
+                checked={ratingFilter == 2}
+                onChange={() => {
+                  setRatingFilter(2);
+                }}
+              />
+              <span>2 Eggs</span>
+            </label>
+            <label htmlFor="">
+              <input
+                type="checkbox"
+                checked={ratingFilter == 1}
+                onChange={() => {
+                  setRatingFilter(1);
+                }}
+              />
+              <span>1 Eggs</span>
+            </label>
+            <label htmlFor="">
+              <input
+                type="checkbox"
+                checked={ratingFilter == 0}
+                onChange={() => {
+                  setRatingFilter(0);
+                }}
+              />
+              <span>All Ratings</span>
+            </label>
+          </div>
+          <hr
+            style={{
+              width: '100%',
+            }}
+          />
+          <h2>Lists Price</h2>
+          <div className={styles.pricecontainer}>
+            <div>
+              <span>Minimum Price: </span>{' '}
+              <input
+                type="number"
+                placeholder="Minimum Price ($)"
+                value={minimumPriceFilter}
+                onChange={(event) => {
+                  setMinimumPriceFilter(Number(event?.target.value));
+                }}
+              />
+            </div>
+            <div>
+              {' '}
+              <span>Maximum Price: </span>
+              <input
+                type="number"
+                placeholder="Maximum Price ($)"
+                value={maximumPriceFilter}
+                onChange={(event) => {
+                  setMaximumPriceFilter(Number(event?.target.value));
+                }}
+              />
+            </div>
+          </div>
+        </div>
         <div className={styles.rightside}>
           <div className={styles.contentcontainer}>
             <div className={styles.filtercontainer}>

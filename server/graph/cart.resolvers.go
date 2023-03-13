@@ -174,8 +174,10 @@ func (r *mutationResolver) UpdateWishlist(ctx context.Context, wishlistID string
 		}
 	}
 
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
 	var wishlist model.Wishlist
-	if err := db.Model(wishlist).Where("id LIKE ?", wishlistID).Take(&wishlist).Error; err != nil {
+	if err := db.Model(wishlist).Where("id LIKE ? AND user_id LIKE ?", wishlistID, userID).Take(&wishlist).Error; err != nil {
 		return nil, err
 	}
 
@@ -195,8 +197,10 @@ func (r *mutationResolver) DeleteWishlist(ctx context.Context, wishlistID string
 		}
 	}
 
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
 	model := new(model.Wishlist)
-	if err := db.First(model, "id = ?", wishlistID).Error; err != nil {
+	if err := db.First(model, "id = ? AND user_id = ?", wishlistID, userID).Error; err != nil {
 		return false, err
 	}
 
@@ -259,7 +263,11 @@ func (r *mutationResolver) UpdateWishlistDetail(ctx context.Context, productID s
 		}
 	}
 
-	// userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var wishlist model.Wishlist
+	if err := db.Model(wishlist).Where("id LIKE ? AND user_id LIKE ?", wishlistID, userID).Take(&wishlist).Error; err != nil {
+		return nil, err
+	}
 
 	var wishlistdetail model.WishlistDetail
 	if err := db.Model(wishlistdetail).Where("wishlist_id LIKE ? AND product_id LIKE ?", wishlistID, productID).Take(&wishlistdetail).Error; err != nil {
@@ -294,6 +302,12 @@ func (r *mutationResolver) DeleteWishlistDetail(ctx context.Context, wishlistID 
 		return false, &gqlerror.Error{
 			Message: "Error, token gaada",
 		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var wishlist model.Wishlist
+	if err := db.Model(wishlist).Where("id LIKE ? AND user_id LIKE ?", wishlistID, userID).Take(&wishlist).Error; err != nil {
+		return false, err
 	}
 
 	model := new(model.WishlistDetail)
@@ -372,6 +386,53 @@ func (r *mutationResolver) CreateWishlistReview(ctx context.Context, wishlistID 
 	}
 
 	return &wishlistReview, nil
+}
+
+// UpdateWishlistReview is the resolver for the updateWishlistReview field.
+func (r *mutationResolver) UpdateWishlistReview(ctx context.Context, wishlistReviewID string, rating float64, title string, comment string) (*model.WishlistReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	wishlistReview := new(model.WishlistReview)
+
+	err := db.First(wishlistReview, "id = ? AND user_id = ?", wishlistReviewID, userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	wishlistReview.Title = title
+	wishlistReview.Comment = comment
+	wishlistReview.Rating = rating
+
+	db.Save(wishlistReview)
+
+	return wishlistReview, nil
+}
+
+// DeleteWishlistReview is the resolver for the deleteWishlistReview field.
+func (r *mutationResolver) DeleteWishlistReview(ctx context.Context, wishlistReviewID string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.WishlistReview)
+	if err := db.First(model, "id = ? AND user_id = ?", wishlistReviewID, userID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
 }
 
 // CreateWishlistFollower is the resolver for the createWishlistFollower field.
@@ -474,26 +535,6 @@ func (r *mutationResolver) DeleteAllSavedForLater(ctx context.Context) (bool, er
 	return true, db.Delete(&models).Error
 }
 
-// CreateWishlistReviewTag is the resolver for the createWishlistReviewTag field.
-func (r *mutationResolver) CreateWishlistReviewTag(ctx context.Context, wishlistReviewID string, helpful bool) (*model.WishlistReviewTag, error) {
-	db := config.GetDB()
-	if ctx.Value("auth") == nil {
-		return nil, &gqlerror.Error{
-			Message: "Error, token gaada",
-		}
-	}
-
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
-
-	wishlistReview := &model.WishlistReviewTag{
-		WishlistReviewID: wishlistReviewID,
-		UserID:           userID,
-		Helpful:          helpful,
-	}
-
-	return wishlistReview, db.Model(wishlistReview).Create(&wishlistReview).Error
-}
-
 // Cart is the resolver for the cart field.
 func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart, error) {
 	panic(fmt.Errorf("not implemented: Cart - cart"))
@@ -521,7 +562,7 @@ func (r *queryResolver) UpdateCart(ctx context.Context, userID string, productID
 }
 
 // Wishlists is the resolver for the wishlists field.
-func (r *queryResolver) Wishlists(ctx context.Context, filter *string, sortBy *string, offset *int, limit *int) ([]*model.Wishlist, error) {
+func (r *queryResolver) Wishlists(ctx context.Context, filter *string, sortBy *string, offset *int, limit *int, ratingFilter *float64, startPriceFilter *float64, endPriceFilter *float64) ([]*model.Wishlist, error) {
 	db := config.GetDB()
 
 	var models []*model.Wishlist
@@ -552,6 +593,18 @@ func (r *queryResolver) Wishlists(ctx context.Context, filter *string, sortBy *s
 
 	if limit != nil {
 		temp = temp.Limit(*limit)
+	}
+
+	if ratingFilter != nil {
+		temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_reviews ON wishlists.id = wishlist_reviews.wishlist_id").Group("wishlists.id").Having("AVG(wishlist_reviews.rating) >= ?", ratingFilter)
+	}
+
+	if startPriceFilter != nil {
+		temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_details ON wishlists.id = wishlist_details.wishlist_id JOIN products ON products.id = wishlist_details.product_id").Group("wishlists.id").Having("SUM(products.price) >= ?", startPriceFilter)
+	}
+
+	if endPriceFilter != nil {
+		temp = temp.Having("SUM(products.price) <= ?", endPriceFilter)
 	}
 
 	return models, temp.Find(&models).Error

@@ -269,8 +269,8 @@ export const DELETE_PRODUCT_FROM_WISHLIST_DETAILS = `mutation($productId:ID!){
   deleteProductFromWishlistDetails(productId:$productId)
 }`;
 
-export const INSERT_USER_VERIFICATION_CODE = `mutation($email:String!, $verificationcode:String!){
-  userInputVerificationCode(email:$email, verificationcode:$verificationcode){
+export const INSERT_USER_VERIFICATION_CODE = `mutation($email:String!, $verificationcode:String!, $duration:Int!){
+  userInputVerificationCode(email:$email, verificationcode:$verificationcode, duration:$duration){
 id
   }
 }`;
@@ -491,8 +491,8 @@ export const USER_TRANSACTIONS = `query($ordersWithin:Int, $ordersType:String, $
   }
 }`;
 
-export const PUBLIC_WISHLISTS_QUERY = `query($filter:String, $sortBy:String, $limit:Int, $offset: Int){
-  wishlists(filter:$filter, sortBy:$sortBy, limit:$limit, offset:$offset){
+export const PUBLIC_WISHLISTS_QUERY = `query($filter:String, $sortBy:String, $limit:Int, $offset: Int, $ratingFilter:Float, $startPriceFilter:Float, $endPriceFilter:Float){
+  wishlists(filter:$filter, sortBy:$sortBy, limit:$limit, offset:$offset, ratingFilter:$ratingFilter, startPriceFilter:$startPriceFilter, endPriceFilter:$endPriceFilter){
     id
     name
     privacy
@@ -916,4 +916,71 @@ export const POPULAR_SAVED_SEARCHES_QUERY = `query{
     keyword
     count
   }
+}`;
+
+export const SHOP_REVIEW_TAG_QUERY = `query($shopReviewID:ID!){
+  shopReviewTag(shopReviewID:$shopReviewID){
+    tag
+  }
+}`;
+
+export const CREATE_SHOP_REVIEW_TAG_MUTATION = `mutation($shopReviewID:ID!, $tag:String!){
+  createShopReviewTag(shopReviewID:$shopReviewID, tag:$tag){
+    tag
+  }
+}`;
+
+export const PRODUCT_REVIEWS_QUERY = `query($productID:ID!){
+  productReviews(productID:$productID){
+    rating
+    title
+    comment
+  }
+}`;
+
+export const USER_PRODUCT_REVIEWS_QUERY = `query{
+  userProductReviews{
+    rating
+    title
+    comment
+    product{
+      id
+      name
+      description
+    }
+  }
+}`;
+
+export const DELETE_PRODUCT_REVIEW_MUTATION = `mutation($productID:String!){
+  deleteProductReview(productID:$productID)
+}`;
+
+export const UPDATE_PRODUCT_REVIEW_MUTATION = `mutation($productID:String!, $title:String!, $comment:String!, $rating:Float!){
+  updateProductReview(productID:$productID title:$title rating:$rating comment:$comment){
+    rating
+  }
+}`;
+
+export const USER_WISHLIST_REVIEWS_QUERY = `query{
+  userWishlistReviews{
+    id
+    wishlist{
+      id
+      name
+    }
+    customName
+    rating
+    title
+    comment
+  }
+}`;
+
+export const UPDATE_WISHLIST_REVIEW_MUTATION = `mutation($wishlistReviewID:ID!, $rating:Float!, $title:String!, $comment:String!){
+  updateWishlistReview(wishlistReviewID:$wishlistReviewID, rating:$rating, title:$title, comment:$comment){
+    id
+  }
+}`;
+
+export const DELETE_WISHLIST_REVIEW_MUTATION = `mutation($wishlistReviewID:ID!){
+  deleteWishlistReview(wishlistReviewID:$wishlistReviewID)
 }`;
