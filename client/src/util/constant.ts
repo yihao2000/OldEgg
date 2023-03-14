@@ -984,3 +984,66 @@ export const UPDATE_WISHLIST_REVIEW_MUTATION = `mutation($wishlistReviewID:ID!, 
 export const DELETE_WISHLIST_REVIEW_MUTATION = `mutation($wishlistReviewID:ID!){
   deleteWishlistReview(wishlistReviewID:$wishlistReviewID)
 }`;
+
+export const TRANSACTION_HEADERS_QUERY = `query{
+  transactionHeaders{
+    id
+    status
+    transactionDate
+    invoice
+  }
+}`;
+
+export const USER_NOTIFICATIONS_QUERY = `query{
+  userNotifications{
+    id
+  	title
+    title
+    content
+    read
+  }
+}`;
+
+export const USER_SHOP_REVIEWS_QUERY = `query{
+  userShopReviews{
+    id
+    rating
+    tag
+    dateCreated
+    comment
+    onTimeDelivery
+    productAccurate
+    satisfiedService
+    shop{
+      id
+      name
+    }
+
+  }
+}`;
+
+export const DELETE_SHOP_REVIEW_MUTATION = `mutation($shopReviewID:ID!){
+  deleteShopReview(shopReviewID:$shopReviewID)
+}`;
+
+export const DELETE_SHOP_REVIEW_TAG_MUTATION = `mutation($shopReviewID:ID!){
+	deleteShopReviewTag(shopReviewID:$shopReviewID)
+}`;
+
+export const UPDATE_SHOP_REVIEW_MUTATION = `mutation($shopReviewID:ID!, $rating:Float!, $comment:String!){
+  updateShopReview(shopReviewID:$shopReviewID, rating:$rating, comment:$comment){
+    id
+  }
+}`;
+
+export const CUSTOMER_SERVICE_REVIEWS_QUERY = `query{
+  customerServiceReviews{
+    id
+    title
+    comment
+    rating
+    user{
+      name
+    }
+  }
+}`;

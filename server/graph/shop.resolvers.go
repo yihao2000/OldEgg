@@ -125,6 +125,51 @@ func (r *mutationResolver) CreateShopReview(ctx context.Context, shopID string, 
 	return &shopReview, nil
 }
 
+// UpdateShopReview is the resolver for the updateShopReview field.
+func (r *mutationResolver) UpdateShopReview(ctx context.Context, shopReviewID string, rating float64, comment string) (*model.ShopReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	shopReview := new(model.ShopReview)
+
+	err := db.First(shopReview, "id = ? AND user_id = ?", shopReviewID, userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	shopReview.Comment = comment
+	shopReview.Rating = rating
+
+	db.Save(shopReview)
+
+	return shopReview, nil
+}
+
+// DeleteShopReview is the resolver for the deleteShopReview field.
+func (r *mutationResolver) DeleteShopReview(ctx context.Context, shopReviewID string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.ShopReview)
+	if err := db.First(model, "id = ? AND user_id = ?", shopReviewID, userID).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(model).Error
+}
+
 // CreateShopReviewTag is the resolver for the createShopReviewTag field.
 func (r *mutationResolver) CreateShopReviewTag(ctx context.Context, shopReviewID string, tag string) (*model.ShopReviewTag, error) {
 	db := config.GetDB()
@@ -146,6 +191,25 @@ func (r *mutationResolver) CreateShopReviewTag(ctx context.Context, shopReviewID
 	}
 
 	return &shopReviewTag, nil
+}
+
+// DeleteShopReviewTag is the resolver for the deleteShopReviewTag field.
+func (r *mutationResolver) DeleteShopReviewTag(ctx context.Context, shopReviewID string) (bool, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	// userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.ShopReviewTag
+	if err := db.Where("shop_review_id = ?", shopReviewID).Find(&models).Error; err != nil {
+		return false, err
+	}
+
+	return true, db.Delete(&models).Error
 }
 
 // Shops is the resolver for the shops field.
@@ -327,7 +391,7 @@ func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, 
 func (r *shopReviewResolver) Shop(ctx context.Context, obj *model.ShopReview) (*model.Shop, error) {
 	db := config.GetDB()
 	var model *model.Shop
-	return model, db.Where("shop_id = ?", obj.ShopID).Find(&model).Error
+	return model, db.Where("id = ?", obj.ShopID).Find(&model).Error
 }
 
 // User is the resolver for the user field.

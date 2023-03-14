@@ -5,14 +5,17 @@ import { useSessionStorage } from 'usehooks-ts';
 import Layout from '@/components/layout';
 import ShopHeader from '@/components/shop/shopheader';
 import styles from '@/styles/pagesstyles/shop/myshop/home.module.scss';
-import styles2 from '@/styles/pagesstyles/shop/myshop/home.module.scss';
+import styles2 from '@/styles/pagesstyles/account/profile.module.scss';
+
 import emailjs from '@emailjs/browser';
 import {
   Brand,
   Category,
+  CustomerServiceReview,
   Product,
   Promo,
   Shop,
+  TransactionHeader,
   User,
 } from '@/components/interfaces/interfaces';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
@@ -23,6 +26,7 @@ import {
   CREATE_NEW_PRODUCT_MUTATION,
   CREATE_PROMO_MUTATION,
   CREATE_SHOP_MUTATION,
+  CUSTOMER_SERVICE_REVIEWS_QUERY,
   DELETE_PROMO_MUTATION,
   GET_CURRENT_USER_SHOP,
   GRAPHQLAPI,
@@ -31,6 +35,7 @@ import {
   SHOP_PRODUCTS_QUERY,
   SHOP_TOTAL_SALES_QUERY,
   SUBSCRIBED_USERS_QUERY,
+  TRANSACTION_HEADERS_QUERY,
   UPDATE_SHOP_STATUS,
   UPDATE_USER_INFORMATION,
   USER_EXCEPT_SELF_QUERY,
@@ -42,6 +47,18 @@ import { LAPTOP_NAME_CONVERTER } from '@/components/converter/converter';
 import { ShopSideBar } from '@/components/sidebar/shopsidebar';
 import Modal from '@/components/modal/modal';
 import { AdminSideBar } from '@/components/sidebar/adminsidebar';
+import { Bar, Doughnut } from 'react-chartjs-2';
+import { Chart, ArcElement, LinearScale } from 'chart.js';
+import { CategoryScale } from 'chart.js';
+import {
+  BarElement,
+  BarController,
+  Decimation,
+  Filler,
+  Legend,
+  Title,
+  Tooltip,
+} from 'chart.js';
 
 export default function MyShop() {
   const router = useRouter();
@@ -98,6 +115,7 @@ export default function MyShop() {
   }
   const UserCard = (props: UserParameter) => {
     const handleBanUserClick = () => {
+      console.log('masuk');
       axios
         .post(
           GRAPHQLAPI,
@@ -116,6 +134,7 @@ export default function MyShop() {
         )
         .then((res) => {
           refreshComponent();
+          console.log(res);
         })
         .catch((err) => {
           console.log(err);
@@ -353,7 +372,6 @@ export default function MyShop() {
           },
         )
         .then((res) => {
-          console.log(res);
           setTotalPage(Math.ceil(res.data.data.users.length / limit));
           setCurrentPage(1);
           setOffset(0);
@@ -1040,12 +1058,247 @@ export default function MyShop() {
     );
   };
 
+  const [totalConfirmedTransactions, setTotalConfirmedTransactions] =
+    useState(0);
+  const [totalOpenTransactions, setTotalOpenTransactions] = useState(0);
+  const [totalCancelledTransactions, setTotalCancelledTransactions] =
+    useState(0);
+
+  const [allTransactions, setAllTransactions] = useState<TransactionHeader[]>(
+    [],
+  );
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: TRANSACTION_HEADERS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setAllTransactions(res.data.data.transactionHeaders);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [refresh, token]);
+
+  useEffect(() => {
+    if (allTransactions) {
+      var confirmed = 0;
+      var open = 0;
+      var cancelled = 0;
+      allTransactions.map((x) => {
+        if (x.status == 'Open') {
+          open += 1;
+        } else if (x.status == 'Cancelled') {
+          cancelled += 1;
+        } else if (x.status == 'Confirmed') {
+          confirmed += 1;
+        }
+      });
+      setTotalConfirmedTransactions(confirmed);
+      setTotalCancelledTransactions(cancelled);
+      setTotalOpenTransactions(open);
+    }
+  }, [allTransactions]);
+
+  const [bannedShops, setBannedShops] = useState(0);
+  const [bannedUsers, setBannedUsers] = useState(0);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_EXCEPT_SELF_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setAllUsers(res.data.data.users);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [refresh]);
+
+  useEffect(() => {
+    if (shops) {
+      var total = 0;
+      shops.map((x) => {
+        if (x.banned == true) {
+          total += 1;
+        }
+      });
+
+      setBannedShops(total);
+    }
+  }, [shops]);
+
+  useEffect(() => {
+    if (allUsers) {
+      var total = 0;
+      allUsers.map((x) => {
+        if (x.banned == true) {
+          total += 1;
+        }
+      });
+
+      setBannedUsers(total);
+    }
+  }, [allUsers]);
+
+  //Data visualization
+  //Doughnut Chart
+  Chart.register(ArcElement);
+  const doughnutData = {
+    labels: [
+      'Open Transactions',
+      'Confirmed Transactions',
+      'Cancelled Transaction',
+    ],
+    datasets: [
+      {
+        label: 'Transactions',
+
+        data: [
+          totalOpenTransactions,
+          totalConfirmedTransactions,
+          totalCancelledTransactions,
+        ],
+        backgroundColor: [
+          'rgb(255, 99, 132)',
+          'rgb(54, 162, 235)',
+          'rgb(255, 205, 86)',
+        ],
+        hoverOffset: 4,
+      },
+    ],
+  };
+
+  //Barchart
+  Chart.register(CategoryScale, LinearScale, BarElement);
+  const labels = ['Banned Users', 'Banned Shops'];
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Total',
+
+        data: [bannedUsers, bannedShops],
+        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+        borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  //Customer Review
+  const [customerServiceReviews, setCustomerServiceReviews] =
+    useState<CustomerServiceReview[]>();
+
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: CUSTOMER_SERVICE_REVIEWS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setCustomerServiceReviews(res.data.data.customerServiceReviews);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  interface CustomerServiceCardParameter {
+    customerServiceReview: CustomerServiceReview;
+  }
+  const CustomerServiceReviewCard = (props: CustomerServiceCardParameter) => {
+    return (
+      <div className={styles2.cardcontainer}>
+        <div className={styles2.infocontainer}>
+          <div className={styles2.namecontainer}>
+            Customer Name: {props.customerServiceReview.user.name}
+          </div>
+        </div>
+        <div className={styles2.ratingcontainer}>
+          <span className={styles2.ratinglabel}>
+            {props.customerServiceReview.rating}
+          </span>{' '}
+          / 5 Eggs
+        </div>
+
+        <div className={styles2.commentcontainer}>
+          <div
+            style={{
+              fontSize: '15px',
+            }}
+          >
+            Comments:{' '}
+          </div>
+          <div>{props.customerServiceReview.title}</div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Layout>
       <div className={styles.maincontainer}>
         <div className={styles.pagedivider}>
           <AdminSideBar />
           <div className={styles.rightsection}>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-evenly',
+                height: 'fit-content',
+                rowGap: '30px',
+              }}
+            >
+              <div
+                style={{
+                  height: '300px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <Doughnut data={doughnutData} />
+              </div>
+
+              <div
+                style={{
+                  height: '300px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {' '}
+                <Bar data={data} />
+              </div>
+            </div>
+
             <div className={styles.flexbetween}>
               <h2>Admin Utility</h2>
             </div>
@@ -1182,6 +1435,23 @@ export default function MyShop() {
                   return <ShopCard shop={shop} key={shop.id} />;
                 })}
               </div>
+            </div>
+            <div
+              style={{
+                marginTop: ' 20px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <h2>Customer Service Reviews</h2>
+              {customerServiceReviews?.map((x) => {
+                return (
+                  <CustomerServiceReviewCard
+                    customerServiceReview={x}
+                    key={x.id}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>

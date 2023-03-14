@@ -194,6 +194,7 @@ export interface ShopReview {
   productAccurate: boolean;
   satisfiedService: boolean;
   transactionHeader: TransactionHeader;
+  shop: Shop;
 }
 
 export interface Promo {
@@ -222,4 +223,19 @@ export interface ProductReview {
   rating: number;
   title: string;
   comment: string;
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  content: string;
+  read: boolean;
+}
+
+export interface CustomerServiceReview {
+  id: string;
+  title: string;
+  comment: string;
+  rating: number;
+  user: User;
 }

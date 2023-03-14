@@ -28,6 +28,24 @@ type Voucher struct {
 	DateUsed    *time.Time `json:"dateUsed"`
 }
 
+type Notification struct {
+	ID      string `json:"id" gorm:"primaryKey"`
+	UserID  string
+	User    *User  `json:"user" gorm:"foreignKey:UserID"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	Read    bool   `json:"read"`
+}
+
+type CustomerServiceReview struct {
+	ID      string  `json:"id"`
+	Title   string  `json:"title"`
+	Comment string  `json:"comment"`
+	Rating  float64 `json:"rating"`
+	UserID  string
+	User    *User `json:"user" gorm:"foreignKey:UserID"`
+}
+
 func HashPassword(s string) string {
 	hashed, _ := bcrypt.GenerateFromPassword([]byte(s), bcrypt.DefaultCost)
 	return string(hashed)

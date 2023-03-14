@@ -5,6 +5,7 @@ import {
   GRAPHQLAPI,
   SEARCH_PRODUCTS_QUERY,
   USER_CART_QUERY,
+  USER_NOTIFICATIONS_QUERY,
 } from '@/util/constant';
 import { links } from '@/util/route';
 import axios from 'axios';
@@ -14,8 +15,16 @@ import Router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { NAME_SPLITTER } from './converter/converter';
-import { Cart, Category, Product, User } from './interfaces/interfaces';
+import {
+  Cart,
+  Category,
+  Notification,
+  Product,
+  User,
+} from './interfaces/interfaces';
 import LocationCard from './navbar/locationcard';
+
+import { FaBell } from 'react-icons/fa';
 
 export default function Navbar() {
   const [token, setToken] = useSessionStorage('token', '');
@@ -162,6 +171,34 @@ export default function Navbar() {
       Router.push('/login');
     }
   };
+
+  //Notification
+  const [openNotificationDropdown, setOpenNotificationDropdown] =
+    useState(false);
+
+  const [userNotifications, setUserNotifications] = useState<Notification[]>(
+    [],
+  );
+
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_NOTIFICATIONS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setUserNotifications(res.data.data.userNotifications);
+      })
+
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <nav>
       <div className={styles.navbarcontainer}>
@@ -180,7 +217,7 @@ export default function Navbar() {
 
               {categories?.map((x) => {
                 return (
-                  <div style={{ marginTop: '15px', zIndex: '100000000' }}>
+                  <div style={{ marginTop: '15px', zIndex: '1000' }}>
                     {x.name}
                   </div>
                 );
@@ -275,6 +312,29 @@ export default function Navbar() {
         >
           {user && <LocationCard />}
         </i>
+        <div className={styles.iconcontainer}>
+          <FaBell
+            fontSize={25}
+            className={styles.bellicon}
+            onClick={() => {
+              setOpenNotificationDropdown(!openNotificationDropdown);
+            }}
+          />
+          {openNotificationDropdown && (
+            <div className={styles.notificationcontainer}>
+              {userNotifications.map((x) => {
+                return (
+                  <div className={styles.notificationitem}>
+                    <div className={styles.notificationtitle}>{x.title}</div>
+                    <div className={styles.notificationcontent}>
+                      {x.content}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <div
           className={styles.usercontainer}

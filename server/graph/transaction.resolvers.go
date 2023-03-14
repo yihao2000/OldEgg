@@ -212,7 +212,17 @@ func (r *queryResolver) PaymentTypes(ctx context.Context) ([]*model.PaymentType,
 
 // TransactionHeaders is the resolver for the transactionHeaders field.
 func (r *queryResolver) TransactionHeaders(ctx context.Context) ([]*model.TransactionHeader, error) {
-	panic(fmt.Errorf("not implemented: TransactionHeaders - transactionHeaders"))
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	var transactionHeaders []*model.TransactionHeader
+
+	return transactionHeaders, db.Find(&transactionHeaders).Error
 }
 
 // UserTransactionHeaders is the resolver for the userTransactionHeaders field.

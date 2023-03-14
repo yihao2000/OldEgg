@@ -46,8 +46,11 @@ extend type Mutation{
     updateShopStatus(banned: Boolean, shopID: ID!): Shop!
 
     createShopReview(shopID:ID!, userID:ID!, rating:Float!, tag:String, comment:String!, oneTimeDelivery:Boolean!, productAccurate:Boolean!, satisfiedService:Boolean!, transactionHeaderID: ID!): ShopReview!
+    updateShopReview(shopReviewID: ID!,  rating:Float!,  comment:String!): ShopReview!
+    deleteShopReview(shopReviewID: ID!):Boolean!
 
     createShopReviewTag(shopReviewID: ID!, tag:String!): ShopReviewTag!
+    deleteShopReviewTag(shopReviewID: ID!): Boolean!
 } 
 
 extend type Query{

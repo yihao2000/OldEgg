@@ -81,7 +81,8 @@ func main() {
 	db.AutoMigrate(&model.UserSavedSearch{})
 	db.AutoMigrate(&model.ShopReviewTag{})
 	db.AutoMigrate(&model.ProductReview{})
-
+	db.AutoMigrate(&model.Notification{})
+	db.AutoMigrate(&model.CustomerServiceReview{})
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{

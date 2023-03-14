@@ -38,6 +38,13 @@ type Location{
   latitude: Float!
 }
 
+type Notification{
+  id: ID!
+  user: User! @goField(forceResolver:true)
+  title: String!
+  content: String!
+  read: Boolean!
+}
 
 
 
@@ -52,6 +59,13 @@ type Location{
 }
 
 
+type CustomerServiceReview{
+    id: ID!
+    title: String!
+    comment: String!
+    rating: Float!
+    user: User! @goField (forceResolver: true)
+}
 
 
 
@@ -76,7 +90,9 @@ type Mutation {
    createUserSavedSearch(keyword: String!): UserSavedSearch!
    deleteUserSavedSearch(keyword: String!): Boolean!
 
-   
+   createNotification(userID: ID!, title:String!, content:String!): Notification!
+
+   createCustomerServiceReview(title:String!, comment:String!, rating:Float!): CustomerServiceReview!
   
 }
 
@@ -100,4 +116,10 @@ type Query{
     
     userProductReviews: [ProductReview!]!
     userWishlistReviews: [WishlistReview!]!
+
+    userNotifications: [Notification!]!
+
+    userShopReviews: [ShopReview!]!
+
+    customerServiceReviews: [CustomerServiceReview!]!
 }

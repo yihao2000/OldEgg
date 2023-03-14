@@ -114,13 +114,14 @@ const Search: NextPage = () => {
         })
         .then((res) => {
           setProducts(res.data.data.products);
+          setAllProducts(res.data.data.products);
           // setCurrentPage();
         })
         .catch((err) => {
           console.log(err);
         });
     }
-  }, [search, category, totalPage, offset, orderBy]);
+  }, [search, category, totalPage, offset, orderBy, refresh]);
 
   const handleNextPageClick = () => {
     if (currentPage < totalPage) {
@@ -158,6 +159,7 @@ const Search: NextPage = () => {
       )
       .then((res) => {
         refreshComponent();
+        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -188,6 +190,21 @@ const Search: NextPage = () => {
         console.log(err);
       });
   };
+
+  //Search Bar
+  const [searchInput, setSearchInput] = useState('');
+  const [allProducts, setAllProducts] = useState<Product[]>();
+
+  useEffect(() => {
+    // refreshComponent();
+    if (allProducts) {
+      setProducts(
+        allProducts.filter((x) => {
+          return x.name.includes(searchInput);
+        }),
+      );
+    }
+  }, [searchInput]);
   return (
     <Layout>
       <div className={styles.maincontainer}>
@@ -200,8 +217,14 @@ const Search: NextPage = () => {
                 <div className={styles.searchlabel}>
                   <b>Search Within: </b>
                 </div>
-                <input type="text" className={styles.searchinput} />
-                <button className={styles.buttongo}>GO</button>
+                <input
+                  type="text"
+                  className={styles.searchinput}
+                  value={searchInput}
+                  onChange={(event) => {
+                    setSearchInput(event.target.value);
+                  }}
+                />
               </div>
               <div className={styles.changepagecontainer}>
                 <div

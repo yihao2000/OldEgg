@@ -599,12 +599,17 @@ func (r *queryResolver) Wishlists(ctx context.Context, filter *string, sortBy *s
 		temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_reviews ON wishlists.id = wishlist_reviews.wishlist_id").Group("wishlists.id").Having("AVG(wishlist_reviews.rating) >= ?", ratingFilter)
 	}
 
-	if startPriceFilter != nil {
-		temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_details ON wishlists.id = wishlist_details.wishlist_id JOIN products ON products.id = wishlist_details.product_id").Group("wishlists.id").Having("SUM(products.price) >= ?", startPriceFilter)
-	}
+	if startPriceFilter != nil && endPriceFilter != nil {
+		temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_details ON wishlists.id = wishlist_details.wishlist_id JOIN products ON products.id = wishlist_details.product_id").Group("wishlists.id").Having("SUM((products.price-(products.price*products.discount/100))*wishlist_details.quantity) >= ? AND SUM((products.price-(products.price*products.discount/100))*wishlist_details.quantity) <= ? ", startPriceFilter, endPriceFilter)
+	} else {
+		if startPriceFilter != nil {
+			temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_details ON wishlists.id = wishlist_details.wishlist_id JOIN products ON products.id = wishlist_details.product_id").Group("wishlists.id").Having("SUM((products.price-(products.price*products.discount/100))*wishlist_details.quantity) >= ?", startPriceFilter)
+		}
 
-	if endPriceFilter != nil {
-		temp = temp.Having("SUM(products.price) <= ?", endPriceFilter)
+		if endPriceFilter != nil {
+			temp = temp.Select("wishlists.id, wishlists.name, wishlists.user_id, wishlists.privacy, wishlists.date_created, wishlists.notes").Joins("LEFT JOIN wishlist_details ON wishlists.id = wishlist_details.wishlist_id JOIN products ON products.id = wishlist_details.product_id").Group("wishlists.id").Having("SUM((products.price-(products.price*products.discount/100))*wishlist_details.quantity) <= ?", endPriceFilter)
+		}
+
 	}
 
 	return models, temp.Find(&models).Error

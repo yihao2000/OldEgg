@@ -26,6 +26,14 @@ func (r *authOpsResolver) Register(ctx context.Context, obj *model.AuthOps, inpu
 	return service.UserRegister(ctx, input)
 }
 
+// User is the resolver for the user field.
+func (r *customerServiceReviewResolver) User(ctx context.Context, obj *model.CustomerServiceReview) (*model.User, error) {
+	db := config.GetDB()
+	model := new(model.User)
+
+	return model, db.First(model, "id = ?", obj.UserID).Error
+}
+
 // Auth is the resolver for the auth field.
 func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
 	return &model.AuthOps{}, nil
@@ -183,6 +191,57 @@ func (r *mutationResolver) DeleteUserSavedSearch(ctx context.Context, keyword st
 	}
 
 	return true, db.Delete(model).Error
+}
+
+// CreateNotification is the resolver for the createNotification field.
+func (r *mutationResolver) CreateNotification(ctx context.Context, userID string, title string, content string) (*model.Notification, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	notification := model.Notification{
+		ID:      uuid.NewString(),
+		UserID:  userID,
+		Title:   title,
+		Content: content,
+		Read:    false,
+	}
+
+	return &notification, db.Model(notification).Create(&notification).Error
+}
+
+// CreateCustomerServiceReview is the resolver for the createCustomerServiceReview field.
+func (r *mutationResolver) CreateCustomerServiceReview(ctx context.Context, title string, comment string, rating float64) (*model.CustomerServiceReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	customerServiceReview := model.CustomerServiceReview{
+		ID:      uuid.NewString(),
+		UserID:  userID,
+		Title:   title,
+		Comment: comment,
+	}
+
+	return &customerServiceReview, db.Model(customerServiceReview).Create(&customerServiceReview).Error
+}
+
+// User is the resolver for the user field.
+func (r *notificationResolver) User(ctx context.Context, obj *model.Notification) (*model.User, error) {
+	db := config.GetDB()
+	user := new(model.User)
+
+	return user, db.First(user, "id = ?", obj.UserID).Error
 }
 
 // User is the resolver for the user field.
@@ -396,6 +455,42 @@ func (r *queryResolver) UserWishlistReviews(ctx context.Context) ([]*model.Wishl
 	return models, db.Where("user_id = ? ", userID).Find(&models).Error
 }
 
+// UserNotifications is the resolver for the userNotifications field.
+func (r *queryResolver) UserNotifications(ctx context.Context) ([]*model.Notification, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var models []*model.Notification
+	return models, db.Where("user_id = ? ", userID).Find(&models).Error
+}
+
+// UserShopReviews is the resolver for the userShopReviews field.
+func (r *queryResolver) UserShopReviews(ctx context.Context) ([]*model.ShopReview, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var models []*model.ShopReview
+	return models, db.Where("user_id = ? ", userID).Find(&models).Error
+}
+
+// CustomerServiceReviews is the resolver for the customerServiceReviews field.
+func (r *queryResolver) CustomerServiceReviews(ctx context.Context) ([]*model.CustomerServiceReview, error) {
+	db := config.GetDB()
+	var models []*model.CustomerServiceReview
+	return models, db.Find(&models).Error
+}
+
 // Location is the resolver for the location field.
 func (r *userResolver) Location(ctx context.Context, obj *model.User) (*model.Location, error) {
 	db := config.GetDB()
@@ -414,8 +509,16 @@ func (r *userResolver) UserSavedSearches(ctx context.Context, obj *model.User) (
 // AuthOps returns AuthOpsResolver implementation.
 func (r *Resolver) AuthOps() AuthOpsResolver { return &authOpsResolver{r} }
 
+// CustomerServiceReview returns CustomerServiceReviewResolver implementation.
+func (r *Resolver) CustomerServiceReview() CustomerServiceReviewResolver {
+	return &customerServiceReviewResolver{r}
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+
+// Notification returns NotificationResolver implementation.
+func (r *Resolver) Notification() NotificationResolver { return &notificationResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
@@ -424,7 +527,9 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 func (r *Resolver) User() UserResolver { return &userResolver{r} }
 
 type authOpsResolver struct{ *Resolver }
+type customerServiceReviewResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
+type notificationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
 

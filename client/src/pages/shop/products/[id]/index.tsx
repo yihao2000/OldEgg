@@ -59,6 +59,7 @@ export default function ShopProducts() {
           setTotalPage(Math.ceil(res.data.data.shopProducts.length / limit));
           setCurrentPage(1);
           setOffset(0);
+          setAllProducts(res.data.data.shopProducts);
         })
 
         .catch((err) => console.log(err));
@@ -107,6 +108,23 @@ export default function ShopProducts() {
     }
   };
 
+  //Search
+  const [searchInput, setSearchInput] = useState('');
+  const [allProducts, setAllProducts] = useState<Product[]>();
+  useEffect(() => {
+    // refreshComponent();
+    if (allProducts) {
+      if (searchInput == '') {
+        refreshComponent();
+      } else {
+        setProducts(
+          allProducts.filter((x) => {
+            return x.name.includes(searchInput);
+          }),
+        );
+      }
+    }
+  }, [searchInput]);
   return (
     <Layout>
       <div className={styles.maincontainer}>
@@ -192,6 +210,19 @@ export default function ShopProducts() {
                         <option value="8">8</option>
                       </select>
                     </div>
+                  </div>
+                </div>
+                <div className={styles.filtercontainer}>
+                  <div className={styles.filtersubcontainer}>
+                    <span style={{ paddingRight: '10px' }}>Search Within:</span>
+                    <input
+                      type="text"
+                      className={styles.searchinput}
+                      value={searchInput}
+                      onChange={(event) => {
+                        setSearchInput(event.target.value);
+                      }}
+                    />
                   </div>
                 </div>
                 <div className={styles.productcardcontainer}>

@@ -10,19 +10,24 @@ import {
   Product,
   ProductReview,
   Shop,
+  ShopReview,
   WishlistReview,
 } from '@/components/interfaces/interfaces';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import {
   DELETE_PRODUCT_REVIEW_MUTATION,
+  DELETE_SHOP_REVIEW_MUTATION,
+  DELETE_SHOP_REVIEW_TAG_MUTATION,
   DELETE_WISHLIST_REVIEW_MUTATION,
   GRAPHQLAPI,
   SHOP_PRODUCTS_QUERY,
   SHOP_QUERY,
   SHOP_TOTAL_SALES_QUERY,
   UPDATE_PRODUCT_REVIEW_MUTATION,
+  UPDATE_SHOP_REVIEW_MUTATION,
   UPDATE_WISHLIST_REVIEW_MUTATION,
   USER_PRODUCT_REVIEWS_QUERY,
+  USER_SHOP_REVIEWS_QUERY,
   USER_WISHLIST_REVIEWS_QUERY,
 } from '@/util/constant';
 import ProductCard from '@/components/productcard';
@@ -44,6 +49,8 @@ export default function MyReviews() {
   const [userWishlistReviews, setUserWishlistReviews] = useState<
     WishlistReview[]
   >([]);
+
+  const [userShopReviews, setUserShopReviews] = useState<ShopReview[]>([]);
 
   useEffect(() => {
     axios
@@ -79,6 +86,25 @@ export default function MyReviews() {
       )
       .then((res) => {
         setUserWishlistReviews(res.data.data.userWishlistReviews);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: USER_SHOP_REVIEWS_QUERY,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setUserShopReviews(res.data.data.userShopReviews);
       })
       .catch((err) => {
         console.log(err);
@@ -418,6 +444,320 @@ export default function MyReviews() {
     );
   };
 
+  interface ShopReviewCardParameter {
+    shopReview: ShopReview;
+  }
+  const ShopReviewCard = (props: ShopReviewCardParameter) => {
+    const [openReviewDetailModal, setOpenReviewDetailModal] = useState(false);
+
+    const [openUpdateReviewModal, setOpenUpdateReviewModal] = useState(false);
+
+    const closeUpdateReviewModal = () => {
+      setOpenUpdateReviewModal(true);
+    };
+
+    const closeReviewDetailModal = () => {
+      setOpenReviewDetailModal(false);
+    };
+
+    const DetailReviewContent = () => {
+      return (
+        <div
+          style={{
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            rowGap: '10px',
+          }}
+        >
+          <div>ID: {props.shopReview.id}</div>
+          <div>Shop Name: {props.shopReview.shop.name}</div>
+
+          <div
+            style={{
+              marginTop: '15px',
+            }}
+          >
+            Review
+          </div>
+          <div>
+            {' '}
+            <span className={styles.ratinglabel}>
+              {props.shopReview.rating}
+            </span>{' '}
+            / 5 Eggs{' '}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+            }}
+          >
+            {props.shopReview.comment}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+            }}
+          >
+            <span
+              style={{
+                fontWeight: 'bold',
+              }}
+            >
+              Ontime Delivery:{' '}
+            </span>
+            {props.shopReview.onTimeDelivery == true ? 'Yes' : 'No'}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+            }}
+          >
+            <span
+              style={{
+                fontWeight: 'bold',
+              }}
+            >
+              Accurate Product:{' '}
+            </span>
+            {props.shopReview.productAccurate == true ? 'Yes' : 'No'}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+            }}
+          >
+            <span
+              style={{
+                fontWeight: 'bold',
+              }}
+            >
+              Satisfied Service:{' '}
+            </span>
+            {props.shopReview.satisfiedService == true ? 'Yes' : 'No'}
+          </div>
+        </div>
+      );
+    };
+
+    const UpdateReviewModalContent = () => {
+      //Review Variables
+      const [reviewRating, setReviewRating] = useState(props.shopReview.rating);
+      const [reviewComment, setReviewComment] = useState(
+        props.shopReview.comment,
+      );
+      const [error, setError] = useState('');
+
+      const handleUpdateClick = () => {
+        setError('');
+        if (reviewComment == '') {
+          setError('All Fields must be Filled !');
+        } else {
+          axios
+            .post(
+              GRAPHQLAPI,
+              {
+                query: UPDATE_SHOP_REVIEW_MUTATION,
+                variables: {
+                  comment: reviewComment,
+                  rating: reviewRating,
+                  shopReviewID: props.shopReview.id,
+                },
+              },
+              {
+                headers: {
+                  Authorization: 'Bearer ' + token,
+                },
+              },
+            )
+            .then((res) => {
+              console.log(res);
+              refreshComponent();
+              closeUpdateReviewModal();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      };
+      return (
+        <div
+          style={{
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            rowGap: '10px',
+          }}
+        >
+          <div>ID: {props.shopReview.id}</div>
+          <div>
+            Shop Name:
+            {props.shopReview.shop.name}
+          </div>
+
+          <div
+            style={{
+              marginTop: '15px',
+            }}
+          >
+            Review
+          </div>
+          <div>
+            <input
+              className={styles.textinput}
+              type="number"
+              value={reviewRating}
+              placeholder={'Rating'}
+              onChange={(event) => {
+                if (
+                  Number(event.target.value) < 6 &&
+                  Number(event.target.value) > 0
+                ) {
+                  setReviewRating(Number(event.target.value));
+                }
+              }}
+            />
+            <span> / 5 Eggs</span>
+          </div>
+
+          <div>
+            <input
+              className={styles.fulltextinput}
+              style={{
+                width: '100%',
+              }}
+              type="text"
+              value={reviewComment}
+              placeholder={'Comment'}
+              onChange={(event) => {
+                setReviewComment(event.target.value);
+              }}
+            />
+          </div>
+          <div
+            style={{
+              color: 'red',
+              fontWeight: 'bold',
+            }}
+          >
+            {error}
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginTop: '20px',
+            }}
+          >
+            <button onClick={handleUpdateClick}>Update</button>
+          </div>
+        </div>
+      );
+    };
+
+    const handleDeleteReviewClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: DELETE_SHOP_REVIEW_TAG_MUTATION,
+            variables: {
+              shopReviewID: props.shopReview.id,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          console.log(res);
+          axios
+            .post(
+              GRAPHQLAPI,
+              {
+                query: DELETE_SHOP_REVIEW_MUTATION,
+                variables: {
+                  shopReviewID: props.shopReview.id,
+                },
+              },
+              {
+                headers: {
+                  Authorization: 'Bearer ' + token,
+                },
+              },
+            )
+            .then((res) => {
+              console.log(res);
+              refreshComponent();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    return (
+      <div className={styles.cardcontainer}>
+        <div className={styles.infocontainer}>
+          <div className={styles.namecontainer}>
+            Shop Name: {props.shopReview.shop.name}
+          </div>
+        </div>
+        <div className={styles.ratingcontainer}>
+          <span className={styles.ratinglabel}>{props.shopReview.rating}</span>{' '}
+          / 5 Eggs
+        </div>
+
+        <div className={styles.commentcontainer}>
+          <div
+            style={{
+              fontSize: '15px',
+            }}
+          >
+            Comments:{' '}
+          </div>
+          <div>{props.shopReview.comment}</div>
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              setOpenReviewDetailModal(true);
+            }}
+          >
+            View Detail
+          </button>
+          <button
+            onClick={() => {
+              setOpenUpdateReviewModal(true);
+            }}
+          >
+            Edit Review
+          </button>
+          <button onClick={handleDeleteReviewClick}>Delete Review</button>
+        </div>
+        {openReviewDetailModal && (
+          <Modal closeModal={closeReviewDetailModal} height={50} width={30}>
+            <DetailReviewContent />
+          </Modal>
+        )}
+        {openUpdateReviewModal && (
+          <Modal closeModal={closeUpdateReviewModal} height={50} width={30}>
+            <UpdateReviewModalContent />
+          </Modal>
+        )}
+      </div>
+    );
+  };
+
   useEffect(() => {}, [refresh]);
 
   return (
@@ -467,6 +807,11 @@ export default function MyReviews() {
             </div>
             <div className={styles.titlecontainer}>
               <h2>Shop Reviews</h2>
+            </div>
+            <div className={styles.contentcontainer}>
+              {userShopReviews.map((x) => {
+                return <ShopReviewCard shopReview={x} key={x.id} />;
+              })}
             </div>
           </div>
         </div>
