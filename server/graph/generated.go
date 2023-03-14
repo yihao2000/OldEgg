@@ -158,6 +158,7 @@ type ComplexityRoot struct {
 		DeleteWishlistFollower           func(childComplexity int, wishlistID string) int
 		DeleteWishlistReview             func(childComplexity int, wishlistReviewID string) int
 		EditWishlistNote                 func(childComplexity int, wishlistID string, notes string) int
+		GenerateUserTwoFactorCode        func(childComplexity int, userID string, twoFactorCode string) int
 		TogglePrimary                    func(childComplexity int, id string) int
 		UpdateBrand                      func(childComplexity int, input model.NewBrand, lastUpdateID string) int
 		UpdateCart                       func(childComplexity int, productID string, quantity int) int
@@ -178,6 +179,7 @@ type ComplexityRoot struct {
 		UserInputVerificationCode        func(childComplexity int, email string, verificationcode string, duration int) int
 		UserUpdateInformation            func(childComplexity int, currentPassword *string, newPassword *string, phone *string, balance *float64, banned *bool) int
 		UserUpdateNewsLetterSubscription func(childComplexity int, userID string, subscribed bool) int
+		ValidateTwoFactorCode            func(childComplexity int, userID string, twoFactorCode string) int
 		ValidateUserVerificationCode     func(childComplexity int, email string, verificationcode string) int
 	}
 
@@ -380,6 +382,8 @@ type ComplexityRoot struct {
 		Password                  func(childComplexity int) int
 		Phone                     func(childComplexity int) int
 		Role                      func(childComplexity int) int
+		TwoFactorCode             func(childComplexity int) int
+		TwoFactorEnabled          func(childComplexity int) int
 		UserSavedSearches         func(childComplexity int) int
 		VerificationCode          func(childComplexity int) int
 		VerificationCodeValidTime func(childComplexity int) int
@@ -459,6 +463,8 @@ type MutationResolver interface {
 	DeleteUserSavedSearch(ctx context.Context, keyword string) (bool, error)
 	CreateNotification(ctx context.Context, userID string, title string, content string) (*model.Notification, error)
 	CreateCustomerServiceReview(ctx context.Context, title string, comment string, rating float64) (*model.CustomerServiceReview, error)
+	GenerateUserTwoFactorCode(ctx context.Context, userID string, twoFactorCode string) (bool, error)
+	ValidateTwoFactorCode(ctx context.Context, userID string, twoFactorCode string) (bool, error)
 	CreateAddress(ctx context.Context, name string, detail string, region string, city string, zipCode string, phone string, isPrimary bool) (*model.Address, error)
 	TogglePrimary(ctx context.Context, id string) (*model.Address, error)
 	DeleteAddress(ctx context.Context, id string) (bool, error)
@@ -1350,6 +1356,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.EditWishlistNote(childComplexity, args["wishlistID"].(string), args["notes"].(string)), true
 
+	case "Mutation.generateUserTwoFactorCode":
+		if e.complexity.Mutation.GenerateUserTwoFactorCode == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_generateUserTwoFactorCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.GenerateUserTwoFactorCode(childComplexity, args["userID"].(string), args["twoFactorCode"].(string)), true
+
 	case "Mutation.togglePrimary":
 		if e.complexity.Mutation.TogglePrimary == nil {
 			break
@@ -1589,6 +1607,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UserUpdateNewsLetterSubscription(childComplexity, args["userID"].(string), args["subscribed"].(bool)), true
+
+	case "Mutation.validateTwoFactorCode":
+		if e.complexity.Mutation.ValidateTwoFactorCode == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_validateTwoFactorCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ValidateTwoFactorCode(childComplexity, args["userID"].(string), args["twoFactorCode"].(string)), true
 
 	case "Mutation.validateUserVerificationCode":
 		if e.complexity.Mutation.ValidateUserVerificationCode == nil {
@@ -2806,6 +2836,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Role(childComplexity), true
+
+	case "User.twoFactorCode":
+		if e.complexity.User.TwoFactorCode == nil {
+			break
+		}
+
+		return e.complexity.User.TwoFactorCode(childComplexity), true
+
+	case "User.twoFactorEnabled":
+		if e.complexity.User.TwoFactorEnabled == nil {
+			break
+		}
+
+		return e.complexity.User.TwoFactorEnabled(childComplexity), true
 
 	case "User.userSavedSearches":
 		if e.complexity.User.UserSavedSearches == nil {
@@ -4059,6 +4103,30 @@ func (ec *executionContext) field_Mutation_editWishlistNote_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_generateUserTwoFactorCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["userID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["twoFactorCode"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("twoFactorCode"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["twoFactorCode"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_togglePrimary_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4626,6 +4694,30 @@ func (ec *executionContext) field_Mutation_userUpdateNewsLetterSubscription_args
 		}
 	}
 	args["subscribed"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_validateTwoFactorCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["userID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["twoFactorCode"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("twoFactorCode"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["twoFactorCode"] = arg1
 	return args, nil
 }
 
@@ -5876,6 +5968,10 @@ func (ec *executionContext) fieldContext_Address_user(ctx context.Context, field
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -6234,6 +6330,10 @@ func (ec *executionContext) fieldContext_Cart_user(ctx context.Context, field gr
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -6732,6 +6832,10 @@ func (ec *executionContext) fieldContext_CustomerServiceReview_user(ctx context.
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -7028,6 +7132,10 @@ func (ec *executionContext) fieldContext_Mutation_userUpdateInformation(ctx cont
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -7110,6 +7218,10 @@ func (ec *executionContext) fieldContext_Mutation_userInputVerificationCode(ctx 
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -7246,6 +7358,10 @@ func (ec *executionContext) fieldContext_Mutation_updateUserInformation(ctx cont
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -7328,6 +7444,10 @@ func (ec *executionContext) fieldContext_Mutation_userUpdateNewsLetterSubscripti
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -7588,6 +7708,114 @@ func (ec *executionContext) fieldContext_Mutation_createCustomerServiceReview(ct
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createCustomerServiceReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_generateUserTwoFactorCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_generateUserTwoFactorCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().GenerateUserTwoFactorCode(rctx, fc.Args["userID"].(string), fc.Args["twoFactorCode"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_generateUserTwoFactorCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_generateUserTwoFactorCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_validateTwoFactorCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_validateTwoFactorCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ValidateTwoFactorCode(rctx, fc.Args["userID"].(string), fc.Args["twoFactorCode"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_validateTwoFactorCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_validateTwoFactorCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -11516,6 +11744,10 @@ func (ec *executionContext) fieldContext_Notification_user(ctx context.Context, 
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -12683,6 +12915,10 @@ func (ec *executionContext) fieldContext_ProductReview_user(ctx context.Context,
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -13062,6 +13298,10 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -13164,6 +13404,10 @@ func (ec *executionContext) fieldContext_Query_getCurrentUser(ctx context.Contex
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -13255,6 +13499,10 @@ func (ec *executionContext) fieldContext_Query_getSubscribedUsers(ctx context.Co
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -13492,6 +13740,10 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -13574,6 +13826,10 @@ func (ec *executionContext) fieldContext_Query_noShopUsers(ctx context.Context, 
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -17224,6 +17480,10 @@ func (ec *executionContext) fieldContext_Review_user(ctx context.Context, field 
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -17502,6 +17762,10 @@ func (ec *executionContext) fieldContext_SavedForLater_user(ctx context.Context,
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -18250,6 +18514,10 @@ func (ec *executionContext) fieldContext_Shop_user(ctx context.Context, field gr
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -18430,6 +18698,10 @@ func (ec *executionContext) fieldContext_ShopReview_user(ctx context.Context, fi
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -18939,6 +19211,10 @@ func (ec *executionContext) fieldContext_ShopReviewTag_user(ctx context.Context,
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -19325,6 +19601,10 @@ func (ec *executionContext) fieldContext_TransactionHeader_user(ctx context.Cont
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -20221,6 +20501,94 @@ func (ec *executionContext) fieldContext_User_userSavedSearches(ctx context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _User_twoFactorEnabled(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_twoFactorEnabled(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TwoFactorEnabled, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_twoFactorEnabled(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_twoFactorCode(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_twoFactorCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TwoFactorCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_twoFactorCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _UserSavedSearch_id(ctx context.Context, field graphql.CollectedField, obj *model.UserSavedSearch) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserSavedSearch_id(ctx, field)
 	if err != nil {
@@ -20679,6 +21047,10 @@ func (ec *executionContext) fieldContext_Wishlist_user(ctx context.Context, fiel
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -21339,6 +21711,10 @@ func (ec *executionContext) fieldContext_WishlistFollower_user(ctx context.Conte
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -21563,6 +21939,10 @@ func (ec *executionContext) fieldContext_WishlistReview_user(ctx context.Context
 				return ec.fieldContext_User_location(ctx, field)
 			case "userSavedSearches":
 				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -24636,6 +25016,18 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_createCustomerServiceReview(ctx, field)
 			})
 
+		case "generateUserTwoFactorCode":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_generateUserTwoFactorCode(ctx, field)
+			})
+
+		case "validateTwoFactorCode":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_validateTwoFactorCode(ctx, field)
+			})
+
 		case "createAddress":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -27480,6 +27872,20 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 				return innerFunc(ctx)
 
 			})
+		case "twoFactorEnabled":
+
+			out.Values[i] = ec._User_twoFactorEnabled(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "twoFactorCode":
+
+			out.Values[i] = ec._User_twoFactorCode(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

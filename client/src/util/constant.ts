@@ -39,7 +39,7 @@ export const CURRENT_USER_QUERY = `query{
     role
     currency
     newslettersubscribe
-
+    twoFactorEnabled
   }
 }`;
 
@@ -1046,4 +1046,12 @@ export const CUSTOMER_SERVICE_REVIEWS_QUERY = `query{
       name
     }
   }
+}`;
+
+export const VALIDATE_TWOFACTOR_CODE = `mutation($userID:ID!, $twoFactorCode:String!){
+  validateTwoFactorCode(userID:$userID twoFactorCode:$twoFactorCode)
+}`;
+
+export const GENERATE_TWOFACTOR_CODE = `mutation($userID:ID!, $twoFactorCode:String!){
+  generateUserTwoFactorCode(userID:$userID twoFactorCode:$twoFactorCode)
 }`;

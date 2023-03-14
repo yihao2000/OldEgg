@@ -20,6 +20,8 @@ type User struct {
 	Currency                  float64    `json:"currency"`
 	LocationID                string
 	Location                  *Location `json:"location" gorm:"foreignKey:LocationID"`
+	TwoFactorEnabled          bool
+	TwoFactorCode             string
 }
 type Voucher struct {
 	ID          string     `json:"id"`

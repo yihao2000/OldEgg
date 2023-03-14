@@ -236,6 +236,40 @@ func (r *mutationResolver) CreateCustomerServiceReview(ctx context.Context, titl
 	return &customerServiceReview, db.Model(customerServiceReview).Create(&customerServiceReview).Error
 }
 
+// GenerateUserTwoFactorCode is the resolver for the generateUserTwoFactorCode field.
+func (r *mutationResolver) GenerateUserTwoFactorCode(ctx context.Context, userID string, twoFactorCode string) (bool, error) {
+	db := config.GetDB()
+
+	var user model.User
+	if err := db.Model(user).Where("id LIKE ?", userID).Take(&user).Error; err != nil {
+		return false, err
+	}
+
+	user.TwoFactorCode = twoFactorCode
+	db.Save(user)
+
+	return true, nil
+}
+
+// ValidateTwoFactorCode is the resolver for the validateTwoFactorCode field.
+func (r *mutationResolver) ValidateTwoFactorCode(ctx context.Context, userID string, twoFactorCode string) (bool, error) {
+	db := config.GetDB()
+
+	var user model.User
+	if err := db.Model(user).Where("id LIKE ?", userID).Take(&user).Error; err != nil {
+		return false, err
+	}
+
+	if user.TwoFactorCode == twoFactorCode {
+		return true, nil
+
+	}
+
+	return false, &gqlerror.Error{
+		Message: "Error, Verification Code Ga Sama!",
+	}
+}
+
 // User is the resolver for the user field.
 func (r *notificationResolver) User(ctx context.Context, obj *model.Notification) (*model.User, error) {
 	db := config.GetDB()

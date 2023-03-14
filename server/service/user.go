@@ -25,6 +25,7 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 		Role:                input.Role,
 		Currency:            0,
 		NewsLetterSubscribe: input.Newslettersubscribe,
+		TwoFactorEnabled:    false,
 	}
 
 	if err := db.Model(user).Create(&user).Error; err != nil {

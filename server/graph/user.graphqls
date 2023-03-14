@@ -19,6 +19,7 @@ type User{
   location: Location! @goField(forceResolver:true)
   userSavedSearches: [UserSavedSearch!]! @goField(forceResolver:true)
   twoFactorEnabled: Boolean!
+  twoFactorCode: String!
 }
 
 type UserSavedSearch{
@@ -94,6 +95,9 @@ type Mutation {
    createNotification(userID: ID!, title:String!, content:String!): Notification!
 
    createCustomerServiceReview(title:String!, comment:String!, rating:Float!): CustomerServiceReview!
+
+   generateUserTwoFactorCode(userID: ID!, twoFactorCode:String!): Boolean!
+   validateTwoFactorCode(userID: ID!, twoFactorCode:String!): Boolean!
   
 }
 

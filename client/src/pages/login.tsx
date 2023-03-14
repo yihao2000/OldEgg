@@ -8,10 +8,12 @@ import { links } from '@/util/route';
 import axios from 'axios';
 import {
   CURRENT_USER_QUERY,
+  GENERATE_TWOFACTOR_CODE,
   GRAPHQLAPI,
   INSERT_USER_VERIFICATION_CODE,
   LOGIN_QUERY,
   USER_QUERY,
+  VALIDATE_TWOFACTOR_CODE,
   VALIDATE_USER_VERIFICATION_CODE,
 } from '@/util/constant';
 import { FaArrowCircleLeft } from 'react-icons/fa';
@@ -40,6 +42,14 @@ export default function Login() {
   const [verificationCodeError, setVerificationCodeError] = useState(false);
 
   const [bannedError, setBannedError] = useState(false);
+
+  const [twoFactorAuthentication, setTwoFactorAuthentication] = useState(false);
+
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [inputtedTwoFactorCode, setInputtedTwoFactorCode] = useState('');
+  const [tempId, setTempId] = useState('');
+  const [tempToken, setTempToken] = useState('');
+
   const form = useRef<HTMLFormElement>(null);
   const sendVerificationCode = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -118,6 +128,45 @@ export default function Login() {
     setVerificationCode(v4().slice(0, 6));
   }, [generateVerificationCode]);
 
+  const generateTwoFactorAuthenticationCode = (email: string, id: string) => {
+    var twoFactorCode = v4().slice(0, 6);
+    setTwoFactorCode(twoFactorCode);
+    var templateParams = {
+      code: twoFactorCode,
+      email: email,
+    };
+    emailjs
+      .send(
+        'service_dsn89wa',
+        'template_upusifi',
+        templateParams,
+        'gM8J9ZjItBS3Hw4je',
+      )
+      .then(
+        function (response) {
+          console.log('SUCCESS!', response.status, response.text);
+        },
+        function (error) {
+          console.log('FAILED...', error);
+        },
+      );
+
+    axios
+      .post(GRAPHQLAPI, {
+        query: GENERATE_TWOFACTOR_CODE,
+        variables: {
+          userID: id,
+          twoFactorCode: twoFactorCode,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(() => {
+        console.log('Error');
+      });
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setBannedError(false);
@@ -188,6 +237,27 @@ export default function Login() {
     }
   };
 
+  const validateTwoFactorCode = () => {
+    axios
+      .post(GRAPHQLAPI, {
+        query: VALIDATE_TWOFACTOR_CODE,
+        variables: {
+          userID: tempId,
+          twoFactorCode: inputtedTwoFactorCode,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.data.data.validateTwoFactorCode == true) {
+          setToken(tempToken);
+          Router.push('/');
+        }
+      })
+      .catch(() => {
+        console.log('Error');
+      });
+  };
+
   const logUser = (token: string) => {
     axios
       .post(
@@ -203,11 +273,22 @@ export default function Login() {
       )
       .then((res) => {
         if (res.data.data.getCurrentUser.banned == false) {
-          if (res.data.data.getCurrentUser.role == 'Admin') {
-            Router.push('/admin/home');
+          if (res.data.data.getCurrentUser.twoFactorEnabled == true) {
+            setTwoFactorAuthentication(true);
+            setTempId(res.data.data.getCurrentUser.id);
+            setTempToken(token);
+            generateTwoFactorAuthenticationCode(
+              res.data.data.getCurrentUser.email,
+              res.data.data.getCurrentUser.id,
+            );
+          } else {
+            setToken(token);
+            if (res.data.data.getCurrentUser.role == 'Admin') {
+              Router.push('/admin/home');
+            }
+
+            Router.push('/');
           }
-          setToken(token);
-          Router.push('/');
         } else {
           setBannedError(true);
         }
@@ -238,22 +319,24 @@ export default function Login() {
               }}
               onSubmit={handleSubmit}
             >
-              {!nextPrompt && !verificationCodePrompt && (
-                <input
-                  type="email"
-                  style={{
-                    marginBottom: '15px',
-                  }}
-                  className={styles.formtextinput}
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="Email Address"
-                  value={email}
-                  onChange={handleEmailChange}
-                />
-              )}
-              {nextPrompt && (
+              {!nextPrompt &&
+                !verificationCodePrompt &&
+                !twoFactorAuthentication && (
+                  <input
+                    type="email"
+                    style={{
+                      marginBottom: '15px',
+                    }}
+                    className={styles.formtextinput}
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="Email Address"
+                    value={email}
+                    onChange={handleEmailChange}
+                  />
+                )}
+              {nextPrompt && !twoFactorAuthentication && (
                 <div className={styles.formcontainer}>
                   <div
                     className={styles.loginemailcontainer}
@@ -297,7 +380,7 @@ export default function Login() {
                 </div>
               )}
 
-              {verificationCodePrompt && (
+              {verificationCodePrompt && !twoFactorAuthentication && (
                 <div className={styles.formcontainer}>
                   <div
                     className={styles.loginemailcontainer}
@@ -340,6 +423,37 @@ export default function Login() {
                 </div>
               )}
 
+              {twoFactorAuthentication && (
+                <div className={styles.formcontainer}>
+                  <div
+                    className={styles.loginemailcontainer}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      columnGap: '0.6em',
+                    }}
+                  ></div>
+                  <input
+                    type="text"
+                    className={styles.formtextinput}
+                    placeholder="Verification Code"
+                    value={inputtedTwoFactorCode}
+                    style={{ marginBottom: '0.5em' }}
+                    onChange={(event) => {
+                      setInputtedTwoFactorCode(event.target.value);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      validateTwoFactorCode();
+                    }}
+                  >
+                    Log In
+                  </button>
+                </div>
+              )}
+
               {isEmailExist && (
                 <h4
                   className={styles.errorMessage}
@@ -362,13 +476,14 @@ export default function Login() {
                   User is Banned !
                 </h4>
               )}
-
-              <button
-                className={`${styles.formbutton} ${styles.themeaccent}`}
-                onClick={handleSubmit}
-              >
-                SIGN IN
-              </button>
+              {!twoFactorAuthentication && (
+                <button
+                  className={`${styles.formbutton} ${styles.themeaccent}`}
+                  onClick={handleSubmit}
+                >
+                  SIGN IN
+                </button>
+              )}
             </form>
 
             <form onSubmit={sendVerificationCode} ref={form}>
@@ -388,12 +503,12 @@ export default function Login() {
                 }}
                 name="code"
               />
-              {oneTimeCodeEnabled && (
+              {oneTimeCodeEnabled && !twoFactorAuthentication && (
                 <button className={styles.formbutton}>
                   GET ONE-TIME SIGN IN CODE
                 </button>
               )}
-              {oneTimeCodeEnabled && (
+              {oneTimeCodeEnabled && !twoFactorAuthentication && (
                 <a
                   href="/forgotpassword"
                   style={{
