@@ -18,6 +18,7 @@ type User{
   currency: Float!
   location: Location! @goField(forceResolver:true)
   userSavedSearches: [UserSavedSearch!]! @goField(forceResolver:true)
+  twoFactorEnabled: Boolean!
 }
 
 type UserSavedSearch{
