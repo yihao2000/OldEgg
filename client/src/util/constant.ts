@@ -1055,3 +1055,11 @@ export const VALIDATE_TWOFACTOR_CODE = `mutation($userID:ID!, $twoFactorCode:Str
 export const GENERATE_TWOFACTOR_CODE = `mutation($userID:ID!, $twoFactorCode:String!){
   generateUserTwoFactorCode(userID:$userID twoFactorCode:$twoFactorCode)
 }`;
+
+export const POPULAR_CATEGORIES_QUERY = `query{
+  popularCategories{
+    id
+    name
+    description
+  }
+}`;

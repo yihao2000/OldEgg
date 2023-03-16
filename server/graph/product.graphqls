@@ -132,4 +132,5 @@ extend type Query{
 
     productReviews(productID: ID!): [ProductReview!]!
     
+    popularCategories: [Category!]!
 }

@@ -150,11 +150,25 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewPro
 func (r *mutationResolver) UpdateProduct(ctx context.Context, productID string, input model.NewProduct) (*model.Product, error) {
 	db := config.GetDB()
 
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	shop := new(model.Shop)
+	firstErr := db.First(shop, "user_id = ?", userID).Error
+	if firstErr != nil {
+		return nil, firstErr
+	}
+
 	product := new(model.Product)
 
-	err := db.First(product, "id = ? AND shop_id = ?", productID, input.ShopID).Error
-	if err != nil {
-		return nil, err
+	secondErr := db.First(product, "id = ? AND shop_id = ?", productID, shop.ID).Error
+	if secondErr != nil {
+		return nil, secondErr
 	}
 
 	product.Name = input.Name
@@ -464,6 +478,18 @@ func (r *queryResolver) ProductReviews(ctx context.Context, productID string) ([
 	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
 	var models []*model.ProductReview
 	return models, db.Where("product_id = ? AND user_id = ?", productID, userID).Find(&models).Error
+}
+
+// PopularCategories is the resolver for the popularCategories field.
+func (r *queryResolver) PopularCategories(ctx context.Context) ([]*model.Category, error) {
+	db := config.GetDB()
+
+	var models []*model.Category
+
+	temp := db.Model(models)
+	temp = temp.Select("categories.id, categories.name, categories.description, COUNT(transaction_headers.id) as total_transactions").Joins("LEFT JOIN products ON products.category_id = categories.id LEFT JOIN transaction_details ON transaction_details.product_id = products.id LEFT JOIN transaction_headers ON transaction_headers.id = transaction_details.transaction_header_id").Group("categories.id").Order("total_transactions DESC").Limit(5)
+
+	return models, temp.Find(&models).Error
 }
 
 // Product returns ProductResolver implementation.

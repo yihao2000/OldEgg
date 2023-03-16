@@ -13,6 +13,7 @@ import axios from 'axios';
 import {
   GRAPHQLAPI,
   POPULAR_BRANDS_QUERY,
+  POPULAR_CATEGORIES_QUERY,
   POPULAR_SAVED_SEARCHES_QUERY,
   PROMOS_QUERY,
   TOP_SHOPS_QUERY,
@@ -20,7 +21,7 @@ import {
 import PromoCarousel from '@/components/promocarousel';
 import ProductRecommendations from '@/components/productrecommendations';
 import { useSessionStorage } from 'usehooks-ts';
-import { Brand, Shop } from '@/components/interfaces/interfaces';
+import { Brand, Category, Shop } from '@/components/interfaces/interfaces';
 import NewsLetter from '@/components/newsletter';
 
 // const myImage = new CloudinaryImage('sample', {
@@ -33,6 +34,7 @@ interface PopularSavedSearch {
   keyword: string;
   count: number;
 }
+
 interface BrandParameter {
   brand: Brand;
 }
@@ -80,10 +82,23 @@ const SearchCard = (props: SearchParameter) => {
   );
 };
 
+interface CategoryParameter {
+  popularCategories: Category;
+}
+
+const CategoryCard = (props: CategoryParameter) => {
+  return (
+    <div className={styles.featuredsearchcard}>
+      {props.popularCategories.name}
+    </div>
+  );
+};
+
 export default function Home() {
   const [popularBrands, setPopularBrands] = useState<Brand[]>();
   const [topShops, setTopShops] = useState<Shop[]>();
   const [popularSearch, setPopularSearch] = useState<PopularSavedSearch[]>();
+  const [popularCategories, setPopularCategories] = useState<Category[]>();
 
   useEffect(() => {
     axios
@@ -110,6 +125,15 @@ export default function Home() {
       })
       .then((res) => {
         setPopularSearch(res.data.data.popularSavedSearches);
+      })
+      .catch(() => {});
+
+    axios
+      .post(GRAPHQLAPI, {
+        query: POPULAR_CATEGORIES_QUERY,
+      })
+      .then((res) => {
+        setPopularCategories(res.data.data.popularCategories);
       })
       .catch(() => {});
   }, []);
@@ -149,6 +173,14 @@ export default function Home() {
             <div className={styles.featuredsearchcontainer}>
               {popularSearch?.map((x) => {
                 return <SearchCard popularSearch={x} />;
+              })}
+            </div>
+          </div>
+          <div className={styles.featuredsection}>
+            <h1>FEATURED CATEGORIES</h1>
+            <div className={styles.featuredsearchcontainer}>
+              {popularCategories?.map((x) => {
+                return <CategoryCard popularCategories={x} />;
               })}
             </div>
           </div>

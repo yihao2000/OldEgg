@@ -169,6 +169,17 @@ export default function ShopProducts() {
                           gap: '5px',
                         }}
                       >
+                        <span>
+                          <span
+                            style={{
+                              fontWeight: 'bold',
+                            }}
+                          >
+                            {' '}
+                            {allProducts?.length}
+                          </span>{' '}
+                          Products -{' '}
+                        </span>
                         <b>Page</b> {currentPage + '/' + totalPage}{' '}
                       </div>
                       {totalPage > 1 && (
