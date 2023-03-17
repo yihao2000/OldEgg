@@ -1,0 +1,76 @@
+.pagedivider {
+  display: flex;
+  padding: 70px;
+}
+
+.halfsection {
+  width: 50%;
+}
+
+.shopcontainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.shopcard {
+  display: flex;
+  column-gap: 20px;
+  align-items: center;
+  background-color: rgb(var(--foreground-lighter-rgb));
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.shopcardimagecontainer {
+  width: 75px;
+  height: 75px;
+}
+
+.shopcardimage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.verticalline {
+  border-left: 1px solid white;
+  min-height: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.shopcardinformationcontainer {
+  // padding-top: 10px;
+  height: 100%;
+}
+
+.shopname {
+  font-weight: bold;
+}
+
+.orderid {
+  width: 400px;
+  // display: flex;
+  // flex-wrap: wrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.shopcard:hover {
+  background-color: rgb(var(--background-end-rgb));
+  cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .pagedivider {
+    flex-direction: column;
+  }
+  .halfsection {
+    width: 100%;
+  }
+  .orderid {
+    width: 500px;
+  }
+}

@@ -21,6 +21,7 @@ type UserChatImage{
 }
 
 extend type Mutation{
-    createUserChat(senderID: ID!, receiverID: ID!): UserChat!
-    createUserChatImage(senderID: ID!, receiverID: ID!, image:String!, time:Time!): UserChatImage!
+    createUserChat(seller: ID!, user: ID!): UserChat!
+    createUserChatImage(chatID: ID!, image:String!, type:String!): UserChatImage!
+    createUserChatMessage(chatID: ID!, message:String!, type:String!): UserChatMessage!
 }

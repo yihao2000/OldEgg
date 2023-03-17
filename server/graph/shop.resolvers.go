@@ -373,6 +373,25 @@ func (r *queryResolver) ShopReviewTag(ctx context.Context, shopReviewID string) 
 	return model, nil
 }
 
+// ShopOnGoingUserOrders is the resolver for the shopOnGoingUserOrders field.
+func (r *queryResolver) ShopOnGoingUserOrders(ctx context.Context, shopID string) ([]*model.TransactionHeader, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.TransactionHeader
+
+	temp := db.Model(models)
+	temp = temp.Select("transaction_headers.id, transaction_headers.transaction_date, transaction_headers.user_id, transaction_headers.shipping_id, transaction_headers.payment_type_id, transaction_headers.status, transaction_headers.address_id, transaction_headers.invoice").Joins("JOIN transaction_details ON transaction_headers.id = transaction_details.transaction_header_id JOIN products ON transaction_details.product_id = products.id JOIN shops ON shops.id = products.shop_id ").Where("transaction_headers.status = ? AND transaction_headers.user_id = ? AND shops.id = ?", "Open", userID, shopID)
+
+	return models, temp.Find(&models).Error
+}
+
 // Products is the resolver for the products field.
 func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
 	db := config.GetDB()

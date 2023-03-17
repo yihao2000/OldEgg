@@ -7,19 +7,23 @@ package graph
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/yihao2000/gqlgen-todos/graph/model"
 )
 
 // CreateUserChat is the resolver for the createUserChat field.
-func (r *mutationResolver) CreateUserChat(ctx context.Context, senderID string, receiverID string) (*model.UserChat, error) {
+func (r *mutationResolver) CreateUserChat(ctx context.Context, seller string, user string) (*model.UserChat, error) {
 	panic(fmt.Errorf("not implemented: CreateUserChat - createUserChat"))
 }
 
 // CreateUserChatImage is the resolver for the createUserChatImage field.
-func (r *mutationResolver) CreateUserChatImage(ctx context.Context, senderID string, receiverID string, image string, time time.Time) (*model.UserChatImage, error) {
+func (r *mutationResolver) CreateUserChatImage(ctx context.Context, chatID string, image string, typeArg string) (*model.UserChatImage, error) {
 	panic(fmt.Errorf("not implemented: CreateUserChatImage - createUserChatImage"))
+}
+
+// CreateUserChatMessage is the resolver for the createUserChatMessage field.
+func (r *mutationResolver) CreateUserChatMessage(ctx context.Context, chatID string, message string, typeArg string) (*model.UserChatMessage, error) {
+	panic(fmt.Errorf("not implemented: CreateUserChatMessage - createUserChatMessage"))
 }
 
 // ID is the resolver for the id field.

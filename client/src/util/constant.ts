@@ -1063,3 +1063,21 @@ export const POPULAR_CATEGORIES_QUERY = `query{
     description
   }
 }`;
+
+export const USER_ONGOING_ORDER_SHOPS = `query{
+  userOngoingOrderShops{
+    id
+    name
+    description
+    banned
+    image
+  }
+}`;
+
+export const SHOP_ONGOING_USER_ORDERS = `query($shopID:ID!){
+  shopOnGoingUserOrders(shopID:$shopID){
+    id
+    transactionDate
+    status
+  }
+}`;

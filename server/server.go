@@ -83,6 +83,9 @@ func main() {
 	db.AutoMigrate(&model.ProductReview{})
 	db.AutoMigrate(&model.Notification{})
 	db.AutoMigrate(&model.CustomerServiceReview{})
+	db.AutoMigrate(&model.UserChat{})
+	db.AutoMigrate(&model.UserChatImage{})
+	db.AutoMigrate(&model.UserChatMessage{})
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{
