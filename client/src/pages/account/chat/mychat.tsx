@@ -1,4 +1,8 @@
-import { Shop, TransactionHeader } from '@/components/interfaces/interfaces';
+import {
+  Shop,
+  TransactionHeader,
+  UserChat,
+} from '@/components/interfaces/interfaces';
 import Layout from '@/components/layout';
 import { useEffect, useState } from 'react';
 import styles from '@/styles/pagesstyles/account/chat/mychat.module.scss';
@@ -6,6 +10,7 @@ import axios from 'axios';
 import {
   GRAPHQLAPI,
   SHOP_ONGOING_USER_ORDERS,
+  USER_CHAT_QUERY,
   USER_ONGOING_ORDER_SHOPS,
 } from '@/util/constant';
 import { useSessionStorage } from 'usehooks-ts';
@@ -15,8 +20,40 @@ interface ShopCardParameter {
 }
 
 export default function MyChat() {
+  const [selectedUserChat, setSelectedUserChat] = useState<UserChat>();
+
+  useEffect(() => {
+    if (selectedUserChat?.id != '') {
+      console.log(selectedUserChat);
+    }
+  }, [selectedUserChat]);
+
   function ShopCard(props: ShopCardParameter) {
     const [orders, setOrders] = useState<TransactionHeader[]>();
+
+    const handleCardClick = () => {
+      axios
+        .post(
+          GRAPHQLAPI,
+          {
+            query: USER_CHAT_QUERY,
+            variables: {
+              sellerID: props.shop.user.id,
+            },
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((res) => {
+          setSelectedUserChat(res.data.data.userChat);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     useEffect(() => {
       axios
         .post(
@@ -41,7 +78,7 @@ export default function MyChat() {
         });
     }, []);
     return (
-      <div className={styles.shopcard}>
+      <div className={styles.shopcard} onClick={handleCardClick}>
         <div className={styles.shopcardimagecontainer}>
           <img src={props.shop.image} alt="" className={styles.shopcardimage} />
         </div>
@@ -74,7 +111,6 @@ export default function MyChat() {
         },
       )
       .then((res) => {
-        console.log(res);
         setShops(res.data.data.userOngoingOrderShops);
       });
   }, []);

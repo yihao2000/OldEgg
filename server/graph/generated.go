@@ -55,7 +55,6 @@ type ResolverRoot interface {
 	TransactionHeader() TransactionHeaderResolver
 	User() UserResolver
 	UserChat() UserChatResolver
-	UserChatImage() UserChatImageResolver
 	Wishlist() WishlistResolver
 	WishlistDetail() WishlistDetailResolver
 	WishlistFollower() WishlistFollowerResolver
@@ -137,7 +136,7 @@ type ComplexityRoot struct {
 		CreateShop                       func(childComplexity int, input model.NewShop) int
 		CreateShopReview                 func(childComplexity int, shopID string, userID string, rating float64, tag *string, comment string, oneTimeDelivery bool, productAccurate bool, satisfiedService bool, transactionHeaderID string) int
 		CreateShopReviewTag              func(childComplexity int, shopReviewID string, tag string) int
-		CreateUserChat                   func(childComplexity int, seller string, user string) int
+		CreateUserChat                   func(childComplexity int, sellerID string, userID string) int
 		CreateUserChatImage              func(childComplexity int, chatID string, image string, typeArg string) int
 		CreateUserChatMessage            func(childComplexity int, chatID string, message string, typeArg string) int
 		CreateUserSavedSearch            func(childComplexity int, keyword string) int
@@ -278,6 +277,7 @@ type ComplexityRoot struct {
 		Shippings                     func(childComplexity int) int
 		Shop                          func(childComplexity int, id *string, name *string) int
 		ShopOnGoingUserOrders         func(childComplexity int, shopID string) int
+		ShopOngoingOrderUsers         func(childComplexity int) int
 		ShopOrders                    func(childComplexity int, shopID string, filter *string) int
 		ShopProducts                  func(childComplexity int, shopID string, sortBy *string, limit *int, offset *int, categoryID *string) int
 		ShopReviewTag                 func(childComplexity int, shopReviewID string) int
@@ -289,9 +289,11 @@ type ComplexityRoot struct {
 		UpdateCart                    func(childComplexity int, userID string, productID string, quantity int) int
 		User                          func(childComplexity int, id *string, email *string) int
 		UserAddresses                 func(childComplexity int) int
+		UserChat                      func(childComplexity int, sellerID string) int
 		UserFollowedWishlists         func(childComplexity int) int
 		UserNotifications             func(childComplexity int) int
 		UserOngoingOrderShops         func(childComplexity int) int
+		UserOngoingShopOrders         func(childComplexity int, userID string) int
 		UserProductReviews            func(childComplexity int) int
 		UserSavedSearches             func(childComplexity int) int
 		UserShopReviews               func(childComplexity int) int
@@ -406,17 +408,19 @@ type ComplexityRoot struct {
 	}
 
 	UserChatImage struct {
-		Chat  func(childComplexity int) int
-		Image func(childComplexity int) int
-		Time  func(childComplexity int) int
-		Type  func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Image    func(childComplexity int) int
+		Time     func(childComplexity int) int
+		Type     func(childComplexity int) int
+		UserChat func(childComplexity int) int
 	}
 
 	UserChatMessage struct {
-		Chat    func(childComplexity int) int
-		Message func(childComplexity int) int
-		Time    func(childComplexity int) int
-		Type    func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Message  func(childComplexity int) int
+		Time     func(childComplexity int) int
+		Type     func(childComplexity int) int
+		UserChat func(childComplexity int) int
 	}
 
 	UserSavedSearch struct {
@@ -519,7 +523,7 @@ type MutationResolver interface {
 	CreateSavedForLater(ctx context.Context, productID string, quantity int) (*model.SavedForLater, error)
 	DeleteSavedForLater(ctx context.Context, productID string) (bool, error)
 	DeleteAllSavedForLater(ctx context.Context) (bool, error)
-	CreateUserChat(ctx context.Context, seller string, user string) (*model.UserChat, error)
+	CreateUserChat(ctx context.Context, sellerID string, userID string) (*model.UserChat, error)
 	CreateUserChatImage(ctx context.Context, chatID string, image string, typeArg string) (*model.UserChatImage, error)
 	CreateUserChatMessage(ctx context.Context, chatID string, message string, typeArg string) (*model.UserChatMessage, error)
 	CreateBrand(ctx context.Context, input model.NewBrand) (*model.Brand, error)
@@ -584,6 +588,7 @@ type QueryResolver interface {
 	UserShopReviews(ctx context.Context) ([]*model.ShopReview, error)
 	CustomerServiceReviews(ctx context.Context) ([]*model.CustomerServiceReview, error)
 	UserOngoingOrderShops(ctx context.Context) ([]*model.Shop, error)
+	UserOngoingShopOrders(ctx context.Context, userID string) ([]*model.TransactionHeader, error)
 	Address(ctx context.Context, id string) (*model.Address, error)
 	Addresses(ctx context.Context) ([]*model.Address, error)
 	UserAddresses(ctx context.Context) ([]*model.Address, error)
@@ -600,6 +605,7 @@ type QueryResolver interface {
 	ProductUserWishlists(ctx context.Context, productID string) ([]*model.Wishlist, error)
 	Wishlist(ctx context.Context, wishlistID string) (*model.Wishlist, error)
 	SavedForLaters(ctx context.Context) ([]*model.SavedForLater, error)
+	UserChat(ctx context.Context, sellerID string) (*model.UserChat, error)
 	Brands(ctx context.Context) ([]*model.Brand, error)
 	Brand(ctx context.Context, id *string, name *string) (*model.Brand, error)
 	PopularBrands(ctx context.Context) ([]*model.Brand, error)
@@ -623,6 +629,7 @@ type QueryResolver interface {
 	ShopReviews(ctx context.Context, shopID string, filter *string, search *string) ([]*model.ShopReview, error)
 	ShopReviewTag(ctx context.Context, shopReviewID string) (*model.ShopReviewTag, error)
 	ShopOnGoingUserOrders(ctx context.Context, shopID string) ([]*model.TransactionHeader, error)
+	ShopOngoingOrderUsers(ctx context.Context) ([]*model.User, error)
 	Shipping(ctx context.Context, id string) (*model.Shipping, error)
 	Shippings(ctx context.Context) ([]*model.Shipping, error)
 	PaymentType(ctx context.Context, id string) (*model.PaymentType, error)
@@ -666,16 +673,10 @@ type UserResolver interface {
 	UserSavedSearches(ctx context.Context, obj *model.User) ([]*model.UserSavedSearch, error)
 }
 type UserChatResolver interface {
-	ID(ctx context.Context, obj *model.UserChat) (string, error)
 	Seller(ctx context.Context, obj *model.UserChat) (*model.User, error)
 	User(ctx context.Context, obj *model.UserChat) (*model.User, error)
 	UserChatMessage(ctx context.Context, obj *model.UserChat) ([]*model.UserChatMessage, error)
 	UserChatImage(ctx context.Context, obj *model.UserChat) ([]*model.UserChatImage, error)
-}
-type UserChatImageResolver interface {
-	Chat(ctx context.Context, obj *model.UserChatImage) (*model.UserChat, error)
-
-	Type(ctx context.Context, obj *model.UserChatImage) (string, error)
 }
 type WishlistResolver interface {
 	User(ctx context.Context, obj *model.Wishlist) (*model.User, error)
@@ -1148,7 +1149,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUserChat(childComplexity, args["seller"].(string), args["user"].(string)), true
+		return e.complexity.Mutation.CreateUserChat(childComplexity, args["sellerID"].(string), args["userID"].(string)), true
 
 	case "Mutation.createUserChatImage":
 		if e.complexity.Mutation.CreateUserChatImage == nil {
@@ -2272,6 +2273,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ShopOnGoingUserOrders(childComplexity, args["shopID"].(string)), true
 
+	case "Query.shopOngoingOrderUsers":
+		if e.complexity.Query.ShopOngoingOrderUsers == nil {
+			break
+		}
+
+		return e.complexity.Query.ShopOngoingOrderUsers(childComplexity), true
+
 	case "Query.shopOrders":
 		if e.complexity.Query.ShopOrders == nil {
 			break
@@ -2389,6 +2397,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.UserAddresses(childComplexity), true
 
+	case "Query.userChat":
+		if e.complexity.Query.UserChat == nil {
+			break
+		}
+
+		args, err := ec.field_Query_userChat_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.UserChat(childComplexity, args["sellerID"].(string)), true
+
 	case "Query.userFollowedWishlists":
 		if e.complexity.Query.UserFollowedWishlists == nil {
 			break
@@ -2409,6 +2429,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.UserOngoingOrderShops(childComplexity), true
+
+	case "Query.userOngoingShopOrders":
+		if e.complexity.Query.UserOngoingShopOrders == nil {
+			break
+		}
+
+		args, err := ec.field_Query_userOngoingShopOrders_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.UserOngoingShopOrders(childComplexity, args["userID"].(string)), true
 
 	case "Query.userProductReviews":
 		if e.complexity.Query.UserProductReviews == nil {
@@ -3017,12 +3049,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserChat.UserChatMessage(childComplexity), true
 
-	case "UserChatImage.chat":
-		if e.complexity.UserChatImage.Chat == nil {
+	case "UserChatImage.id":
+		if e.complexity.UserChatImage.ID == nil {
 			break
 		}
 
-		return e.complexity.UserChatImage.Chat(childComplexity), true
+		return e.complexity.UserChatImage.ID(childComplexity), true
 
 	case "UserChatImage.image":
 		if e.complexity.UserChatImage.Image == nil {
@@ -3045,12 +3077,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserChatImage.Type(childComplexity), true
 
-	case "UserChatMessage.chat":
-		if e.complexity.UserChatMessage.Chat == nil {
+	case "UserChatImage.userChat":
+		if e.complexity.UserChatImage.UserChat == nil {
 			break
 		}
 
-		return e.complexity.UserChatMessage.Chat(childComplexity), true
+		return e.complexity.UserChatImage.UserChat(childComplexity), true
+
+	case "UserChatMessage.id":
+		if e.complexity.UserChatMessage.ID == nil {
+			break
+		}
+
+		return e.complexity.UserChatMessage.ID(childComplexity), true
 
 	case "UserChatMessage.message":
 		if e.complexity.UserChatMessage.Message == nil {
@@ -3072,6 +3111,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UserChatMessage.Type(childComplexity), true
+
+	case "UserChatMessage.userChat":
+		if e.complexity.UserChatMessage.UserChat == nil {
+			break
+		}
+
+		return e.complexity.UserChatMessage.UserChat(childComplexity), true
 
 	case "UserSavedSearch.id":
 		if e.complexity.UserSavedSearch.ID == nil {
@@ -3988,23 +4034,23 @@ func (ec *executionContext) field_Mutation_createUserChat_args(ctx context.Conte
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["seller"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seller"))
+	if tmp, ok := rawArgs["sellerID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sellerID"))
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["seller"] = arg0
+	args["sellerID"] = arg0
 	var arg1 string
-	if tmp, ok := rawArgs["user"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
+	if tmp, ok := rawArgs["userID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
 		arg1, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["user"] = arg1
+	args["userID"] = arg1
 	return args, nil
 }
 
@@ -5592,6 +5638,36 @@ func (ec *executionContext) field_Query_updateCart_args(ctx context.Context, raw
 		}
 	}
 	args["quantity"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_userChat_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["sellerID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sellerID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["sellerID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_userOngoingShopOrders_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["userID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userID"] = arg0
 	return args, nil
 }
 
@@ -10001,7 +10077,7 @@ func (ec *executionContext) _Mutation_createUserChat(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUserChat(rctx, fc.Args["seller"].(string), fc.Args["user"].(string))
+		return ec.resolvers.Mutation().CreateUserChat(rctx, fc.Args["sellerID"].(string), fc.Args["userID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10091,8 +10167,10 @@ func (ec *executionContext) fieldContext_Mutation_createUserChatImage(ctx contex
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "chat":
-				return ec.fieldContext_UserChatImage_chat(ctx, field)
+			case "id":
+				return ec.fieldContext_UserChatImage_id(ctx, field)
+			case "userChat":
+				return ec.fieldContext_UserChatImage_userChat(ctx, field)
 			case "image":
 				return ec.fieldContext_UserChatImage_image(ctx, field)
 			case "type":
@@ -10155,8 +10233,10 @@ func (ec *executionContext) fieldContext_Mutation_createUserChatMessage(ctx cont
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "chat":
-				return ec.fieldContext_UserChatMessage_chat(ctx, field)
+			case "id":
+				return ec.fieldContext_UserChatMessage_id(ctx, field)
+			case "userChat":
+				return ec.fieldContext_UserChatMessage_userChat(ctx, field)
 			case "message":
 				return ec.fieldContext_UserChatMessage_message(ctx, field)
 			case "type":
@@ -14898,6 +14978,80 @@ func (ec *executionContext) fieldContext_Query_userOngoingOrderShops(ctx context
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_userOngoingShopOrders(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userOngoingShopOrders(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserOngoingShopOrders(rctx, fc.Args["userID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TransactionHeader)
+	fc.Result = res
+	return ec.marshalNTransactionHeader2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐTransactionHeaderᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userOngoingShopOrders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_TransactionHeader_id(ctx, field)
+			case "transactionDate":
+				return ec.fieldContext_TransactionHeader_transactionDate(ctx, field)
+			case "user":
+				return ec.fieldContext_TransactionHeader_user(ctx, field)
+			case "shipping":
+				return ec.fieldContext_TransactionHeader_shipping(ctx, field)
+			case "paymentType":
+				return ec.fieldContext_TransactionHeader_paymentType(ctx, field)
+			case "status":
+				return ec.fieldContext_TransactionHeader_status(ctx, field)
+			case "address":
+				return ec.fieldContext_TransactionHeader_address(ctx, field)
+			case "invoice":
+				return ec.fieldContext_TransactionHeader_invoice(ctx, field)
+			case "transactionDetails":
+				return ec.fieldContext_TransactionHeader_transactionDetails(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type TransactionHeader", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_userOngoingShopOrders_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_address(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_address(ctx, field)
 	if err != nil {
@@ -16014,6 +16168,72 @@ func (ec *executionContext) fieldContext_Query_savedForLaters(ctx context.Contex
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SavedForLater", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_userChat(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userChat(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserChat(rctx, fc.Args["sellerID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserChat)
+	fc.Result = res
+	return ec.marshalNUserChat2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserChat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userChat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserChat_id(ctx, field)
+			case "seller":
+				return ec.fieldContext_UserChat_seller(ctx, field)
+			case "user":
+				return ec.fieldContext_UserChat_user(ctx, field)
+			case "userChatMessage":
+				return ec.fieldContext_UserChat_userChatMessage(ctx, field)
+			case "userChatImage":
+				return ec.fieldContext_UserChat_userChatImage(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserChat", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_userChat_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -17566,6 +17786,81 @@ func (ec *executionContext) fieldContext_Query_shopOnGoingUserOrders(ctx context
 	if fc.Args, err = ec.field_Query_shopOnGoingUserOrders_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_shopOngoingOrderUsers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_shopOngoingOrderUsers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ShopOngoingOrderUsers(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_shopOngoingOrderUsers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "verificationcode":
+				return ec.fieldContext_User_verificationcode(ctx, field)
+			case "verificationcodevalidtime":
+				return ec.fieldContext_User_verificationcodevalidtime(ctx, field)
+			case "newslettersubscribe":
+				return ec.fieldContext_User_newslettersubscribe(ctx, field)
+			case "currency":
+				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -21292,7 +21587,7 @@ func (ec *executionContext) _UserChat_id(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.UserChat().ID(rctx, obj)
+		return obj.ID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -21313,8 +21608,8 @@ func (ec *executionContext) fieldContext_UserChat_id(ctx context.Context, field 
 	fc = &graphql.FieldContext{
 		Object:     "UserChat",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -21513,8 +21808,10 @@ func (ec *executionContext) fieldContext_UserChat_userChatMessage(ctx context.Co
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "chat":
-				return ec.fieldContext_UserChatMessage_chat(ctx, field)
+			case "id":
+				return ec.fieldContext_UserChatMessage_id(ctx, field)
+			case "userChat":
+				return ec.fieldContext_UserChatMessage_userChat(ctx, field)
 			case "message":
 				return ec.fieldContext_UserChatMessage_message(ctx, field)
 			case "type":
@@ -21567,8 +21864,10 @@ func (ec *executionContext) fieldContext_UserChat_userChatImage(ctx context.Cont
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "chat":
-				return ec.fieldContext_UserChatImage_chat(ctx, field)
+			case "id":
+				return ec.fieldContext_UserChatImage_id(ctx, field)
+			case "userChat":
+				return ec.fieldContext_UserChatImage_userChat(ctx, field)
 			case "image":
 				return ec.fieldContext_UserChatImage_image(ctx, field)
 			case "type":
@@ -21582,8 +21881,8 @@ func (ec *executionContext) fieldContext_UserChat_userChatImage(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _UserChatImage_chat(ctx context.Context, field graphql.CollectedField, obj *model.UserChatImage) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_UserChatImage_chat(ctx, field)
+func (ec *executionContext) _UserChatImage_id(ctx context.Context, field graphql.CollectedField, obj *model.UserChatImage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserChatImage_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -21596,7 +21895,51 @@ func (ec *executionContext) _UserChatImage_chat(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.UserChatImage().Chat(rctx, obj)
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserChatImage_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserChatImage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserChatImage_userChat(ctx context.Context, field graphql.CollectedField, obj *model.UserChatImage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserChatImage_userChat(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserChat, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -21613,12 +21956,12 @@ func (ec *executionContext) _UserChatImage_chat(ctx context.Context, field graph
 	return ec.marshalNUserChat2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserChat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UserChatImage_chat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UserChatImage_userChat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UserChatImage",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -21696,7 +22039,7 @@ func (ec *executionContext) _UserChatImage_type(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.UserChatImage().Type(rctx, obj)
+		return obj.Type, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -21717,8 +22060,8 @@ func (ec *executionContext) fieldContext_UserChatImage_type(ctx context.Context,
 	fc = &graphql.FieldContext{
 		Object:     "UserChatImage",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -21770,8 +22113,8 @@ func (ec *executionContext) fieldContext_UserChatImage_time(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _UserChatMessage_chat(ctx context.Context, field graphql.CollectedField, obj *model.UserChatMessage) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_UserChatMessage_chat(ctx, field)
+func (ec *executionContext) _UserChatMessage_id(ctx context.Context, field graphql.CollectedField, obj *model.UserChatMessage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserChatMessage_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -21784,7 +22127,51 @@ func (ec *executionContext) _UserChatMessage_chat(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Chat, nil
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserChatMessage_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserChatMessage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserChatMessage_userChat(ctx context.Context, field graphql.CollectedField, obj *model.UserChatMessage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserChatMessage_userChat(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserChat, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -21801,7 +22188,7 @@ func (ec *executionContext) _UserChatMessage_chat(ctx context.Context, field gra
 	return ec.marshalNUserChat2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUserChat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UserChatMessage_chat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UserChatMessage_userChat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UserChatMessage",
 		Field:      field,
@@ -27572,6 +27959,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "userOngoingShopOrders":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userOngoingShopOrders(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "address":
 			field := field
 
@@ -27882,6 +28289,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_savedForLaters(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "userChat":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userChat(ctx, field)
 				return res
 			}
 
@@ -28342,6 +28769,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_shopOnGoingUserOrders(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "shopOngoingOrderUsers":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_shopOngoingOrderUsers(ctx, field)
 				return res
 			}
 
@@ -29355,25 +29802,12 @@ func (ec *executionContext) _UserChat(ctx context.Context, sel ast.SelectionSet,
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("UserChat")
 		case "id":
-			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._UserChat_id(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._UserChat_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
 			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
 		case "seller":
 			field := field
 
@@ -29475,59 +29909,40 @@ func (ec *executionContext) _UserChatImage(ctx context.Context, sel ast.Selectio
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("UserChatImage")
-		case "chat":
-			field := field
+		case "id":
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._UserChatImage_chat(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._UserChatImage_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
 			}
+		case "userChat":
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			out.Values[i] = ec._UserChatImage_userChat(ctx, field, obj)
 
-			})
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "image":
 
 			out.Values[i] = ec._UserChatImage_image(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "type":
-			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._UserChatImage_type(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._UserChatImage_type(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
 			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
 		case "time":
 
 			out.Values[i] = ec._UserChatImage_time(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -29550,9 +29965,16 @@ func (ec *executionContext) _UserChatMessage(ctx context.Context, sel ast.Select
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("UserChatMessage")
-		case "chat":
+		case "id":
 
-			out.Values[i] = ec._UserChatMessage_chat(ctx, field, obj)
+			out.Values[i] = ec._UserChatMessage_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userChat":
+
+			out.Values[i] = ec._UserChatMessage_userChat(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

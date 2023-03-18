@@ -38,6 +38,7 @@ export interface Shop {
   products: Product[];
   banned: boolean;
   banner: string;
+  user: User;
 }
 
 export interface ProductGroup {
@@ -238,4 +239,10 @@ export interface CustomerServiceReview {
   comment: string;
   rating: number;
   user: User;
+}
+
+export interface UserChat {
+  id: string;
+  user: User;
+  seller: User;
 }

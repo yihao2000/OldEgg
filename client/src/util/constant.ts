@@ -1071,6 +1071,9 @@ export const USER_ONGOING_ORDER_SHOPS = `query{
     description
     banned
     image
+    user{
+      id
+    }
   }
 }`;
 
@@ -1079,5 +1082,41 @@ export const SHOP_ONGOING_USER_ORDERS = `query($shopID:ID!){
     id
     transactionDate
     status
+  }
+}`;
+
+export const USER_CHAT_QUERY = `query($sellerID:ID!){
+  userChat(sellerID:$sellerID){
+    id
+    seller{
+      id
+      name
+    }
+    user{
+      id
+      name
+    }
+
+  }
+}`;
+
+export const SHOP_ONGOING_ORDER_USERS_QUERY = `query{
+  shopOngoingOrderUsers{
+    id
+    name
+    email
+    phone
+    banned
+    role
+  }
+}`;
+
+export const USER_ONGOING_SHOP_ORDERS_QUERY = `query($userID:ID!){
+  userOngoingShopOrders(userID:$userID){
+   	id
+    transactionDate
+    status
+    invoice
+
   }
 }`;

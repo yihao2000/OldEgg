@@ -102,13 +102,6 @@ type SearchProduct struct {
 	HighRating     *bool    `json:"highRating"`
 }
 
-type UserChatMessage struct {
-	Chat    *UserChat `json:"chat"`
-	Message string    `json:"message"`
-	Type    string    `json:"type"`
-	Time    time.Time `json:"time"`
-}
-
 type UserSavedSearch struct {
 	ID      string `json:"id"`
 	Keyword string `json:"keyword"`

@@ -544,6 +544,25 @@ func (r *queryResolver) UserOngoingOrderShops(ctx context.Context) ([]*model.Sho
 	return models, temp.Find(&models).Error
 }
 
+// UserOngoingShopOrders is the resolver for the userOngoingShopOrders field.
+func (r *queryResolver) UserOngoingShopOrders(ctx context.Context, userID string) ([]*model.TransactionHeader, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	currUserID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	var models []*model.TransactionHeader
+
+	temp := db.Model(models)
+	temp = temp.Select("transaction_headers.id, transaction_headers.transaction_date, transaction_headers.user_id, transaction_headers.shipping_id, transaction_headers.payment_type_id, transaction_headers.status, transaction_headers.address_id, transaction_headers.invoice").Joins("JOIN transaction_details ON transaction_headers.id = transaction_details.transaction_header_id JOIN products ON transaction_details.product_id = products.id JOIN shops ON shops.id = products.shop_id ").Where("transaction_headers.status = ? AND transaction_headers.user_id = ? AND shops.user_id = ?", "Open", userID, currUserID)
+
+	return models, temp.Find(&models).Error
+}
+
 // Location is the resolver for the location field.
 func (r *userResolver) Location(ctx context.Context, obj *model.User) (*model.Location, error) {
 	db := config.GetDB()

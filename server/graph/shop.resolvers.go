@@ -392,6 +392,34 @@ func (r *queryResolver) ShopOnGoingUserOrders(ctx context.Context, shopID string
 	return models, temp.Find(&models).Error
 }
 
+// ShopOngoingOrderUsers is the resolver for the shopOngoingOrderUsers field.
+func (r *queryResolver) ShopOngoingOrderUsers(ctx context.Context) ([]*model.User, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	// var model *model.Shop
+	// err := db.Where("user_id = ?", userID).Find(&model).Error
+
+	// if err != nil {
+	// 	return nil, &gqlerror.Error{
+	// 		Message: "User does not have any shop !",
+	// 	}
+	// }
+
+	var models []*model.User
+
+	temp := db.Model(models)
+	temp = temp.Select("DISTINCT users.id, users.name, users.email, users.phone,  users.banned, users.role").Joins("JOIN transaction_headers ON transaction_headers.user_id = users.id JOIN transaction_details ON transaction_details.transaction_header_id = transaction_headers.id JOIN products ON products.id = transaction_details.product_id JOIN shops ON shops.id = products.shop_id").Where("transaction_headers.status = ? AND shops.user_id = ?", "Open", userID)
+
+	return models, temp.Find(&models).Error
+}
+
 // Products is the resolver for the products field.
 func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
 	db := config.GetDB()

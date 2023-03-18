@@ -129,4 +129,9 @@ type Query{
     customerServiceReviews: [CustomerServiceReview!]!
 
     userOngoingOrderShops: [Shop!]!
+
+    userOngoingShopOrders(userID: ID!): [TransactionHeader!]!
+    
+
+    
 }

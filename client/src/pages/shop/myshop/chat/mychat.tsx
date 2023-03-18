@@ -1,28 +1,38 @@
-import { Shop, TransactionHeader } from '@/components/interfaces/interfaces';
+import {
+  Shop,
+  TransactionHeader,
+  User,
+} from '@/components/interfaces/interfaces';
 import Layout from '@/components/layout';
 import { useEffect, useState } from 'react';
 import styles from '@/styles/pagesstyles/account/chat/mychat.module.scss';
 import axios from 'axios';
 import {
   GRAPHQLAPI,
+  SHOP_ONGOING_ORDER_USERS_QUERY,
   SHOP_ONGOING_USER_ORDERS,
   USER_ONGOING_ORDER_SHOPS,
+  USER_ONGOING_SHOP_ORDERS_QUERY,
 } from '@/util/constant';
 import { useSessionStorage } from 'usehooks-ts';
 
-interface ShopCardParameter {
-  shop: Shop;
+interface UserCardParameter {
+  // shop: Shop;
+  user: User;
 }
 
 export default function MyChat() {
-  function ShopCard(props: ShopCardParameter) {
+  function UserCard(props: UserCardParameter) {
     const [orders, setOrders] = useState<TransactionHeader[]>();
     useEffect(() => {
       axios
         .post(
           GRAPHQLAPI,
           {
-            query: SHOP_ONGOING_USER_ORDERS,
+            query: USER_ONGOING_SHOP_ORDERS_QUERY,
+            variables: {
+              userID: props.user.id,
+            },
           },
           {
             headers: {
@@ -31,7 +41,8 @@ export default function MyChat() {
           },
         )
         .then((res) => {
-          setOrders(res.data.data.shopOnGoingUserOrders);
+          // console.log(res);
+          setOrders(res.data.data.userOngoingShopOrders);
         })
         .catch((err) => {
           console.log(err);
@@ -40,10 +51,14 @@ export default function MyChat() {
     return (
       <div className={styles.shopcard}>
         <div className={styles.shopcardimagecontainer}>
-          <img src={props.shop.image} alt="" className={styles.shopcardimage} />
+          <img
+            src="https://res.cloudinary.com/dmpbgjnrc/image/upload/v1678103779/userplaceholder_bloytq.webp"
+            alt=""
+            className={styles.shopcardimage}
+          />
         </div>
         <div className={styles.shopcardinformationcontainer}>
-          <div className={styles.shopname}>{props.shop.name}</div>
+          <div className={styles.shopname}>{props.user.name}</div>
           <div className={styles.orderid}>
             Ongoing Order ID(s):
             {orders?.map((x) => {
@@ -55,14 +70,15 @@ export default function MyChat() {
     );
   }
 
-  const [shops, setShops] = useState<Shop[]>();
+  // const [shops, setShops] = useState<Shop[]>();
+  const [users, setUsers] = useState<User[]>();
   const [token, setToken] = useSessionStorage('token', '');
   useEffect(() => {
     axios
       .post(
         GRAPHQLAPI,
         {
-          query: USER_ONGOING_ORDER_SHOPS,
+          query: SHOP_ONGOING_ORDER_USERS_QUERY,
         },
         {
           headers: {
@@ -71,8 +87,7 @@ export default function MyChat() {
         },
       )
       .then((res) => {
-        console.log(res);
-        setShops(res.data.data.userOngoingOrderShops);
+        setUsers(res.data.data.shopOngoingOrderUsers);
       });
   }, []);
   return (
@@ -81,8 +96,8 @@ export default function MyChat() {
         <div className={styles.pagedivider}>
           <div className={styles.halfsection}>
             <div className={styles.shopcontainer}>
-              {shops?.map((x) => {
-                return <ShopCard shop={x} />;
+              {users?.map((x) => {
+                return <UserCard user={x} />;
               })}
             </div>
           </div>

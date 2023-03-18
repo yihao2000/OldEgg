@@ -67,4 +67,5 @@ extend type Query{
     shopReviewTag(shopReviewID: ID!): ShopReviewTag!
     
     shopOnGoingUserOrders(shopID:ID!): [TransactionHeader!]!
+    shopOngoingOrderUsers: [User!]!
 }

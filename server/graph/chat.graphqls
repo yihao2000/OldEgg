@@ -1,27 +1,34 @@
 type UserChat{
     id: ID!
-    seller: User!
-    user: User!
-    userChatMessage: [UserChatMessage!]!
-    userChatImage: [UserChatImage!]!
+    seller: User! @goField (forceResolver: true)
+    user: User! @goField (forceResolver: true)
+    userChatMessage: [UserChatMessage!]! @goField (forceResolver: true)
+    userChatImage: [UserChatImage!]! @goField (forceResolver: true)
 }
 
 type UserChatMessage{
-    chat: UserChat!
+    id: ID!
+    userChat: UserChat!
     message: String!
     type: String!
     time: Time!
 }
 
 type UserChatImage{
-   chat: UserChat!
+   id: ID!
+   userChat: UserChat!
    image: String!
    type: String!
    time: Time!
 }
 
 extend type Mutation{
-    createUserChat(seller: ID!, user: ID!): UserChat!
+    createUserChat(sellerID: ID!, userID: ID!): UserChat!
     createUserChatImage(chatID: ID!, image:String!, type:String!): UserChatImage!
     createUserChatMessage(chatID: ID!, message:String!, type:String!): UserChatMessage!
+}
+
+
+extend type Query{
+    userChat(sellerID:ID!): UserChat!
 }

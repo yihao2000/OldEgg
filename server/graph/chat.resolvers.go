@@ -7,13 +7,31 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
+	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/yihao2000/gqlgen-todos/config"
 	"github.com/yihao2000/gqlgen-todos/graph/model"
+	"github.com/yihao2000/gqlgen-todos/service"
 )
 
 // CreateUserChat is the resolver for the createUserChat field.
-func (r *mutationResolver) CreateUserChat(ctx context.Context, seller string, user string) (*model.UserChat, error) {
-	panic(fmt.Errorf("not implemented: CreateUserChat - createUserChat"))
+func (r *mutationResolver) CreateUserChat(ctx context.Context, sellerID string, userID string) (*model.UserChat, error) {
+	db := config.GetDB()
+
+	userChat := model.UserChat{
+		ID:       uuid.NewString(),
+		SellerID: sellerID,
+		UserID:   userID,
+		Time:     time.Now(),
+	}
+	if err := db.Model(userChat).Create(&userChat).Error; err != nil {
+		return nil, err
+	}
+
+	return &userChat, nil
+	// panic(fmt.Errorf("not implemented: CreateUserChatImage - createUserChatImage"))
 }
 
 // CreateUserChatImage is the resolver for the createUserChatImage field.
@@ -26,19 +44,36 @@ func (r *mutationResolver) CreateUserChatMessage(ctx context.Context, chatID str
 	panic(fmt.Errorf("not implemented: CreateUserChatMessage - createUserChatMessage"))
 }
 
-// ID is the resolver for the id field.
-func (r *userChatResolver) ID(ctx context.Context, obj *model.UserChat) (string, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
+// UserChat is the resolver for the userChat field.
+func (r *queryResolver) UserChat(ctx context.Context, sellerID string) (*model.UserChat, error) {
+	db := config.GetDB()
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	userChat := new(model.UserChat)
+
+	return userChat, db.Joins("JOIN users ON users.id = user_chats.user_id").Where("user_chats.seller_id = ? AND user_chats.user_id = ?", sellerID, userID).Find(&userChat).Error
 }
 
 // Seller is the resolver for the seller field.
 func (r *userChatResolver) Seller(ctx context.Context, obj *model.UserChat) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: Seller - seller"))
+	db := config.GetDB()
+	user := new(model.User)
+
+	return user, db.Where("id = ?", obj.SellerID).Limit(1).Find(&user).Error
 }
 
 // User is the resolver for the user field.
 func (r *userChatResolver) User(ctx context.Context, obj *model.UserChat) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	db := config.GetDB()
+	user := new(model.User)
+
+	return user, db.Where("id = ?", obj.UserID).Limit(1).Find(&user).Error
 }
 
 // UserChatMessage is the resolver for the userChatMessage field.
@@ -51,21 +86,7 @@ func (r *userChatResolver) UserChatImage(ctx context.Context, obj *model.UserCha
 	panic(fmt.Errorf("not implemented: UserChatImage - userChatImage"))
 }
 
-// Chat is the resolver for the chat field.
-func (r *userChatImageResolver) Chat(ctx context.Context, obj *model.UserChatImage) (*model.UserChat, error) {
-	panic(fmt.Errorf("not implemented: Chat - chat"))
-}
-
-// Type is the resolver for the type field.
-func (r *userChatImageResolver) Type(ctx context.Context, obj *model.UserChatImage) (string, error) {
-	panic(fmt.Errorf("not implemented: Type - type"))
-}
-
 // UserChat returns UserChatResolver implementation.
 func (r *Resolver) UserChat() UserChatResolver { return &userChatResolver{r} }
 
-// UserChatImage returns UserChatImageResolver implementation.
-func (r *Resolver) UserChatImage() UserChatImageResolver { return &userChatImageResolver{r} }
-
 type userChatResolver struct{ *Resolver }
-type userChatImageResolver struct{ *Resolver }
