@@ -1120,3 +1120,9 @@ export const USER_ONGOING_SHOP_ORDERS_QUERY = `query($userID:ID!){
 
   }
 }`;
+
+export const USER_UPDATE_TWO_FACTOR_AUTHENTICATION = `mutation($enabled:Boolean!){
+  userUpdateTwoFactorAuthentication(enabled:$enabled){
+    id
+  }
+}`;

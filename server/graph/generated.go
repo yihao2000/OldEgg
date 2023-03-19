@@ -118,73 +118,74 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		Auth                             func(childComplexity int) int
-		Checkout                         func(childComplexity int, shippingID string, paymentTypeID string, addressID string) int
-		CreateAddress                    func(childComplexity int, name string, detail string, region string, city string, zipCode string, phone string, isPrimary bool) int
-		CreateBrand                      func(childComplexity int, input model.NewBrand) int
-		CreateCart                       func(childComplexity int, productID string, quantity int) int
-		CreateCategory                   func(childComplexity int, input model.NewCategory) int
-		CreateCustomerServiceReview      func(childComplexity int, title string, comment string, rating float64) int
-		CreateNotification               func(childComplexity int, userID string, title string, content string) int
-		CreateProduct                    func(childComplexity int, input model.NewProduct) int
-		CreateProductGroup               func(childComplexity int) int
-		CreateProductReview              func(childComplexity int, productID string, rating float64, title string, comment string) int
-		CreateProductVariant             func(childComplexity int, input model.NewProductVariant) int
-		CreatePromo                      func(childComplexity int, input model.NewPromo) int
-		CreateReview                     func(childComplexity int, productID string, rating int, description string) int
-		CreateSavedForLater              func(childComplexity int, productID string, quantity int) int
-		CreateShop                       func(childComplexity int, input model.NewShop) int
-		CreateShopReview                 func(childComplexity int, shopID string, userID string, rating float64, tag *string, comment string, oneTimeDelivery bool, productAccurate bool, satisfiedService bool, transactionHeaderID string) int
-		CreateShopReviewTag              func(childComplexity int, shopReviewID string, tag string) int
-		CreateUserChat                   func(childComplexity int, sellerID string, userID string) int
-		CreateUserChatImage              func(childComplexity int, chatID string, image string, typeArg string) int
-		CreateUserChatMessage            func(childComplexity int, chatID string, message string, typeArg string) int
-		CreateUserSavedSearch            func(childComplexity int, keyword string) int
-		CreateVoucher                    func(childComplexity int, balance float64) int
-		CreateWishlist                   func(childComplexity int, input model.NewWishlist) int
-		CreateWishlistDetail             func(childComplexity int, wishlistID string, productID string, quantity int) int
-		CreateWishlistFollower           func(childComplexity int, wishlistID string) int
-		CreateWishlistReview             func(childComplexity int, wishlistID string, customName string, rating float64, title string, comment string) int
-		DeleteAddress                    func(childComplexity int, id string) int
-		DeleteAllCart                    func(childComplexity int) int
-		DeleteAllSavedForLater           func(childComplexity int) int
-		DeleteAllWishlistWishlistDetail  func(childComplexity int, wishlistID string) int
-		DeleteCart                       func(childComplexity int, productID string) int
-		DeleteProductFromWishlistDetails func(childComplexity int, productID string) int
-		DeleteProductReview              func(childComplexity int, productID string) int
-		DeletePromo                      func(childComplexity int, promoID string) int
-		DeleteSavedForLater              func(childComplexity int, productID string) int
-		DeleteShopReview                 func(childComplexity int, shopReviewID string) int
-		DeleteShopReviewTag              func(childComplexity int, shopReviewID string) int
-		DeleteUserSavedSearch            func(childComplexity int, keyword string) int
-		DeleteWishlist                   func(childComplexity int, wishlistID string) int
-		DeleteWishlistDetail             func(childComplexity int, wishlistID string, productID string) int
-		DeleteWishlistFollower           func(childComplexity int, wishlistID string) int
-		DeleteWishlistReview             func(childComplexity int, wishlistReviewID string) int
-		EditWishlistNote                 func(childComplexity int, wishlistID string, notes string) int
-		GenerateUserTwoFactorCode        func(childComplexity int, userID string, twoFactorCode string) int
-		TogglePrimary                    func(childComplexity int, id string) int
-		UpdateBrand                      func(childComplexity int, input model.NewBrand, lastUpdateID string) int
-		UpdateCart                       func(childComplexity int, productID string, quantity int) int
-		UpdateCategory                   func(childComplexity int, input model.NewCategory, lastUpdateID string) int
-		UpdateProduct                    func(childComplexity int, productID string, input model.NewProduct) int
-		UpdateProductReview              func(childComplexity int, productID string, rating float64, title string, comment string) int
-		UpdateProductVariant             func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
-		UpdatePromo                      func(childComplexity int, input model.NewPromo) int
-		UpdateShop                       func(childComplexity int, name string, aboutus string, description string, image string, shopID string) int
-		UpdateShopReview                 func(childComplexity int, shopReviewID string, rating float64, comment string) int
-		UpdateShopStatus                 func(childComplexity int, banned *bool, shopID string) int
-		UpdateTransactionHeader          func(childComplexity int, status string, transactionHeaderID string) int
-		UpdateUserInformation            func(childComplexity int, userID string, banned *bool) int
-		UpdateVoucher                    func(childComplexity int, voucherID string) int
-		UpdateWishlist                   func(childComplexity int, wishlistID string, input model.NewWishlist) int
-		UpdateWishlistDetail             func(childComplexity int, productID string, wishlistID string, quantity int) int
-		UpdateWishlistReview             func(childComplexity int, wishlistReviewID string, rating float64, title string, comment string) int
-		UserInputVerificationCode        func(childComplexity int, email string, verificationcode string, duration int) int
-		UserUpdateInformation            func(childComplexity int, currentPassword *string, newPassword *string, phone *string, balance *float64, banned *bool) int
-		UserUpdateNewsLetterSubscription func(childComplexity int, userID string, subscribed bool) int
-		ValidateTwoFactorCode            func(childComplexity int, userID string, twoFactorCode string) int
-		ValidateUserVerificationCode     func(childComplexity int, email string, verificationcode string) int
+		Auth                              func(childComplexity int) int
+		Checkout                          func(childComplexity int, shippingID string, paymentTypeID string, addressID string) int
+		CreateAddress                     func(childComplexity int, name string, detail string, region string, city string, zipCode string, phone string, isPrimary bool) int
+		CreateBrand                       func(childComplexity int, input model.NewBrand) int
+		CreateCart                        func(childComplexity int, productID string, quantity int) int
+		CreateCategory                    func(childComplexity int, input model.NewCategory) int
+		CreateCustomerServiceReview       func(childComplexity int, title string, comment string, rating float64) int
+		CreateNotification                func(childComplexity int, userID string, title string, content string) int
+		CreateProduct                     func(childComplexity int, input model.NewProduct) int
+		CreateProductGroup                func(childComplexity int) int
+		CreateProductReview               func(childComplexity int, productID string, rating float64, title string, comment string) int
+		CreateProductVariant              func(childComplexity int, input model.NewProductVariant) int
+		CreatePromo                       func(childComplexity int, input model.NewPromo) int
+		CreateReview                      func(childComplexity int, productID string, rating int, description string) int
+		CreateSavedForLater               func(childComplexity int, productID string, quantity int) int
+		CreateShop                        func(childComplexity int, input model.NewShop) int
+		CreateShopReview                  func(childComplexity int, shopID string, userID string, rating float64, tag *string, comment string, oneTimeDelivery bool, productAccurate bool, satisfiedService bool, transactionHeaderID string) int
+		CreateShopReviewTag               func(childComplexity int, shopReviewID string, tag string) int
+		CreateUserChat                    func(childComplexity int, sellerID string, userID string) int
+		CreateUserChatImage               func(childComplexity int, chatID string, image string, typeArg string) int
+		CreateUserChatMessage             func(childComplexity int, chatID string, message string, typeArg string) int
+		CreateUserSavedSearch             func(childComplexity int, keyword string) int
+		CreateVoucher                     func(childComplexity int, balance float64) int
+		CreateWishlist                    func(childComplexity int, input model.NewWishlist) int
+		CreateWishlistDetail              func(childComplexity int, wishlistID string, productID string, quantity int) int
+		CreateWishlistFollower            func(childComplexity int, wishlistID string) int
+		CreateWishlistReview              func(childComplexity int, wishlistID string, customName string, rating float64, title string, comment string) int
+		DeleteAddress                     func(childComplexity int, id string) int
+		DeleteAllCart                     func(childComplexity int) int
+		DeleteAllSavedForLater            func(childComplexity int) int
+		DeleteAllWishlistWishlistDetail   func(childComplexity int, wishlistID string) int
+		DeleteCart                        func(childComplexity int, productID string) int
+		DeleteProductFromWishlistDetails  func(childComplexity int, productID string) int
+		DeleteProductReview               func(childComplexity int, productID string) int
+		DeletePromo                       func(childComplexity int, promoID string) int
+		DeleteSavedForLater               func(childComplexity int, productID string) int
+		DeleteShopReview                  func(childComplexity int, shopReviewID string) int
+		DeleteShopReviewTag               func(childComplexity int, shopReviewID string) int
+		DeleteUserSavedSearch             func(childComplexity int, keyword string) int
+		DeleteWishlist                    func(childComplexity int, wishlistID string) int
+		DeleteWishlistDetail              func(childComplexity int, wishlistID string, productID string) int
+		DeleteWishlistFollower            func(childComplexity int, wishlistID string) int
+		DeleteWishlistReview              func(childComplexity int, wishlistReviewID string) int
+		EditWishlistNote                  func(childComplexity int, wishlistID string, notes string) int
+		GenerateUserTwoFactorCode         func(childComplexity int, userID string, twoFactorCode string) int
+		TogglePrimary                     func(childComplexity int, id string) int
+		UpdateBrand                       func(childComplexity int, input model.NewBrand, lastUpdateID string) int
+		UpdateCart                        func(childComplexity int, productID string, quantity int) int
+		UpdateCategory                    func(childComplexity int, input model.NewCategory, lastUpdateID string) int
+		UpdateProduct                     func(childComplexity int, productID string, input model.NewProduct) int
+		UpdateProductReview               func(childComplexity int, productID string, rating float64, title string, comment string) int
+		UpdateProductVariant              func(childComplexity int, input model.NewProductVariant, lastUpdateID string) int
+		UpdatePromo                       func(childComplexity int, input model.NewPromo) int
+		UpdateShop                        func(childComplexity int, name string, aboutus string, description string, image string, shopID string) int
+		UpdateShopReview                  func(childComplexity int, shopReviewID string, rating float64, comment string) int
+		UpdateShopStatus                  func(childComplexity int, banned *bool, shopID string) int
+		UpdateTransactionHeader           func(childComplexity int, status string, transactionHeaderID string) int
+		UpdateUserInformation             func(childComplexity int, userID string, banned *bool) int
+		UpdateVoucher                     func(childComplexity int, voucherID string) int
+		UpdateWishlist                    func(childComplexity int, wishlistID string, input model.NewWishlist) int
+		UpdateWishlistDetail              func(childComplexity int, productID string, wishlistID string, quantity int) int
+		UpdateWishlistReview              func(childComplexity int, wishlistReviewID string, rating float64, title string, comment string) int
+		UserInputVerificationCode         func(childComplexity int, email string, verificationcode string, duration int) int
+		UserUpdateInformation             func(childComplexity int, currentPassword *string, newPassword *string, phone *string, balance *float64, banned *bool) int
+		UserUpdateNewsLetterSubscription  func(childComplexity int, userID string, subscribed bool) int
+		UserUpdateTwoFactorAuthentication func(childComplexity int, enabled bool) int
+		ValidateTwoFactorCode             func(childComplexity int, userID string, twoFactorCode string) int
+		ValidateUserVerificationCode      func(childComplexity int, email string, verificationcode string) int
 	}
 
 	Notification struct {
@@ -499,6 +500,7 @@ type MutationResolver interface {
 	CreateCustomerServiceReview(ctx context.Context, title string, comment string, rating float64) (*model.CustomerServiceReview, error)
 	GenerateUserTwoFactorCode(ctx context.Context, userID string, twoFactorCode string) (bool, error)
 	ValidateTwoFactorCode(ctx context.Context, userID string, twoFactorCode string) (bool, error)
+	UserUpdateTwoFactorAuthentication(ctx context.Context, enabled bool) (*model.User, error)
 	CreateAddress(ctx context.Context, name string, detail string, region string, city string, zipCode string, phone string, isPrimary bool) (*model.Address, error)
 	TogglePrimary(ctx context.Context, id string) (*model.Address, error)
 	DeleteAddress(ctx context.Context, id string) (bool, error)
@@ -1692,6 +1694,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UserUpdateNewsLetterSubscription(childComplexity, args["userID"].(string), args["subscribed"].(bool)), true
+
+	case "Mutation.userUpdateTwoFactorAuthentication":
+		if e.complexity.Mutation.UserUpdateTwoFactorAuthentication == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_userUpdateTwoFactorAuthentication_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UserUpdateTwoFactorAuthentication(childComplexity, args["enabled"].(bool)), true
 
 	case "Mutation.validateTwoFactorCode":
 		if e.complexity.Mutation.ValidateTwoFactorCode == nil {
@@ -5035,6 +5049,21 @@ func (ec *executionContext) field_Mutation_userUpdateNewsLetterSubscription_args
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_userUpdateTwoFactorAuthentication_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 bool
+	if tmp, ok := rawArgs["enabled"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("enabled"))
+		arg0, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["enabled"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_validateTwoFactorCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -8199,6 +8228,92 @@ func (ec *executionContext) fieldContext_Mutation_validateTwoFactorCode(ctx cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_validateTwoFactorCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_userUpdateTwoFactorAuthentication(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_userUpdateTwoFactorAuthentication(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UserUpdateTwoFactorAuthentication(rctx, fc.Args["enabled"].(bool))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋyihao2000ᚋgqlgenᚑtodosᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_userUpdateTwoFactorAuthentication(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "banned":
+				return ec.fieldContext_User_banned(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "verificationcode":
+				return ec.fieldContext_User_verificationcode(ctx, field)
+			case "verificationcodevalidtime":
+				return ec.fieldContext_User_verificationcodevalidtime(ctx, field)
+			case "newslettersubscribe":
+				return ec.fieldContext_User_newslettersubscribe(ctx, field)
+			case "currency":
+				return ec.fieldContext_User_currency(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "userSavedSearches":
+				return ec.fieldContext_User_userSavedSearches(ctx, field)
+			case "twoFactorEnabled":
+				return ec.fieldContext_User_twoFactorEnabled(ctx, field)
+			case "twoFactorCode":
+				return ec.fieldContext_User_twoFactorCode(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_userUpdateTwoFactorAuthentication_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -26782,6 +26897,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_validateTwoFactorCode(ctx, field)
+			})
+
+		case "userUpdateTwoFactorAuthentication":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_userUpdateTwoFactorAuthentication(ctx, field)
 			})
 
 		case "createAddress":

@@ -12,6 +12,7 @@ import {
   GRAPHQLAPI,
   PRODUCT_PRODUCTSGROUP_QUERY,
   PRODUCT_QUERY,
+  USER_UPDATE_TWO_FACTOR_AUTHENTICATION,
 } from '@/util/constant';
 import {
   Product,
@@ -159,6 +160,56 @@ const Profile: NextPage = () => {
                               }}
                             >
                               EDIT
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr className={`${styles.rowcontainer}`}>
+                      <td>
+                        <span>2FA</span>
+                      </td>
+                      <td>
+                        <div className={styles.marginvertical}>
+                          <div className={styles.flexwrap}>
+                            <span
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <b>
+                                {user.twoFactorEnabled ? 'Enabled' : 'Disabled'}
+                              </b>
+                            </span>
+                            <button
+                              className={styles.editbutton}
+                              onClick={() => {
+                                axios
+                                  .post(
+                                    GRAPHQLAPI,
+                                    {
+                                      query:
+                                        USER_UPDATE_TWO_FACTOR_AUTHENTICATION,
+                                      variables: {
+                                        enabled: !user.twoFactorEnabled,
+                                      },
+                                    },
+                                    {
+                                      headers: {
+                                        Authorization: `Bearer ${token}`,
+                                      },
+                                    },
+                                  )
+                                  .then((res) => {
+                                    router.reload();
+                                  })
+                                  .catch(() => {});
+                              }}
+                            >
+                              {user.twoFactorEnabled == true
+                                ? 'Disable'
+                                : 'Enable'}
                             </button>
                           </div>
                         </div>

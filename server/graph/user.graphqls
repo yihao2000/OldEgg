@@ -98,6 +98,8 @@ type Mutation {
 
    generateUserTwoFactorCode(userID: ID!, twoFactorCode:String!): Boolean!
    validateTwoFactorCode(userID: ID!, twoFactorCode:String!): Boolean!
+
+   userUpdateTwoFactorAuthentication(enabled: Boolean!): User!
   
 }
 

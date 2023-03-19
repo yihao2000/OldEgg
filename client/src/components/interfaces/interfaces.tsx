@@ -70,6 +70,7 @@ export interface User {
   currency: number;
   newslettersubscribe: boolean;
   location: Location;
+  twoFactorEnabled: boolean;
 }
 
 export interface ProductCardData {

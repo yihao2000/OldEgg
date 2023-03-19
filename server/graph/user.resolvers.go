@@ -270,6 +270,28 @@ func (r *mutationResolver) ValidateTwoFactorCode(ctx context.Context, userID str
 	}
 }
 
+// UserUpdateTwoFactorAuthentication is the resolver for the userUpdateTwoFactorAuthentication field.
+func (r *mutationResolver) UserUpdateTwoFactorAuthentication(ctx context.Context, enabled bool) (*model.User, error) {
+	db := config.GetDB()
+
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	var user model.User
+	if err := db.Model(user).Where("id LIKE ?", userID).Take(&user).Error; err != nil {
+		return nil, err
+	}
+
+	user.TwoFactorEnabled = enabled
+	db.Save(user)
+
+	return &user, nil
+}
+
 // User is the resolver for the user field.
 func (r *notificationResolver) User(ctx context.Context, obj *model.Notification) (*model.User, error) {
 	db := config.GetDB()
