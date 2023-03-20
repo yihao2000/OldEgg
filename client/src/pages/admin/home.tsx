@@ -6,7 +6,7 @@ import Layout from '@/components/layout';
 import ShopHeader from '@/components/shop/shopheader';
 import styles from '@/styles/pagesstyles/shop/myshop/home.module.scss';
 import styles2 from '@/styles/pagesstyles/account/profile.module.scss';
-
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import emailjs from '@emailjs/browser';
 import {
   Brand,
@@ -1162,6 +1162,7 @@ export default function MyShop() {
   //Data visualization
   //Doughnut Chart
   Chart.register(ArcElement);
+  Chart.register(ChartDataLabels);
   const doughnutData = {
     labels: [
       'Open Transactions',
@@ -1177,11 +1178,7 @@ export default function MyShop() {
           totalConfirmedTransactions,
           totalCancelledTransactions,
         ],
-        backgroundColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          'rgb(255, 205, 86)',
-        ],
+        backgroundColor: ['blue', 'green', 'red'],
         hoverOffset: 4,
       },
     ],
@@ -1274,7 +1271,8 @@ export default function MyShop() {
                 flexWrap: 'wrap',
                 justifyContent: 'space-evenly',
                 height: 'fit-content',
-                rowGap: '30px',
+                rowGap: '100px',
+                marginBottom: '50px',
               }}
             >
               <div
@@ -1282,9 +1280,26 @@ export default function MyShop() {
                   height: '300px',
                   display: 'flex',
                   alignItems: 'center',
+                  flexDirection: 'column',
+                  rowGap: '20px',
                 }}
               >
-                <Doughnut data={doughnutData} />
+                <Doughnut
+                  data={doughnutData}
+                  options={{
+                    plugins: {
+                      datalabels: {
+                        labels: {
+                          value: {},
+                          title: {
+                            color: 'white',
+                          },
+                        },
+                      },
+                    },
+                  }}
+                />
+                Blue: Pending | Green: Confirmed | Red: Cancelled - Transactions
               </div>
 
               <div
