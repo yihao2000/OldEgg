@@ -284,7 +284,7 @@ type ComplexityRoot struct {
 		ShopReviewTag                 func(childComplexity int, shopReviewID string) int
 		ShopReviews                   func(childComplexity int, shopID string, filter *string, search *string) int
 		ShopTotalSales                func(childComplexity int, shopID string) int
-		Shops                         func(childComplexity int, banned *bool) int
+		Shops                         func(childComplexity int, banned *bool, limit *int, offset *int) int
 		TopShops                      func(childComplexity int) int
 		TransactionHeaders            func(childComplexity int) int
 		UpdateCart                    func(childComplexity int, userID string, productID string, quantity int) int
@@ -622,7 +622,7 @@ type QueryResolver interface {
 	PopularCategories(ctx context.Context) ([]*model.Category, error)
 	Promos(ctx context.Context) ([]*model.Promo, error)
 	Reviews(ctx context.Context, productID string) ([]*model.Review, error)
-	Shops(ctx context.Context, banned *bool) ([]*model.Shop, error)
+	Shops(ctx context.Context, banned *bool, limit *int, offset *int) ([]*model.Shop, error)
 	Shop(ctx context.Context, id *string, name *string) (*model.Shop, error)
 	ShopProducts(ctx context.Context, shopID string, sortBy *string, limit *int, offset *int, categoryID *string) ([]*model.Product, error)
 	ShopOrders(ctx context.Context, shopID string, filter *string) ([]*model.TransactionHeader, error)
@@ -2364,7 +2364,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Shops(childComplexity, args["banned"].(*bool)), true
+		return e.complexity.Query.Shops(childComplexity, args["banned"].(*bool), args["limit"].(*int), args["offset"].(*int)), true
 
 	case "Query.topShops":
 		if e.complexity.Query.TopShops == nil {
@@ -5634,6 +5634,24 @@ func (ec *executionContext) field_Query_shops_args(ctx context.Context, rawArgs 
 		}
 	}
 	args["banned"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg2
 	return args, nil
 }
 
@@ -17282,7 +17300,7 @@ func (ec *executionContext) _Query_shops(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Shops(rctx, fc.Args["banned"].(*bool))
+		return ec.resolvers.Query().Shops(rctx, fc.Args["banned"].(*bool), fc.Args["limit"].(*int), fc.Args["offset"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

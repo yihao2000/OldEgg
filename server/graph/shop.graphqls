@@ -54,7 +54,7 @@ extend type Mutation{
 } 
 
 extend type Query{
-    shops(banned:Boolean): [Shop!]! @goField(forceResolver: true)
+    shops(banned:Boolean, limit:Int, offset: Int): [Shop!]! @goField(forceResolver: true)
     shop(id: ID, name: String): Shop! @goField(forceResolver: true)
     shopProducts(shopID: ID!, sortBy: String, limit: Int, offset: Int, categoryID:ID): [Product!]!
     shopOrders(shopID: ID!, filter:String): [TransactionHeader!]!

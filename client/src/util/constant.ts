@@ -798,8 +798,8 @@ export const UPDATE_USER_INFORMATION = `mutation($userID:ID!, $banned:Boolean){
   }
 }`;
 
-export const SHOPS_QUERY = `query($banned:Boolean){
-  shops(banned:$banned){
+export const SHOPS_QUERY = `query($banned:Boolean, $limit:Int, $offset:Int){
+  shops(banned:$banned, offset:$offset, limit:$limit){
     id
     name
     description

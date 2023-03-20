@@ -213,7 +213,7 @@ func (r *mutationResolver) DeleteShopReviewTag(ctx context.Context, shopReviewID
 }
 
 // Shops is the resolver for the shops field.
-func (r *queryResolver) Shops(ctx context.Context, banned *bool) ([]*model.Shop, error) {
+func (r *queryResolver) Shops(ctx context.Context, banned *bool, limit *int, offset *int) ([]*model.Shop, error) {
 	db := config.GetDB()
 
 	var models []*model.Shop
@@ -222,6 +222,14 @@ func (r *queryResolver) Shops(ctx context.Context, banned *bool) ([]*model.Shop,
 
 	if banned != nil {
 		temp = temp.Where("banned = ?", banned)
+	}
+
+	if limit != nil {
+		temp = temp.Limit(*limit)
+	}
+
+	if offset != nil {
+		temp = temp.Offset(*offset)
 	}
 
 	return models, temp.Find(&models).Error

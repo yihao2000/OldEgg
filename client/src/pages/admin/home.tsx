@@ -75,6 +75,11 @@ export default function MyShop() {
 
   const [shops, setShops] = useState<Shop[]>();
   const [filterBy, setFilterBy] = useState('All');
+  const [shopLimit, setShopLimit] = useState(3);
+  const [shopOffset, setShopOffset] = useState(0);
+
+  const [shopCurrentPage, setShopCurrentPage] = useState(1);
+  const [shopTotalPage, setShopTotalPage] = useState(0);
 
   const [openAddShopModal, setOpenAddShopModal] = useState(false);
 
@@ -350,12 +355,38 @@ export default function MyShop() {
 
   useEffect(() => {
     refreshComponent();
-  }, [token, limit, orderBy, filterBy]);
+  }, [token, limit, orderBy, filterBy, shopLimit]);
 
   const handleAddShopClick = () => {
     setOpenAddShopModal(true);
   };
 
+  useEffect(() => {
+    axios
+      .post(
+        GRAPHQLAPI,
+        {
+          query: SHOPS_QUERY,
+          variables: {
+            limit: shopLimit,
+            offset: shopOffset,
+            banned:
+              filterBy != 'All' ? (filterBy == 'Banned' ? true : false) : null,
+          },
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+      .then((res) => {
+        setShops(res.data.data.shops);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [shopTotalPage, shopOffset, refresh]);
   useEffect(() => {
     if (token) {
       console.log(token);
@@ -379,20 +410,11 @@ export default function MyShop() {
         .catch((err) => {
           console.log(err);
         });
-
       axios
         .post(
           GRAPHQLAPI,
           {
             query: SHOPS_QUERY,
-            variables: {
-              banned:
-                filterBy != 'All'
-                  ? filterBy == 'Banned'
-                    ? true
-                    : false
-                  : null,
-            },
           },
           {
             headers: {
@@ -401,7 +423,10 @@ export default function MyShop() {
           },
         )
         .then((res) => {
-          setShops(res.data.data.shops);
+          console.log(res);
+          setShopTotalPage(Math.ceil(res.data.data.shops.length / limit));
+          setShopCurrentPage(1);
+          setShopOffset(0);
         })
         .catch((err) => {
           console.log(err);
@@ -453,6 +478,21 @@ export default function MyShop() {
         console.log(err);
       });
   }, [totalPage, offset, sortBy, refresh]);
+
+  useEffect(() => {
+    setShopOffset((shopCurrentPage - 1) * shopLimit);
+  }, [shopCurrentPage]);
+
+  const handleShopPrevPageClick = () => {
+    if (shopCurrentPage > 1) {
+      setShopCurrentPage(shopCurrentPage - 1);
+    }
+  };
+  const handleShopNextPageClick = () => {
+    if (shopCurrentPage < shopTotalPage) {
+      setShopCurrentPage(shopCurrentPage + 1);
+    }
+  };
 
   useEffect(() => {
     setOffset((currentPage - 1) * limit);
@@ -1426,6 +1466,53 @@ export default function MyShop() {
               <h2>Manage Shops</h2>
               <div className={styles.filtercontainer}>
                 <div className={styles.filtersubcontainer}>
+                  <div className={styles.orderBycontainer}></div>
+                </div>
+                <div
+                  className={styles.filtersubcontainer}
+                  style={{
+                    display: 'flex',
+                    columnGap: '10px',
+                  }}
+                >
+                  <div className={styles.changepagecontainer}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      <b>Page</b> {shopCurrentPage + '/' + shopTotalPage}{' '}
+                    </div>
+                    {shopTotalPage > 1 && (
+                      <div>
+                        {' '}
+                        <button
+                          onClick={handleShopPrevPageClick}
+                          style={{
+                            display: 'inline',
+                          }}
+                          className={styles.changepagebutton}
+                        >
+                          <FaAngleLeft />
+                        </button>
+                        <button
+                          onClick={handleShopNextPageClick}
+                          style={{
+                            display: 'inline',
+                          }}
+                          className={styles.changepagebutton}
+                        >
+                          <FaAngleRight />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className={styles.filtercontainer}>
+                <div className={styles.filtersubcontainer}>
                   <div className={styles.orderBycontainer}>
                     <b>Filter By:</b>
                     <select
@@ -1445,6 +1532,7 @@ export default function MyShop() {
                   <button onClick={handleAddShopClick}>Add New Shop</button>
                 </div>
               </div>
+
               <div className={styles.productcardcontainer}>
                 {shops?.map((shop) => {
                   return <ShopCard shop={shop} key={shop.id} />;
