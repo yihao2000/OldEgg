@@ -104,6 +104,7 @@ export default function Signup() {
               },
             })
             .then((res) => {
+              console.log(res);
               setToken(res.data.data.auth.register.token);
 
               Router.push('/');

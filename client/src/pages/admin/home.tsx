@@ -559,8 +559,7 @@ export default function MyShop() {
         shopDescription == '' ||
         shopImage == '' ||
         shopAboutUs == '' ||
-        shopBanner == '' ||
-        selectedUserID == ''
+        shopBanner == ''
       ) {
         setError('All Fields must be Filled!');
       } else {
@@ -585,11 +584,15 @@ export default function MyShop() {
             },
           )
           .then((res) => {
+            var templateParams = {
+              email: selectedUser?.email,
+              content: 'You have successfully opened a new shop !',
+            };
             emailjs
-              .sendForm(
+              .send(
                 'service_dsn89wa',
                 'template_0bl2oge',
-                form.current!,
+                templateParams,
                 'gM8J9ZjItBS3Hw4je',
               )
               .then(
@@ -763,34 +766,6 @@ export default function MyShop() {
               })}
             </select>
           </div>
-          <input
-            type="email"
-            style={{
-              marginBottom: '15px',
-              display: 'none',
-            }}
-            className={styles.formtextinput}
-            id="email"
-            name="email"
-            required
-            placeholder="Email Address"
-            value={selectedUser?.email}
-            formNoValidate
-          />
-          <input
-            type="text"
-            style={{
-              marginBottom: '15px',
-              display: 'none',
-            }}
-            className={styles.formtextinput}
-            id="content"
-            name="content"
-            required
-            placeholder="Email Address"
-            value={'You have successfully opened a new shop !'}
-            formNoValidate
-          />
 
           <div className={styles.gapcontainer}>
             <span style={{ color: 'red' }}>{error}</span>

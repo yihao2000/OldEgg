@@ -26,6 +26,7 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 		Currency:            0,
 		NewsLetterSubscribe: input.Newslettersubscribe,
 		TwoFactorEnabled:    false,
+		LocationID:          "10af47cb-546a-4662-88cb-d9ab1122cac0",
 	}
 
 	if err := db.Model(user).Create(&user).Error; err != nil {
